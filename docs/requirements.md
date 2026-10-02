@@ -2,10 +2,10 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.0 (Sprint 1 - Ngày 1) |
+| Phiên bản | 1.1 (Sprint 1 - đổi sang nhóm 2 người) |
 | Ngày tạo | 01/10/2026 |
 | Thời gian thực hiện | 8 tuần (8 sprint, mỗi sprint 1 tuần) |
-| Nhân sự | 1 người (full-stack) |
+| Nhân sự | 2 người, chia theo chức năng (xem mục 1.4) |
 
 ---
 
@@ -41,6 +41,17 @@ Xây dựng hệ thống Blog đa ngôn ngữ, gồm trang đọc blog cho ngư�
 | Access token | JWT ngắn hạn dùng để gọi API |
 | Refresh token | Token dài hạn dùng để xin access token mới, lưu trong Redis |
 
+### 1.4. Phân công
+
+Theo gợi ý của đề bài, một bạn phụ trách Backend admin, một bạn phụ trách Frontend và Backend Owner. Mỗi người làm cả backend lẫn frontend cho phần chức năng của mình.
+
+| Thành viên | Phụ trách |
+| --- | --- |
+| A - Admin + nền tảng backend | Khung backend, migrations, models, seeders; backend xác thực (UC01-UC04, UC12); toàn bộ chức năng Super Admin (UC14-UC18) cả backend lẫn frontend; OAuth (UC20) cả 2 phía |
+| B - Public + Owner + nền tảng frontend | Khung Angular (interceptors, guards, đa ngôn ngữ, theme); frontend xác thực (UC01-UC04, UC12); trang public (UC05-UC11), quản lý bài viết (UC13), tìm kiếm (UC19) cả backend lẫn frontend |
+
+Mỗi PR phải được thành viên còn lại review trước khi merge.
+
 ---
 
 ## 2. Tác nhân (Actors)
@@ -60,28 +71,28 @@ Trong CSDL, mỗi tài khoản có đúng một role: `user`, `blog_owner` hoặ
 
 Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có), **Could** (làm nếu còn thời gian).
 
-| Mã | Use case | Actor | Ưu tiên | Ghi chú |
-| --- | --- | --- | --- | --- |
-| UC01 | Đăng ký (Register) | Guest | Must | |
-| UC02 | Đăng nhập (Login) | Guest | Must | |
-| UC03 | Khôi phục mật khẩu (Recover password) | Guest | Must | |
-| UC04 | Đăng xuất (Logout) | Authenticated User | Must | Bổ sung, đề bài không ghi |
-| UC05 | Xem danh sách bài viết (trang chủ) | Guest, Authenticated User | Must | Bổ sung, đề bài không ghi |
-| UC06 | Xem chi tiết bài viết (View post detail) | Guest, Authenticated User | Must | |
-| UC07 | Xem bài viết theo danh mục (View posts by category) | Guest, Authenticated User | Must | |
-| UC08 | Bình luận (Comment) | Authenticated User | Must | |
-| UC09 | Đổi ngôn ngữ (Change blog language) | Guest, Authenticated User | Must | |
-| UC10 | Đổi giao diện sáng/tối (Change theme) | Guest, Authenticated User | Should | Mở rộng |
-| UC11 | Xem trang tĩnh (About) | Guest, Authenticated User | Must | |
-| UC12 | Quản lý hồ sơ cá nhân | Authenticated User | Should | Bổ sung, đề bài không ghi |
-| UC13 | Quản lý bài viết (Manage posts) | Blog Owner | Must | Thêm, sửa, xóa, xem danh sách |
-| UC14 | Quản lý người dùng (Manage users) | Super Admin | Must | |
-| UC15 | Quản lý danh mục (Manage categories) | Super Admin | Must | |
-| UC16 | Quản lý ngôn ngữ (Manage languages) | Super Admin | Must | |
-| UC17 | Quản lý bản dịch giao diện (Manage UI translations) | Super Admin | Must | Cần để đổi được menu và chữ tĩnh theo ngôn ngữ |
-| UC18 | Quản lý trang tĩnh (Manage pages) | Super Admin | Must | Cần để đổi được trang About theo ngôn ngữ |
-| UC19 | Tìm kiếm toàn văn (Full text search) | Guest, Authenticated User | Should | Mở rộng |
-| UC20 | Đăng nhập bằng OAuth (Google, Github, Facebook) | Guest | Should | Mở rộng, làm Google và Github trước |
+| Mã | Use case | Actor | Ưu tiên | Phụ trách | Ghi chú |
+| --- | --- | --- | --- | --- | --- |
+| UC01 | Đăng ký (Register) | Guest | Must | BE: A, FE: B | |
+| UC02 | Đăng nhập (Login) | Guest | Must | BE: A, FE: B | |
+| UC03 | Khôi phục mật khẩu (Recover password) | Guest | Must | BE: A, FE: B | |
+| UC04 | Đăng xuất (Logout) | Authenticated User | Must | BE: A, FE: B | Bổ sung, đề bài không ghi |
+| UC05 | Xem danh sách bài viết (trang chủ) | Guest, Authenticated User | Must | B | Bổ sung, đề bài không ghi |
+| UC06 | Xem chi tiết bài viết (View post detail) | Guest, Authenticated User | Must | B | |
+| UC07 | Xem bài viết theo danh mục (View posts by category) | Guest, Authenticated User | Must | B | |
+| UC08 | Bình luận (Comment) | Authenticated User | Must | B | |
+| UC09 | Đổi ngôn ngữ (Change blog language) | Guest, Authenticated User | Must | B | Dùng API languages và translations của A |
+| UC10 | Đổi giao diện sáng/tối (Change theme) | Guest, Authenticated User | Should | B | Mở rộng |
+| UC11 | Xem trang tĩnh (About) | Guest, Authenticated User | Must | B | Dùng API pages của A |
+| UC12 | Quản lý hồ sơ cá nhân | Authenticated User | Should | BE: A, FE: B | Bổ sung, đề bài không ghi |
+| UC13 | Quản lý bài viết (Manage posts) | Blog Owner | Must | B | Thêm, sửa, xóa, xem danh sách |
+| UC14 | Quản lý người dùng (Manage users) | Super Admin | Must | A | |
+| UC15 | Quản lý danh mục (Manage categories) | Super Admin | Must | A | |
+| UC16 | Quản lý ngôn ngữ (Manage languages) | Super Admin | Must | A | |
+| UC17 | Quản lý bản dịch giao diện (Manage UI translations) | Super Admin | Must | A | Cần để đổi được menu và chữ tĩnh theo ngôn ngữ |
+| UC18 | Quản lý trang tĩnh (Manage pages) | Super Admin | Must | A | Cần để đổi được trang About theo ngôn ngữ |
+| UC19 | Tìm kiếm toàn văn (Full text search) | Guest, Authenticated User | Should | B | Mở rộng |
+| UC20 | Đăng nhập bằng OAuth (Google, Github, Facebook) | Guest | Should | A | Mở rộng, làm Google và Github trước |
 
 ---
 
