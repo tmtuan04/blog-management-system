@@ -2,9 +2,9 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.2 (Sprint 1 - đổi sang nhóm 3 người) |
+| Phiên bản | 1.4 (chia theo phase, bổ sung phase deploy lên máy ảo Linux) |
 | Ngày tạo | 01/10/2026 |
-| Thời gian thực hiện | 8 tuần (8 sprint, mỗi sprint 1 tuần) |
+| Thời gian thực hiện | Khoảng 8 tuần, chia thành 5 phase (xem mục 1.5) |
 | Nhân sự | 3 người, chia theo chức năng (xem mục 1.4) |
 
 ---
@@ -13,12 +13,13 @@
 
 ### 1.1. Mục đích
 
-Xây dựng hệ thống Blog đa ngôn ngữ, gồm trang đọc blog cho người dùng và trang quản trị cho chủ blog và quản trị viên. Dự án thực hiện theo quy trình Agile/Scrum, đi từ phân tích yêu cầu, thiết kế CSDL, dựng giao diện HTML tĩnh, code backend rồi đến frontend.
+Xây dựng hệ thống Blog đa ngôn ngữ, gồm trang đọc blog cho người dùng và trang quản trị cho chủ blog và quản trị viên. Dự án chia thành 5 phase làm lần lượt: xây dựng cơ sở dữ liệu, xây dựng giao diện HTML, xây dựng backend, xây dựng frontend, và deploy lên máy ảo Linux.
 
 ### 1.2. Công nghệ
 
 | Thành phần | Công nghệ |
 | --- | --- |
+| Giao diện HTML tĩnh | HTML5, Bootstrap 5, SCSS |
 | Backend | NodeJS, ExpressJS, Sequelize, kiến trúc Monolith chia module theo HMVC |
 | Frontend | Angular (chia theo module), Bootstrap 5, SCSS |
 | Cơ sở dữ liệu | MySQL 8 (utf8mb4) |
@@ -26,7 +27,10 @@ Xây dựng hệ thống Blog đa ngôn ngữ, gồm trang đọc blog cho ngư�
 | Thiết kế CSDL | dbdiagram.io |
 | Kiểm thử API | Postman, Jest, Supertest |
 | Tài liệu API | Swagger (OpenAPI 3) |
-| Môi trường chạy | Docker Compose (MySQL, Redis) |
+| Môi trường phát triển | Máy Windows, MySQL và Redis chạy bằng Docker Compose |
+| Môi trường deploy | Máy ảo Ubuntu Server 24.04 LTS (VirtualBox hoặc VMware); MySQL Server, Redis, NodeJS cài trực tiếp, không dùng Docker |
+| Web server | Nginx: phục vụ bản build Angular và chuyển tiếp `/api` về backend NodeJS |
+| Quản lý tiến trình NodeJS | PM2 |
 
 ### 1.3. Thuật ngữ
 
@@ -36,22 +40,155 @@ Xây dựng hệ thống Blog đa ngôn ngữ, gồm trang đọc blog cho ngư�
 | Category | Danh mục bài viết, dùng chung cho mọi ngôn ngữ, tên được dịch theo từng ngôn ngữ |
 | Language | Ngôn ngữ do Super Admin quản lý (ví dụ `vi`, `en`) |
 | UI translation | Bản dịch chữ tĩnh trên giao diện (menu, nút bấm, footer...) |
-| Page | Trang nội dung tĩnh (About...), có nội dung riêng cho từng ngôn ngữ |
+| Page | Trang nội dung tĩnh (Giới thiệu, Liên hệ, Chính sách bảo mật). Danh sách trang cố định, mỗi trang có nội dung riêng cho từng ngôn ngữ (xem UC18) |
 | Slug | Chuỗi định danh trên URL, sinh từ tiêu đề, ví dụ `huong-dan-angular` |
 | Access token | JWT ngắn hạn dùng để gọi API |
 | Refresh token | Token dài hạn dùng để xin access token mới, lưu trong Redis |
 
 ### 1.4. Phân công
 
-Nhóm gồm 3 thành viên, chia theo chức năng: một bạn lo nền tảng backend và xác thực, một bạn lo nền tảng frontend và trang public, một bạn lo Blog Owner và các chức năng quản trị nội dung. Mỗi người làm cả backend lẫn frontend cho phần chức năng của mình (trừ phần xác thực, chia BE/FE giữa A và B).
+Nhóm gồm 3 thành viên. Khối lượng chia không đều: A khoảng 50%, B khoảng 30-35%, C khoảng 15-20%. A và B nhận phần nền tảng và các chức năng nhiều ràng buộc. C nhận các chức năng thêm/sửa/xóa đơn giản. Mỗi người làm cả backend lẫn frontend cho phần của mình, trừ những use case ghi rõ BE/FE ở mục 3.
 
-| Thành viên | Phụ trách |
+| Thành viên | Khối lượng | Phụ trách |
+| --- | --- | --- |
+| A - Nền tảng backend + Auth + Bài viết + Người dùng | ~50% | Khung backend (cấu trúc HMVC, format response, xử lý lỗi, middleware phân quyền, upload file, lọc HTML, Swagger); migrations, models, seeder tài khoản; backend xác thực (UC01-UC04, UC12); OAuth (UC20); quản lý bài viết (UC13), gồm component rich text editor dùng chung; quản lý người dùng (UC14); quản lý ngôn ngữ (UC16); backend tìm kiếm (UC19) |
+| B - Nền tảng frontend + Public | ~30-35% | Khung Angular (interceptors, guards, đa ngôn ngữ, layout trang public và trang quản trị, component dùng chung: phân trang, hộp xác nhận, thông báo); frontend xác thực (UC01-UC04, UC12); trang chủ, chi tiết bài viết, bài theo danh mục (UC05-UC07); bình luận (UC08); đổi ngôn ngữ (UC09); frontend tìm kiếm (UC19) |
+| C - Quản trị nội dung đơn giản | ~15-20% | Quản lý danh mục (UC15); quản lý bản dịch giao diện (UC17); quản lý trang tĩnh (UC18) và trang xem trang tĩnh (UC11); nút đổi giao diện sáng/tối (UC10); seeder dữ liệu mẫu (danh mục, bài viết, bản dịch, trang tĩnh) |
+
+- Ở phase 3 và phase 4, C chỉ bắt đầu code sau khi A dựng xong khung backend và B dựng xong khung Angular. C làm theo mẫu module có sẵn và dùng lại các component dùng chung (rich text editor, phân trang, hộp xác nhận).
+- A là người review chính cho các PR của C.
+- Mỗi PR phải được ít nhất 1 thành viên khác review trước khi merge.
+
+### 1.5. Kế hoạch theo phase
+
+Các phase làm lần lượt. Một phase chỉ kết thúc khi đạt hết "Điều kiện hoàn thành". Thời gian ghi trong bảng là ước lượng.
+
+| Phase | Nội dung | Thời gian | Đầu ra chính |
+| --- | --- | --- | --- |
+| 1 | Xây dựng cơ sở dữ liệu | ~1 tuần | ERD, migrations, seeders |
+| 2 | Xây dựng giao diện HTML | ~1 tuần | Các trang HTML tĩnh cho mọi màn hình |
+| 3 | Xây dựng backend | ~2,5 tuần | API, Swagger, Postman, test |
+| 4 | Xây dựng frontend | ~2,5 tuần | Ứng dụng Angular chạy được với API thật |
+| 5 | Deploy lên máy ảo Linux | ~1 tuần | Hệ thống chạy trên máy ảo, tài liệu hướng dẫn deploy |
+
+#### Phase 1 - Xây dựng cơ sở dữ liệu
+
+Công việc:
+
+- Thiết kế ERD trên dbdiagram.io cho các bảng: `users`, `oauth_accounts`, `languages`, `categories`, `category_translations`, `posts`, `comments`, `ui_translations`, `pages`, `page_translations`.
+- Viết tài liệu mô tả từng bảng: cột, kiểu dữ liệu, ràng buộc, index, khóa ngoại và hành vi khi xóa (ví dụ xóa bài thì xóa luôn bình luận).
+- Viết migrations Sequelize, gồm cả FULLTEXT index (parser `ngram`) cho bảng `posts`.
+- Viết seeders theo mục 6.6.
+
+| Người | Việc |
 | --- | --- |
-| A - Nền tảng backend + Auth + Người dùng | Khung backend, migrations, models, seeders; backend xác thực (UC01-UC04, UC12); OAuth (UC20) cả 2 phía; quản lý người dùng (UC14) cả backend lẫn frontend |
-| B - Nền tảng frontend + Public | Khung Angular (interceptors, guards, đa ngôn ngữ, theme, layout trang quản trị); frontend xác thực (UC01-UC04, UC12); trang public (UC05-UC11), tìm kiếm (UC19) cả backend lẫn frontend |
-| C - Blog Owner + Quản trị nội dung | Quản lý bài viết (UC13); quản lý danh mục, ngôn ngữ, bản dịch giao diện, trang tĩnh (UC15-UC18), cả backend lẫn frontend |
+| A | Thiết kế ERD, viết migrations, seeder tài khoản |
+| B | Review ERD, phụ trách phần bảng `comments` và FULLTEXT index |
+| C | Viết tài liệu mô tả bảng; viết seeder dữ liệu mẫu (ngôn ngữ, danh mục, bài viết, bản dịch, trang tĩnh) |
 
-Mỗi PR phải được ít nhất 1 thành viên khác review trước khi merge.
+Đầu ra: file ERD (link dbdiagram và ảnh export) và tài liệu mô tả bảng trong `docs/`, migrations và seeders trong source backend.
+
+Điều kiện hoàn thành:
+
+- Cả nhóm thống nhất ERD.
+- Trên một database trống, chạy migrate rồi seed không lỗi, và rollback (`db:migrate:undo:all`) cũng không lỗi.
+
+#### Phase 2 - Xây dựng giao diện HTML
+
+Dựng giao diện bằng HTML, Bootstrap 5 và SCSS, dùng dữ liệu giả, chưa gọi API. Mỗi màn hình là một file HTML, dùng chung một bộ SCSS (biến màu, cả chế độ sáng lẫn tối). Ở phase 4, các file này được chuyển thành component Angular.
+
+| Người | Màn hình |
+| --- | --- |
+| A | Trang quản trị: danh sách bài viết, form thêm/sửa bài viết, quản lý người dùng, quản lý ngôn ngữ |
+| B | Bộ SCSS dùng chung; layout trang public (header, footer) và layout trang quản trị (sidebar); trang chủ, chi tiết bài viết (kèm bình luận), bài theo danh mục, kết quả tìm kiếm, trang 404; đăng ký, đăng nhập, quên mật khẩu, đặt lại mật khẩu, hồ sơ cá nhân |
+| C | Trang tĩnh (public); trang quản trị: quản lý danh mục, quản lý bản dịch giao diện, danh sách trang tĩnh, sửa trang tĩnh |
+
+Đầu ra: thư mục `html/` chứa các file HTML và SCSS.
+
+Điều kiện hoàn thành:
+
+- Có đủ tất cả màn hình trong bảng trên.
+- Hiển thị đúng trên mobile (360px), tablet, desktop, ở cả chế độ sáng và tối.
+- Mỗi form có sẵn trạng thái hiển thị lỗi validate và trạng thái loading.
+
+#### Phase 3 - Xây dựng backend
+
+Công việc:
+
+- A dựng khung backend trước (cấu trúc HMVC, format response, xử lý lỗi, middleware xác thực và phân quyền, upload, lọc HTML, Redis, Swagger). B và C bắt đầu code API sau khi khung backend được merge.
+- Mỗi người code API cho các use case mình phụ trách (mục 3), kèm validate, test, tài liệu Swagger và request trong Postman collection.
+
+Đầu ra: API dưới `/api/v1`, Swagger tại `/api-docs`, Postman collection trong `docs/`.
+
+Điều kiện hoàn thành:
+
+- Có đủ API cho các use case Must.
+- Test chạy qua hết, độ phủ tầng service tối thiểu 70%.
+- Mọi API đúng chuẩn ở mục 6.4.
+
+#### Phase 4 - Xây dựng frontend
+
+Công việc:
+
+- B dựng khung Angular trước (module, routing, interceptors, guards, đa ngôn ngữ, layout, component dùng chung). A và C bắt đầu sau khi khung Angular được merge.
+- Chuyển các trang HTML của phase 2 thành component Angular, nối với API thật.
+
+Đầu ra: ứng dụng Angular chạy với backend ở local.
+
+Điều kiện hoàn thành:
+
+- Chạy được trọn vẹn mọi use case Must từ giao diện, từ đầu đến cuối.
+- Các use case Should làm nếu còn thời gian.
+
+#### Phase 5 - Deploy lên máy ảo Linux
+
+Mục tiêu: chạy toàn bộ hệ thống trên một máy ảo Linux như một server thật. Qua đó cả nhóm biết cách cài và cấu hình Nginx, MySQL Server (gồm cả đặt mật khẩu), Redis, NodeJS trên Linux.
+
+Công việc:
+
+1. **Máy ảo:** tạo máy ảo Ubuntu Server 24.04 LTS (khuyến nghị 2 CPU, 4GB RAM, 25GB ổ cứng). Cấu hình mạng Bridged hoặc Host-only để máy thật truy cập được.
+2. **Hệ điều hành:** cập nhật hệ thống; tạo user `deploy` có quyền sudo, không dùng root để chạy ứng dụng; đăng nhập SSH bằng key; bật firewall UFW, chỉ mở cổng 22 (SSH) và 80 (HTTP).
+3. **MySQL Server 8:**
+   - Cài đặt và chạy `mysql_secure_installation`: đặt mật khẩu cho `root`, xóa user ẩn danh, chặn `root` đăng nhập từ xa, xóa database test.
+   - Tạo database `blog_db` với `utf8mb4` / `utf8mb4_unicode_ci`.
+   - Tạo user riêng cho ứng dụng (ví dụ `blog_app`) có mật khẩu mạnh và chỉ có quyền trên `blog_db`. Ứng dụng không được dùng tài khoản `root`.
+   - Cấu hình `bind-address = 127.0.0.1` để MySQL chỉ nhận kết nối từ trong máy ảo.
+4. **Redis:** cài đặt, chỉ lắng nghe `127.0.0.1`, đặt mật khẩu (`requirepass`).
+5. **Backend:**
+   - Cài NodeJS LTS, clone source, tạo file `.env` cho môi trường production (không commit lên Git).
+   - Chạy migrations và seeders.
+   - Chạy backend bằng PM2, cấu hình `pm2 startup` để tự chạy lại khi khởi động lại máy ảo.
+6. **Frontend:** build Angular ở chế độ production, copy kết quả vào `/var/www/blog`.
+7. **Nginx:**
+   - Phục vụ bản build Angular, cấu hình `try_files ... /index.html` để reload trang ở mọi route không bị lỗi 404.
+   - Chuyển tiếp `/api` và `/uploads` về backend NodeJS.
+   - Đặt `client_max_body_size` đủ cho upload ảnh 2MB; bật gzip.
+8. **Kiểm tra:** đi qua checklist ở mục "Điều kiện hoàn thành".
+
+| Người | Việc |
+| --- | --- |
+| A | Cấu hình máy ảo và hệ điều hành; cài MySQL, Redis; deploy backend bằng PM2 |
+| B | Build frontend, cấu hình Nginx |
+| C | Viết tài liệu hướng dẫn deploy từng bước; kiểm tra lại hệ thống trên máy ảo theo checklist |
+
+Sau khi deploy xong, **mỗi thành viên tự làm lại toàn bộ các bước trên một máy ảo của mình** theo tài liệu, để ai cũng biết cách cài.
+
+Đầu ra:
+
+- `docs/deployment.md`: hướng dẫn deploy từng bước, ghi đủ lệnh.
+- `deploy/nginx.conf`: file cấu hình Nginx mẫu.
+- `ecosystem.config.js`: file cấu hình PM2.
+- `.env.example`: danh sách biến môi trường, không chứa giá trị thật.
+
+Điều kiện hoàn thành:
+
+- Từ trình duyệt trên máy thật, mở địa chỉ IP của máy ảo thì dùng được blog: đọc bài, đăng ký, đăng nhập, viết bài có upload ảnh, bình luận, đổi ngôn ngữ.
+- Reload trang ở một route bất kỳ (ví dụ `/posts/abc`) không bị lỗi 404 của Nginx.
+- Khởi động lại máy ảo thì ứng dụng tự chạy lại, không cần thao tác tay.
+- Không đăng nhập được MySQL bằng `root` khi không có mật khẩu. Ứng dụng kết nối bằng user riêng, không dùng `root`.
+- Từ máy thật không kết nối trực tiếp được vào MySQL (cổng 3306) và Redis (cổng 6379).
+
+Lưu ý về OAuth: Google chỉ chấp nhận callback là `localhost` hoặc địa chỉ HTTPS có tên miền, nên đăng nhập Google có thể không chạy được trên máy ảo truy cập bằng IP. Trên máy ảo chỉ bắt buộc chạy đăng nhập bằng Github. Đăng nhập Google demo ở môi trường local.
 
 ---
 
@@ -82,17 +219,17 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 | UC06 | Xem chi tiết bài viết (View post detail) | Guest, Authenticated User | Must | B | |
 | UC07 | Xem bài viết theo danh mục (View posts by category) | Guest, Authenticated User | Must | B | |
 | UC08 | Bình luận (Comment) | Authenticated User | Must | B | |
-| UC09 | Đổi ngôn ngữ (Change blog language) | Guest, Authenticated User | Must | B | Dùng API languages và translations của C |
-| UC10 | Đổi giao diện sáng/tối (Change theme) | Guest, Authenticated User | Should | B | Mở rộng |
-| UC11 | Xem trang tĩnh (About) | Guest, Authenticated User | Must | B | Dùng API pages của C |
+| UC09 | Đổi ngôn ngữ (Change blog language) | Guest, Authenticated User | Must | B | Dùng API languages của A và API translations của C |
+| UC10 | Đổi giao diện sáng/tối (Change theme) | Guest, Authenticated User | Should | C | Mở rộng |
+| UC11 | Xem trang tĩnh (Giới thiệu, Liên hệ, Chính sách bảo mật) | Guest, Authenticated User | Must | C | |
 | UC12 | Quản lý hồ sơ cá nhân | Authenticated User | Should | BE: A, FE: B | Bổ sung, đề bài không ghi |
-| UC13 | Quản lý bài viết (Manage posts) | Blog Owner | Must | C | Thêm, sửa, xóa, xem danh sách |
+| UC13 | Quản lý bài viết (Manage posts) | Blog Owner | Must | A | Thêm, sửa, xóa, xem danh sách |
 | UC14 | Quản lý người dùng (Manage users) | Super Admin | Must | A | |
 | UC15 | Quản lý danh mục (Manage categories) | Super Admin | Must | C | |
-| UC16 | Quản lý ngôn ngữ (Manage languages) | Super Admin | Must | C | |
+| UC16 | Quản lý ngôn ngữ (Manage languages) | Super Admin | Must | A | |
 | UC17 | Quản lý bản dịch giao diện (Manage UI translations) | Super Admin | Must | C | Cần để đổi được menu và chữ tĩnh theo ngôn ngữ |
-| UC18 | Quản lý trang tĩnh (Manage pages) | Super Admin | Must | C | Cần để đổi được trang About theo ngôn ngữ |
-| UC19 | Tìm kiếm toàn văn (Full text search) | Guest, Authenticated User | Should | B | Mở rộng |
+| UC18 | Quản lý trang tĩnh (Manage pages) | Super Admin | Must | C | Chỉ sửa nội dung của các trang có sẵn, không đổi bố cục giao diện |
+| UC19 | Tìm kiếm toàn văn (Full text search) | Guest, Authenticated User | Should | BE: A, FE: B | Mở rộng |
 | UC20 | Đăng nhập bằng OAuth (Google, Github, Facebook) | Guest | Should | A | Mở rộng, làm Google và Github trước |
 
 ---
@@ -180,7 +317,7 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
   - Danh sách bài viết: chỉ còn bài của ngôn ngữ mới.
   - Tên danh mục.
   - Menu, nút bấm, footer và mọi chữ tĩnh khác (UI translations).
-  - Nội dung trang About.
+  - Nội dung các trang tĩnh (Giới thiệu, Liên hệ, Chính sách bảo mật).
 - Nếu đang ở trang chi tiết bài viết hoặc trang danh mục khi đổi ngôn ngữ thì chuyển về trang chủ, vì bài viết của các ngôn ngữ là độc lập với nhau.
 - Lựa chọn được lưu ở `localStorage`, tải lại trang vẫn giữ nguyên.
 - Lần truy cập đầu tiên: dùng ngôn ngữ của trình duyệt nếu hệ thống có hỗ trợ, nếu không thì dùng ngôn ngữ mặc định.
@@ -191,10 +328,14 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 - Có nút chuyển Light/Dark trên header, áp dụng cho cả trang public lẫn trang quản trị.
 - Lựa chọn được lưu ở `localStorage`. Lần đầu truy cập thì theo cài đặt hệ điều hành (`prefers-color-scheme`).
 
-**UC11 - Trang tĩnh (About)**
+**UC11 - Xem trang tĩnh**
 
-- Hiện nội dung trang theo ngôn ngữ đang chọn.
-- Nếu trang chưa có bản dịch cho ngôn ngữ đó thì hiện bản của ngôn ngữ mặc định.
+- Hệ thống có 3 trang tĩnh cố định: Giới thiệu, Liên hệ, Chính sách bảo mật (danh sách ở UC18).
+- Truy cập qua URL `/pages/:key`, ví dụ `/pages/about`.
+- Link tới cả 3 trang nằm ở footer. Trang Giới thiệu có thêm link trên menu header.
+- Hiện tiêu đề và nội dung theo ngôn ngữ đang chọn. Nếu trang chưa có nội dung cho ngôn ngữ đó thì hiện bản của ngôn ngữ mặc định.
+- Trang đang bị ẩn hoặc key không tồn tại: hiện trang 404. Link tới trang bị ẩn cũng không hiện trên footer và menu.
+- Mọi trang tĩnh dùng chung một khung giao diện: tiêu đề ở trên, nội dung rich text ở dưới.
 
 **UC19 - Tìm kiếm toàn văn**
 
@@ -267,8 +408,53 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 
 **UC18 - Quản lý trang tĩnh**
 
-- Danh sách trang (About...), mỗi trang có một key cố định.
-- Sửa tiêu đề và nội dung (rich text) cho từng ngôn ngữ.
+Trang tĩnh là trang chỉ gồm chữ và hình, nội dung ít thay đổi và không phải bài viết. Hệ thống có sẵn một danh sách trang cố định. Admin chỉ sửa nội dung, không tạo thêm hay xóa trang.
+
+*Danh sách trang:*
+
+| Key | Tên trang | URL public | Nội dung gợi ý |
+| --- | --- | --- | --- |
+| `about` | Giới thiệu | `/pages/about` | Giới thiệu blog, mục đích, đội ngũ tác giả |
+| `contact` | Liên hệ | `/pages/contact` | Email, mạng xã hội, địa chỉ. Chỉ là văn bản, không có form gửi liên hệ |
+| `privacy` | Chính sách bảo mật | `/pages/privacy` | Blog thu thập và sử dụng dữ liệu người dùng như thế nào |
+
+- Các trang được tạo sẵn bằng seeder. Key và URL không đổi được.
+- Muốn thêm trang mới thì lập trình viên thêm bằng seeder, không làm qua màn hình quản trị.
+
+*Màn hình danh sách trang:*
+
+- Bảng gồm: tên trang (theo ngôn ngữ mặc định), key, các ngôn ngữ đã có nội dung, trạng thái hiển thị, ngày cập nhật gần nhất, nút "Sửa".
+- Không cần phân trang và tìm kiếm vì chỉ có vài trang.
+
+*Màn hình sửa trang:*
+
+- Mỗi ngôn ngữ đang hoạt động là một tab. Mỗi tab có các trường:
+
+| Trường | Bắt buộc | Ràng buộc |
+| --- | --- | --- |
+| Tiêu đề | Có với ngôn ngữ mặc định, không bắt buộc với ngôn ngữ khác | 2 đến 255 ký tự |
+| Nội dung | Có với ngôn ngữ mặc định, không bắt buộc với ngôn ngữ khác | Rich text (HTML), backend lọc bỏ thẻ và thuộc tính nguy hiểm để chống XSS |
+
+- Ngôn ngữ khác ngôn ngữ mặc định: điền đủ cả tiêu đề và nội dung, hoặc để trống cả hai. Để trống cả hai thì trang public hiện bản của ngôn ngữ mặc định.
+- Công tắc "Hiển thị" bật/tắt trang, áp dụng cho mọi ngôn ngữ.
+- Nút "Lưu" lưu tất cả các tab cùng lúc và hiện thông báo thành công hoặc lỗi.
+- Nút "Xem trên trang public" mở trang ở tab mới của trình duyệt.
+- Rich text editor dùng chung component với UC13, hỗ trợ: tiêu đề (H2, H3), in đậm, in nghiêng, gạch chân, danh sách, trích dẫn, chèn link, chèn ảnh. Ảnh chèn vào theo ràng buộc ảnh của UC13 (jpg, png, webp, tối đa 2MB).
+
+*Những gì chức năng này KHÔNG làm:*
+
+- Không phải công cụ thiết kế trang (page builder): không kéo thả, không đổi bố cục, màu sắc, font chữ hay CSS của trang. Mọi trang tĩnh dùng chung một khung giao diện do frontend làm sẵn.
+- Không tạo trang mới, không xóa trang, không đổi key hoặc URL.
+- Không sửa chữ trên menu, footer hay nút bấm, kể cả tên của các link dẫn tới trang tĩnh. Phần đó sửa ở UC17.
+- Không lưu lịch sử các lần sửa.
+
+*Phân biệt UC17 và UC18:*
+
+| | UC17 - Bản dịch giao diện | UC18 - Trang tĩnh |
+| --- | --- | --- |
+| Sửa cái gì | Chữ ngắn cố định trên giao diện: menu, nút bấm, footer, thông báo | Nội dung dài của một trang riêng |
+| Dạng dữ liệu | Mỗi key là một chuỗi văn bản thuần | Tiêu đề và nội dung rich text |
+| Ví dụ | `menu.about` = "Giới thiệu" | Toàn bộ nội dung của trang `/pages/about` |
 
 ---
 
@@ -277,7 +463,7 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 | Chức năng | Guest | User | Blog Owner | Super Admin |
 | --- | --- | --- | --- | --- |
 | Đăng ký, đăng nhập, quên mật khẩu, OAuth | X | | | |
-| Xem danh sách, chi tiết, danh mục, About, tìm kiếm | X | X | X | X |
+| Xem danh sách, chi tiết, danh mục, trang tĩnh, tìm kiếm | X | X | X | X |
 | Đổi ngôn ngữ, đổi theme | X | X | X | X |
 | Bình luận | | X | X | X |
 | Xóa bình luận của mình | | X | X | X |
@@ -345,7 +531,7 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 ### 6.5. Chất lượng code và kiểm thử
 
 - Backend chia theo module (HMVC). Mỗi module tự chứa routes, controller, service, validator, model và test.
-- Sequelize cấu hình 2 môi trường `development` và `test`, dùng 2 database riêng. Thay đổi schema chỉ qua migration.
+- Sequelize cấu hình 3 môi trường `development`, `test` và `production`, mỗi môi trường dùng database riêng. Thay đổi schema chỉ qua migration.
 - Unit test và integration test bằng Jest + Supertest, độ phủ tối thiểu 70% ở tầng service.
 - Dùng ESLint và Prettier cho cả backend và frontend.
 - Git: nhánh `main` luôn chạy được, mỗi task làm trên nhánh `feature/*`, commit theo Conventional Commits.
@@ -353,7 +539,7 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 ### 6.6. Dữ liệu
 
 - CSDL dùng `utf8mb4` / `utf8mb4_unicode_ci` để lưu đúng tiếng Việt và emoji.
-- Có seeder dữ liệu mẫu: 1 Super Admin, 2 Blog Owner, 2 ngôn ngữ (`vi` mặc định, `en`), 5 danh mục, khoảng 30 bài viết, các UI translation cơ bản và trang About.
+- Có seeder dữ liệu mẫu: 1 Super Admin, 2 Blog Owner, 2 ngôn ngữ (`vi` mặc định, `en`), 5 danh mục, khoảng 30 bài viết, các UI translation cơ bản, 3 trang tĩnh (`about`, `contact`, `privacy`) có nội dung cho cả `vi` và `en`.
 
 ---
 
@@ -372,6 +558,8 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 | D9 | Có xác thực email khi đăng ký không? | Không (đưa ra ngoài phạm vi) | Giảm khối lượng. Đã có gửi email ở chức năng khôi phục mật khẩu |
 | D10 | Mỗi Owner có nhiều blog không? | Không. Owner quản lý danh sách bài viết của mình, không có khái niệm "blog" riêng | Đề chỉ yêu cầu quản lý bài đăng |
 | D11 | Token lưu ở đâu? | Refresh token và token reset mật khẩu lưu trong Redis kèm TTL | Thu hồi được, tự hết hạn, và tận dụng Redis theo đề bài |
+| D12 | Admin có tạo thêm trang tĩnh được không? | Không. Danh sách cố định 3 trang (`about`, `contact`, `privacy`), admin chỉ sửa nội dung | Đề chỉ nêu trang About. Danh sách cố định giúp menu, footer và route frontend không phải đổi theo dữ liệu |
+| D13 | "Quản lý trang tĩnh" có cho đổi giao diện trang không? | Không. Chỉ sửa tiêu đề, nội dung và bật/tắt hiển thị. Bố cục do frontend làm sẵn | Làm page builder quá lớn so với 8 tuần. Giao diện thống nhất trên toàn site |
 
 ---
 
@@ -382,14 +570,17 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 - Like, share, bookmark bài viết.
 - Thống kê, dashboard biểu đồ.
 - Lên lịch đăng bài.
+- Công cụ thiết kế trang (page builder), tùy chỉnh bố cục hoặc màu sắc riêng cho từng trang tĩnh.
 - Liên kết các bản dịch của cùng một bài viết.
-- Triển khai lên môi trường production (chỉ chạy local bằng Docker Compose).
+- Deploy lên cloud hoặc hosting thật, dùng tên miền thật và chứng chỉ HTTPS thật (chỉ deploy lên máy ảo, xem phase 5).
+- CI/CD tự động build và deploy.
 
 ---
 
 ## 9. Giả định và ràng buộc
 
 - Có một SMTP để gửi email khôi phục mật khẩu. Môi trường dev dùng Mailtrap hoặc Ethereal.
-- Đã đăng ký app OAuth trên Google Cloud Console và GitHub Developer Settings, callback chạy trên `localhost`.
+- Đã đăng ký app OAuth trên Google Cloud Console và GitHub Developer Settings. Callback chạy trên `localhost`; riêng app Github có thêm callback theo địa chỉ IP của máy ảo.
 - Ảnh upload lưu ở thư mục `uploads/` trên server, không dùng dịch vụ cloud storage.
 - Máy phát triển chạy Windows có Docker Desktop (WSL2 backend), NodeJS LTS và Angular CLI.
+- Máy thật đủ tài nguyên để chạy máy ảo (khuyến nghị RAM từ 8GB) và đã cài VirtualBox hoặc VMware.
