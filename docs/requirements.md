@@ -2,7 +2,7 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.4 (chia theo phase, bổ sung phase deploy lên máy ảo Linux) |
+| Phiên bản | 1.5 (đổi backend từ ExpressJS sang NestJS) |
 | Ngày tạo | 01/10/2026 |
 | Thời gian thực hiện | Khoảng 8 tuần, chia thành 5 phase (xem mục 1.5) |
 | Nhân sự | 3 người, chia theo chức năng (xem mục 1.4) |
@@ -20,13 +20,13 @@ Xây dựng hệ thống Blog đa ngôn ngữ, gồm trang đọc blog cho ngư�
 | Thành phần | Công nghệ |
 | --- | --- |
 | Giao diện HTML tĩnh | HTML5, Bootstrap 5, SCSS |
-| Backend | NodeJS, ExpressJS, Sequelize, kiến trúc Monolith chia module theo HMVC |
+| Backend | NodeJS, NestJS (TypeScript), Sequelize (`@nestjs/sequelize`), kiến trúc Monolith chia theo module của NestJS |
 | Frontend | Angular (chia theo module), Bootstrap 5, SCSS |
 | Cơ sở dữ liệu | MySQL 8 (utf8mb4) |
 | Cache / token store | Redis |
 | Thiết kế CSDL | dbdiagram.io |
 | Kiểm thử API | Postman, Jest, Supertest |
-| Tài liệu API | Swagger (OpenAPI 3) |
+| Tài liệu API | Swagger (OpenAPI 3) qua `@nestjs/swagger` |
 | Môi trường phát triển | Máy Windows, MySQL và Redis chạy bằng Docker Compose |
 | Môi trường deploy | Máy ảo Ubuntu Server 24.04 LTS (VirtualBox hoặc VMware); MySQL Server, Redis, NodeJS cài trực tiếp, không dùng Docker |
 | Web server | Nginx: phục vụ bản build Angular và chuyển tiếp `/api` về backend NodeJS |
@@ -51,7 +51,7 @@ Nhóm gồm 3 thành viên. Khối lượng chia không đều: A khoảng 50%, 
 
 | Thành viên | Khối lượng | Phụ trách |
 | --- | --- | --- |
-| A - Nền tảng backend + Auth + Bài viết + Người dùng | ~50% | Khung backend (cấu trúc HMVC, format response, xử lý lỗi, middleware phân quyền, upload file, lọc HTML, Swagger); migrations, models, seeder tài khoản; backend xác thực (UC01-UC04, UC12); OAuth (UC20); quản lý bài viết (UC13), gồm component rich text editor dùng chung; quản lý người dùng (UC14); quản lý ngôn ngữ (UC16); backend tìm kiếm (UC19) |
+| A - Nền tảng backend + Auth + Bài viết + Người dùng | ~50% | Khung backend NestJS (cấu trúc module, interceptor format response, exception filter xử lý lỗi, guard xác thực và phân quyền, upload file, lọc HTML, Swagger); migrations, models, seeder tài khoản; backend xác thực (UC01-UC04, UC12); OAuth (UC20); quản lý bài viết (UC13), gồm component rich text editor dùng chung; quản lý người dùng (UC14); quản lý ngôn ngữ (UC16); backend tìm kiếm (UC19) |
 | B - Nền tảng frontend + Public | ~30-35% | Khung Angular (interceptors, guards, đa ngôn ngữ, layout trang public và trang quản trị, component dùng chung: phân trang, hộp xác nhận, thông báo); frontend xác thực (UC01-UC04, UC12); trang chủ, chi tiết bài viết, bài theo danh mục (UC05-UC07); bình luận (UC08); đổi ngôn ngữ (UC09); frontend tìm kiếm (UC19) |
 | C - Quản trị nội dung đơn giản | ~15-20% | Quản lý danh mục (UC15); quản lý bản dịch giao diện (UC17); quản lý trang tĩnh (UC18) và trang xem trang tĩnh (UC11); nút đổi giao diện sáng/tối (UC10); seeder dữ liệu mẫu (danh mục, bài viết, bản dịch, trang tĩnh) |
 
@@ -115,7 +115,7 @@ Dựng giao diện bằng HTML, Bootstrap 5 và SCSS, dùng dữ liệu giả, c
 
 Công việc:
 
-- A dựng khung backend trước (cấu trúc HMVC, format response, xử lý lỗi, middleware xác thực và phân quyền, upload, lọc HTML, Redis, Swagger). B và C bắt đầu code API sau khi khung backend được merge.
+- A dựng khung backend NestJS trước (cấu trúc module, interceptor format response, exception filter xử lý lỗi, guard xác thực và phân quyền, upload, lọc HTML, Redis, Swagger). B và C bắt đầu code API sau khi khung backend được merge.
 - Mỗi người code API cho các use case mình phụ trách (mục 3), kèm validate, test, tài liệu Swagger và request trong Postman collection.
 
 Đầu ra: API dưới `/api/v1`, Swagger tại `/api-docs`, Postman collection trong `docs/`.
@@ -483,10 +483,10 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 
 - Mật khẩu băm bằng bcrypt (cost 10).
 - Xác thực bằng JWT (access token 15 phút). Refresh token 7 ngày lưu trong Redis để thu hồi được.
-- Validate mọi dữ liệu đầu vào ở backend bằng `express-validator`, và ở frontend bằng Angular Validators.
+- Validate mọi dữ liệu đầu vào ở backend bằng DTO với `class-validator` và `ValidationPipe` của NestJS, và ở frontend bằng Angular Validators.
 - Lọc HTML nội dung bài viết và trang tĩnh để chống XSS.
 - Upload file: kiểm tra cả đuôi file lẫn MIME type, giới hạn dung lượng, đổi tên file ngẫu nhiên khi lưu.
-- Dùng `helmet`, cấu hình CORS chỉ cho phép domain của frontend, rate limit API đăng nhập và quên mật khẩu.
+- Dùng `helmet`, cấu hình CORS chỉ cho phép domain của frontend, rate limit API đăng nhập và quên mật khẩu (`@nestjs/throttler`, lưu bộ đếm trong Redis).
 - Không commit file `.env` và các secret lên Git.
 
 ### 6.2. Hiệu năng
@@ -530,7 +530,7 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 
 ### 6.5. Chất lượng code và kiểm thử
 
-- Backend chia theo module (HMVC). Mỗi module tự chứa routes, controller, service, validator, model và test.
+- Backend chia theo module của NestJS. Mỗi module tự chứa module file, controller, service, DTO, model và test.
 - Sequelize cấu hình 3 môi trường `development`, `test` và `production`, mỗi môi trường dùng database riêng. Thay đổi schema chỉ qua migration.
 - Unit test và integration test bằng Jest + Supertest, độ phủ tối thiểu 70% ở tầng service.
 - Dùng ESLint và Prettier cho cả backend và frontend.
