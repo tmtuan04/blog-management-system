@@ -1,0 +1,281 @@
+// Blog Management System - ERD
+// MySQL 8, charset utf8mb4 / utf8mb4_unicode_ci
+// Docs: https://dbml.dbdiagram.io/docs
+
+Project blog_management_system {
+  database_type: 'MySQL'
+  Note: '''
+    Blog đa ngôn ngữ (xem docs/requirements.md).
+    - Mỗi post thuộc đúng 1 ngôn ngữ (D3).
+    - Category dùng chung, chỉ dịch tên (D4).
+    - Refresh token, token reset mật khẩu, rate limit, đếm lượt xem lưu trong Redis, không có bảng.
+  '''
+}
+
+// ============ Enums ============
+
+Enum user_role {
+  user
+  blog_owner
+  super_admin
+}
+
+Enum oauth_provider {
+  google
+  github
+  facebook
+}
+
+Enum post_status {
+  draft
+  published
+  archived
+}
+
+// ============ Users & Auth ============
+
+Table users {
+  id bigint [pk, increment]
+  full_name varchar(150) [not null, note: '2-150 ký tự']
+  email varchar(255) [not null, unique]
+  password_hash varchar(255) [null, note: 'NULL với tài khoản tạo qua OAuth chưa đặt mật khẩu']
+  avatar varchar(255) [null, note: 'Đường dẫn file trong uploads/']
+  role user_role [not null, default: 'user']
+  is_active boolean [not null, default: true, note: 'Khóa tài khoản = false. Không xóa cứng (D8)']
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (role, is_active)
+  }
+}
+
+Table oauth_accounts {
+  id bigint [pk, increment]
+  user_id bigint [not null]
+  provider oauth_provider [not null]
+  provider_user_id varchar(255) [not null, note: 'ID của user bên provider']
+  provider_email varchar(255) [null]
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (provider, provider_user_id) [unique]
+    (user_id, provider) [unique, note: 'Mỗi user liên kết tối đa 1 tài khoản / provider']
+  }
+}
+
+// ============ Languages ============
+
+Table languages {
+  id int [pk, increment]
+  code varchar(10) [not null, unique, note: 'ISO 639-1: vi, en...']
+  name varchar(100) [not null, note: 'Tên hiển thị']
+  is_default boolean [not null, default: false, note: 'Luôn đúng 1 dòng = true (đảm bảo ở service, trong transaction)']
+  is_active boolean [not null, default: true, note: 'Không được tắt ngôn ngữ mặc định']
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    is_active
+  }
+}
+
+// ============ Categories ============
+
+Table categories {
+  id int [pk, increment]
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Không xóa được khi còn bài viết (FK posts.category_id RESTRICT)'
+}
+
+Table category_translations {
+  id int [pk, increment]
+  category_id int [not null]
+  language_id int [not null]
+  name varchar(150) [not null]
+  slug varchar(180) [not null, note: 'Sinh từ name, bỏ dấu']
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (category_id, language_id) [unique]
+    (language_id, slug) [unique, note: 'Slug duy nhất trong cùng ngôn ngữ']
+  }
+
+  Note: 'Bắt buộc có bản dịch của ngôn ngữ mặc định. Thiếu ngôn ngữ nào thì fallback về mặc định.'
+}
+
+// ============ Posts ============
+
+Table posts {
+  id bigint [pk, increment]
+  user_id bigint [not null, note: 'Tác giả']
+  language_id int [not null]
+  category_id int [not null]
+  title varchar(255) [not null, note: '5-255 ký tự']
+  slug varchar(280) [not null]
+  excerpt varchar(500) [null, note: 'Tóm tắt']
+  content mediumtext [not null, note: 'HTML đã lọc XSS']
+  thumbnail varchar(255) [null, note: 'Đường dẫn file trong uploads/']
+  status post_status [not null, default: 'draft']
+  view_count int [not null, default: 0, note: 'UNSIGNED']
+  published_at datetime [null, note: 'Ghi lần đầu chuyển sang published']
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (language_id, slug) [unique, note: 'Slug duy nhất trong cùng ngôn ngữ, trùng thì thêm -2, -3...']
+    (language_id, status, published_at) [note: 'Trang chủ UC05']
+    (category_id, language_id, status, published_at) [note: 'Bài theo danh mục UC07']
+    (user_id, status) [note: 'Danh sách bài của owner UC13']
+  }
+
+  Note: '''
+    FULLTEXT index (tạo trong migration bằng raw SQL, DBML không hỗ trợ):
+    CREATE FULLTEXT INDEX ft_posts_search ON posts(title, excerpt, content) WITH PARSER ngram;
+  '''
+}
+
+// ============ Comments ============
+
+Table comments {
+  id bigint [pk, increment]
+  post_id bigint [not null]
+  user_id bigint [not null]
+  parent_id bigint [null, note: 'NULL = bình luận gốc. Chỉ 1 cấp: parent phải có parent_id = NULL (kiểm tra ở service)']
+  content varchar(1000) [not null, note: 'Văn bản thuần, 1-1000 ký tự']
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (post_id, parent_id, created_at)
+    user_id
+  }
+}
+
+// ============ UI translations ============
+
+Table ui_translations {
+  id int [pk, increment]
+  language_id int [not null]
+  key varchar(150) [not null, note: 'Ví dụ menu.home']
+  value text [not null]
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (language_id, key) [unique]
+    key [note: 'Xóa key ở mọi ngôn ngữ, tìm theo key']
+  }
+
+  Note: 'Thêm ngôn ngữ mới thì copy toàn bộ key từ ngôn ngữ mặc định.'
+}
+
+// ============ Static pages ============
+
+Table pages {
+  id int [pk, increment]
+  key varchar(50) [not null, unique, note: 'about, contact, privacy. Chỉ tạo bằng seeder, không đổi được']
+  is_visible boolean [not null, default: true, note: 'Áp dụng cho mọi ngôn ngữ']
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+}
+
+Table page_translations {
+  id int [pk, increment]
+  page_id int [not null]
+  language_id int [not null]
+  title varchar(255) [not null, note: '2-255 ký tự']
+  content mediumtext [not null, note: 'HTML đã lọc XSS']
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (page_id, language_id) [unique]
+  }
+
+  Note: 'Ngôn ngữ không mặc định để trống cả title và content thì không lưu dòng (fallback về mặc định).'
+}
+
+// ============ Relationships ============
+
+Ref oauth_user: oauth_accounts.user_id > users.id [delete: cascade]
+
+Ref post_author: posts.user_id > users.id [delete: restrict]
+Ref post_language: posts.language_id > languages.id [delete: restrict] // không xóa ngôn ngữ đang có bài
+Ref post_category: posts.category_id > categories.id [delete: restrict] // không xóa danh mục đang có bài
+
+Ref category_tr_category: category_translations.category_id > categories.id [delete: cascade]
+Ref category_tr_language: category_translations.language_id > languages.id [delete: cascade]
+
+Ref comment_post: comments.post_id > posts.id [delete: cascade] // xóa bài thì xóa bình luận
+Ref comment_user: comments.user_id > users.id [delete: restrict]
+Ref comment_parent: comments.parent_id > comments.id [delete: cascade] // xóa cha thì xóa trả lời
+
+Ref ui_tr_language: ui_translations.language_id > languages.id [delete: cascade]
+
+Ref page_tr_page: page_translations.page_id > pages.id [delete: cascade]
+Ref page_tr_language: page_translations.language_id > languages.id [delete: cascade]
+
+// ============ Sample records ============
+
+Records languages(id, code, name, is_default, is_active) {
+  1, 'vi', 'Tiếng Việt', true, true
+  2, 'en', 'English', false, true
+}
+
+Records users(id, full_name, email, role, is_active) {
+  1, 'Super Admin', 'admin@blog.local', 'super_admin', true
+  2, 'Nguyễn Văn An', 'owner1@blog.local', 'blog_owner', true
+  3, 'Trần Thị Bình', 'owner2@blog.local', 'blog_owner', true
+  4, 'Lê Minh Cường', 'user@blog.local', 'user', true
+}
+
+Records oauth_accounts(id, user_id, provider, provider_user_id, provider_email) {
+  1, 4, 'github', '10293847', 'user@blog.local'
+}
+
+Records categories(id) {
+  1
+  2
+}
+
+Records category_translations(id, category_id, language_id, name, slug) {
+  1, 1, 1, 'Lập trình', 'lap-trinh'
+  2, 1, 2, 'Programming', 'programming'
+  3, 2, 1, 'Đời sống', 'doi-song'
+}
+
+Records posts(id, user_id, language_id, category_id, title, slug, content, status, view_count, published_at) {
+  1, 2, 1, 1, 'Hướng dẫn Angular', 'huong-dan-angular', '<p>Nội dung...</p>', 'published', 120, '2026-09-01 08:00:00'
+  2, 2, 2, 1, 'Getting started with NestJS', 'getting-started-with-nestjs', '<p>Content...</p>', 'published', 45, '2026-09-05 09:30:00'
+  3, 3, 1, 2, 'Bản nháp', 'ban-nhap', '<p>...</p>', 'draft', 0, null
+}
+
+Records comments(id, post_id, user_id, parent_id, content) {
+  1, 1, 4, null, 'Bài viết rất hay!'
+  2, 1, 2, 1, 'Cảm ơn bạn đã đọc.'
+}
+
+Records ui_translations(id, language_id, key, value) {
+  1, 1, 'menu.home', 'Trang chủ'
+  2, 2, 'menu.home', 'Home'
+  3, 1, 'menu.about', 'Giới thiệu'
+  4, 2, 'menu.about', 'About'
+}
+
+Records pages(id, key, is_visible) {
+  1, 'about', true
+  2, 'contact', true
+  3, 'privacy', true
+}
+
+Records page_translations(id, page_id, language_id, title, content) {
+  1, 1, 1, 'Giới thiệu', '<p>Về blog của chúng tôi...</p>'
+  2, 1, 2, 'About', '<p>About our blog...</p>'
+  3, 2, 1, 'Liên hệ', '<p>Email: contact@blog.local</p>'
+  4, 3, 1, 'Chính sách bảo mật', '<p>...</p>'
+}
