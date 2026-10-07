@@ -2,7 +2,7 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.5 (đổi backend từ ExpressJS sang NestJS) |
+| Phiên bản | 1.6 (bài viết có ngôn ngữ gốc và dịch được ra nhiều ngôn ngữ) |
 | Ngày tạo | 01/10/2026 |
 | Thời gian thực hiện | Khoảng 8 tuần, chia thành 5 phase (xem mục 1.5) |
 | Nhân sự | 3 người, chia theo chức năng (xem mục 1.4) |
@@ -36,7 +36,9 @@ Xây dựng hệ thống Blog đa ngôn ngữ, gồm trang đọc blog cho ngư�
 
 | Thuật ngữ | Ý nghĩa |
 | --- | --- |
-| Post | Một bài viết blog, mỗi post thuộc đúng một ngôn ngữ |
+| Post | Một bài viết blog. Mỗi post có một ngôn ngữ gốc và có thể có bản dịch sang các ngôn ngữ khác |
+| Bản gốc | Bản dịch của post ở ngôn ngữ gốc. Bắt buộc có, tạo cùng lúc với post |
+| Bản dịch bài viết (Post translation) | Nội dung của post ở một ngôn ngữ: tiêu đề, slug, tóm tắt, nội dung, trạng thái, lượt xem. Mỗi post có tối đa một bản dịch cho mỗi ngôn ngữ |
 | Category | Danh mục bài viết, dùng chung cho mọi ngôn ngữ, tên được dịch theo từng ngôn ngữ |
 | Language | Ngôn ngữ do Super Admin quản lý (ví dụ `vi`, `en`) |
 | UI translation | Bản dịch chữ tĩnh trên giao diện (menu, nút bấm, footer...) |
@@ -75,9 +77,9 @@ Các phase làm lần lượt. Một phase chỉ kết thúc khi đạt hết "�
 
 Công việc:
 
-- Thiết kế ERD trên dbdiagram.io cho các bảng: `users`, `oauth_accounts`, `languages`, `categories`, `category_translations`, `posts`, `comments`, `ui_translations`, `pages`, `page_translations`.
+- Thiết kế ERD trên dbdiagram.io cho các bảng: `roles`, `users`, `oauth_accounts`, `languages`, `categories`, `category_translations`, `posts`, `post_translations`, `comments`, `ui_translations`, `pages`, `page_translations`.
 - Viết tài liệu mô tả từng bảng: cột, kiểu dữ liệu, ràng buộc, index, khóa ngoại và hành vi khi xóa (ví dụ xóa bài thì xóa luôn bình luận).
-- Viết migrations Sequelize, gồm cả FULLTEXT index (parser `ngram`) cho bảng `posts`.
+- Viết migrations Sequelize, gồm cả FULLTEXT index (parser `ngram`) cho bảng `post_translations`.
 - Viết seeders theo mục 6.6.
 
 | Người | Việc |
@@ -99,7 +101,7 @@ Dựng giao diện bằng HTML, Bootstrap 5 và SCSS, dùng dữ liệu giả, c
 
 | Người | Màn hình |
 | --- | --- |
-| A | Trang quản trị: danh sách bài viết, form thêm/sửa bài viết, quản lý người dùng, quản lý ngôn ngữ |
+| A | Trang quản trị: danh sách bài viết, form thêm/sửa bài viết (có tab cho từng ngôn ngữ), quản lý người dùng, quản lý ngôn ngữ |
 | B | Bộ SCSS dùng chung; layout trang public (header, footer) và layout trang quản trị (sidebar); trang chủ, chi tiết bài viết (kèm bình luận), bài theo danh mục, kết quả tìm kiếm, trang 404; đăng ký, đăng nhập, quên mật khẩu, đặt lại mật khẩu, hồ sơ cá nhân |
 | C | Trang tĩnh (public); trang quản trị: quản lý danh mục, quản lý bản dịch giao diện, danh sách trang tĩnh, sửa trang tĩnh |
 
@@ -182,7 +184,7 @@ Sau khi deploy xong, **mỗi thành viên tự làm lại toàn bộ các bướ
 
 Điều kiện hoàn thành:
 
-- Từ trình duyệt trên máy thật, mở địa chỉ IP của máy ảo thì dùng được blog: đọc bài, đăng ký, đăng nhập, viết bài có upload ảnh, bình luận, đổi ngôn ngữ.
+- Từ trình duyệt trên máy thật, mở địa chỉ IP của máy ảo thì dùng được blog: đọc bài, đăng ký, đăng nhập, viết bài có upload ảnh, thêm bản dịch cho bài, bình luận, đổi ngôn ngữ.
 - Reload trang ở một route bất kỳ (ví dụ `/posts/abc`) không bị lỗi 404 của Nginx.
 - Khởi động lại máy ảo thì ứng dụng tự chạy lại, không cần thao tác tay.
 - Không đăng nhập được MySQL bằng `root` khi không có mật khẩu. Ứng dụng kết nối bằng user riêng, không dùng `root`.
@@ -201,7 +203,7 @@ Lưu ý về OAuth: Google chỉ chấp nhận callback là `localhost` hoặc �
 | Blog Owner | Người viết và quản lý bài viết của chính mình | Authenticated User |
 | Super Admin | Quản trị toàn hệ thống | Blog Owner |
 
-Trong CSDL, mỗi tài khoản có đúng một role: `user`, `blog_owner` hoặc `super_admin`. Guest là người chưa có phiên đăng nhập nên không có role.
+Trong CSDL, role lưu ở bảng `roles` (danh sách cố định `user`, `blog_owner`, `super_admin`, tạo bằng seeder, không có màn hình quản lý). Mỗi tài khoản có đúng một role, tham chiếu qua `users.role_id`. Guest là người chưa có phiên đăng nhập nên không có role.
 
 ---
 
@@ -223,7 +225,7 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 | UC10 | Đổi giao diện sáng/tối (Change theme) | Guest, Authenticated User | Should | C | Mở rộng |
 | UC11 | Xem trang tĩnh (Giới thiệu, Liên hệ, Chính sách bảo mật) | Guest, Authenticated User | Must | C | |
 | UC12 | Quản lý hồ sơ cá nhân | Authenticated User | Should | BE: A, FE: B | Bổ sung, đề bài không ghi |
-| UC13 | Quản lý bài viết (Manage posts) | Blog Owner | Must | A | Thêm, sửa, xóa, xem danh sách |
+| UC13 | Quản lý bài viết (Manage posts) | Blog Owner | Must | A | Thêm, sửa, xóa, xem danh sách, thêm/sửa/xóa bản dịch theo ngôn ngữ |
 | UC14 | Quản lý người dùng (Manage users) | Super Admin | Must | A | |
 | UC15 | Quản lý danh mục (Manage categories) | Super Admin | Must | C | |
 | UC16 | Quản lý ngôn ngữ (Manage languages) | Super Admin | Must | A | |
@@ -281,44 +283,47 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 
 **UC05 - Danh sách bài viết (trang chủ)**
 
-- Chỉ hiện bài có trạng thái `published` và thuộc ngôn ngữ đang chọn.
-- Sắp xếp theo ngày đăng mới nhất, phân trang 10 bài mỗi trang.
-- Mỗi bài hiện: ảnh thumbnail, tiêu đề, tóm tắt, tên danh mục (theo ngôn ngữ đang chọn), tác giả, ngày đăng, lượt xem.
+- Chỉ hiện các bài có bản dịch ở ngôn ngữ đang chọn và bản dịch đó có trạng thái `published`. Không fallback: bài chưa có bản dịch `published` ở ngôn ngữ đang chọn thì không hiện, kể cả khi bản gốc đã đăng.
+- Sắp xếp theo ngày đăng của bản dịch, mới nhất trước, phân trang 10 bài mỗi trang.
+- Mỗi bài hiện: ảnh thumbnail, tiêu đề, tóm tắt, tên danh mục (theo ngôn ngữ đang chọn), tác giả, ngày đăng, lượt xem. Tiêu đề, tóm tắt, ngày đăng, lượt xem lấy theo bản dịch đang hiển thị; thumbnail, danh mục, tác giả dùng chung cho mọi bản dịch.
 
 **UC06 - Chi tiết bài viết**
 
-- Truy cập qua URL `/posts/:slug`.
-- Hiện đầy đủ nội dung, tác giả, danh mục, ngày đăng, lượt xem, danh sách bình luận và một vài bài cùng danh mục.
-- Mỗi lần xem thì tăng lượt xem lên 1 (mỗi IP chỉ tính 1 lần trong 1 giờ, kiểm tra bằng Redis).
-- Bài không tồn tại, chưa đăng, hoặc không thuộc ngôn ngữ đang chọn: hiện trang 404.
+- Truy cập qua URL `/posts/:slug`, slug là slug của bản dịch theo ngôn ngữ đang chọn.
+- Hiện đầy đủ nội dung, tác giả, danh mục, ngày đăng, lượt xem, danh sách bình luận và một vài bài cùng danh mục (có bản dịch `published` ở cùng ngôn ngữ).
+- Hiện dòng "Bài viết này có ở các ngôn ngữ: ..." gồm các ngôn ngữ đang hoạt động mà bài có bản dịch `published`. Bấm vào một ngôn ngữ thì đổi ngôn ngữ (như UC09) và mở bản dịch tương ứng.
+- Mỗi lần xem thì tăng lượt xem của bản dịch đang xem lên 1 (mỗi IP chỉ tính 1 lần trong 1 giờ cho mỗi bản dịch, kiểm tra bằng Redis).
+- Không tìm thấy bản dịch có slug này ở ngôn ngữ đang chọn, hoặc bản dịch chưa đăng: hiện trang 404.
 
 **UC07 - Bài viết theo danh mục**
 
 - Truy cập qua URL `/categories/:slug`, slug là slug của danh mục theo ngôn ngữ đang chọn.
 - Danh sách bài viết hiển thị và phân trang giống UC05.
-- Thanh điều hướng hoặc sidebar hiện danh sách danh mục kèm số lượng bài.
+- Thanh điều hướng hoặc sidebar hiện danh sách danh mục kèm số lượng bài có bản dịch `published` ở ngôn ngữ đang chọn.
 
 **UC08 - Bình luận**
 
 - Phải đăng nhập mới được bình luận. Guest chỉ xem được bình luận và thấy nút "Đăng nhập để bình luận".
 - Nội dung từ 1 đến 1000 ký tự, chỉ là văn bản thuần (không nhận HTML).
 - Cho phép trả lời bình luận, tối đa 1 cấp (không trả lời một bình luận trả lời).
+- Bình luận gắn với từng bản dịch: mỗi ngôn ngữ của bài có luồng bình luận riêng.
 - Bình luận hiện ngay, không cần duyệt.
 - Quyền xóa:
   - Người viết bình luận xóa được bình luận của mình.
   - Blog Owner xóa được mọi bình luận trên bài của mình.
   - Super Admin xóa được mọi bình luận.
-  - Xóa bình luận cha thì xóa luôn các bình luận trả lời.
+  - Xóa bình luận cha thì xóa luôn các bình luận trả lời. Xóa bản dịch thì xóa luôn bình luận của bản dịch đó.
 
 **UC09 - Đổi ngôn ngữ**
 
 - Bộ chọn ngôn ngữ trên header chỉ hiện các ngôn ngữ đang hoạt động.
 - Khi đổi ngôn ngữ, toàn bộ nội dung sau phải đổi theo:
-  - Danh sách bài viết: chỉ còn bài của ngôn ngữ mới.
+  - Danh sách bài viết: chỉ còn các bài có bản dịch `published` ở ngôn ngữ mới, hiện theo bản dịch đó.
   - Tên danh mục.
   - Menu, nút bấm, footer và mọi chữ tĩnh khác (UI translations).
   - Nội dung các trang tĩnh (Giới thiệu, Liên hệ, Chính sách bảo mật).
-- Nếu đang ở trang chi tiết bài viết hoặc trang danh mục khi đổi ngôn ngữ thì chuyển về trang chủ, vì bài viết của các ngôn ngữ là độc lập với nhau.
+- Nếu đang ở trang chi tiết bài viết khi đổi ngôn ngữ: bài có bản dịch `published` ở ngôn ngữ mới thì chuyển sang bản dịch đó (`/posts/:slug` theo slug mới), nếu không thì chuyển về trang chủ.
+- Nếu đang ở trang danh mục khi đổi ngôn ngữ: chuyển sang slug của danh mục đó ở ngôn ngữ mới.
 - Lựa chọn được lưu ở `localStorage`, tải lại trang vẫn giữ nguyên.
 - Lần truy cập đầu tiên: dùng ngôn ngữ của trình duyệt nếu hệ thống có hỗ trợ, nếu không thì dùng ngôn ngữ mặc định.
 - Frontend gửi ngôn ngữ đang chọn qua header `Accept-Language` trong mọi request.
@@ -340,7 +345,7 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 **UC19 - Tìm kiếm toàn văn**
 
 - Ô tìm kiếm trên header, chuyển sang trang `/search?q=...`.
-- Tìm trong tiêu đề, tóm tắt và nội dung bài viết, chỉ trong các bài `published` thuộc ngôn ngữ đang chọn.
+- Tìm trong tiêu đề, tóm tắt và nội dung của bản dịch, chỉ trong các bản dịch `published` thuộc ngôn ngữ đang chọn.
 - Dùng MySQL FULLTEXT index với parser `ngram` để tìm được tiếng Việt có dấu.
 - Từ khóa từ 2 đến 100 ký tự. Kết quả sắp xếp theo độ liên quan và có phân trang.
 
@@ -354,23 +359,38 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 
 **UC13 - Quản lý bài viết**
 
-- **Danh sách**: chỉ hiện bài của chính mình. Có lọc theo trạng thái, ngôn ngữ, danh mục, tìm theo tiêu đề, có phân trang.
-- **Thêm bài**, các trường:
+Mỗi bài viết gồm phần dùng chung cho mọi ngôn ngữ và các bản dịch theo từng ngôn ngữ. Bài được tạo ở một ngôn ngữ gốc, sau đó tác giả thêm dần bản dịch sang các ngôn ngữ khác.
+
+*Phần dùng chung (bảng `posts`):*
+
+| Trường | Bắt buộc | Ràng buộc |
+| --- | --- | --- |
+| Ngôn ngữ gốc | Có | Ngôn ngữ đang hoạt động. Chọn khi tạo bài, không đổi được sau đó |
+| Danh mục | Có | Danh mục đang tồn tại |
+| Ảnh thumbnail | Không | jpg, png, webp, tối đa 2MB |
+
+*Phần theo từng ngôn ngữ (bảng `post_translations`):*
 
 | Trường | Bắt buộc | Ràng buộc |
 | --- | --- | --- |
 | Tiêu đề | Có | 5 đến 255 ký tự |
-| Ngôn ngữ | Có | Ngôn ngữ đang hoạt động |
-| Danh mục | Có | Danh mục đang tồn tại |
 | Tóm tắt | Không | Tối đa 500 ký tự |
 | Nội dung | Có | Rich text (HTML), backend lọc bỏ thẻ và thuộc tính nguy hiểm để chống XSS |
-| Ảnh thumbnail | Không | jpg, png, webp, tối đa 2MB |
-| Trạng thái | Có | `draft`, `published` hoặc `archived` |
+| Trạng thái | Có | `draft`, `published` hoặc `archived`, riêng cho từng bản dịch |
 
-- **Slug**: tự sinh từ tiêu đề (bỏ dấu tiếng Việt) và là duy nhất trong cùng một ngôn ngữ. Nếu trùng thì thêm hậu tố `-2`, `-3`...
-- **Ngày đăng** (`published_at`): ghi lại vào lần đầu tiên bài chuyển sang `published`.
-- **Sửa bài**: chỉ sửa được bài của mình. Vào trang sửa bài của người khác thì trả lỗi 403.
-- **Xóa bài**: chỉ xóa được bài của mình, phải xác nhận trước khi xóa. Xóa bài thì xóa luôn bình luận và ảnh thumbnail.
+- **Danh sách**: chỉ hiện bài của chính mình, mỗi dòng là một bài: tiêu đề (theo bản gốc), ngôn ngữ gốc, danh mục, các ngôn ngữ đã có bản dịch kèm trạng thái của từng bản, ngày cập nhật. Lọc theo trạng thái của bản gốc, theo ngôn ngữ (bài có bản dịch ở ngôn ngữ đó), theo danh mục; tìm theo tiêu đề ở mọi bản dịch; có phân trang.
+- **Thêm bài**: nhập phần dùng chung và bản gốc. Bản gốc là bản dịch ở ngôn ngữ gốc.
+- **Sửa bài**: màn hình gồm phần dùng chung ở trên và các tab ngôn ngữ ở dưới, mỗi ngôn ngữ đang hoạt động là một tab. Tab ngôn ngữ gốc luôn có dữ liệu. Tab ngôn ngữ chưa có bản dịch hiện nút "Thêm bản dịch"; khi thêm, form điền sẵn nội dung của bản gốc để tác giả dịch lại.
+- **Bản dịch**:
+  - Mỗi bài có tối đa một bản dịch cho mỗi ngôn ngữ.
+  - Mỗi bản dịch có trạng thái, ngày đăng, lượt xem và bình luận riêng.
+  - Xóa được bản dịch không phải bản gốc (phải xác nhận). Xóa bản dịch thì xóa luôn bình luận của bản dịch đó.
+  - Không xóa riêng được bản gốc, muốn bỏ thì xóa cả bài.
+  - Sửa bản gốc không làm thay đổi các bản dịch khác.
+- **Slug**: mỗi bản dịch có slug riêng, tự sinh từ tiêu đề của bản dịch đó (bỏ dấu tiếng Việt) và là duy nhất trong cùng một ngôn ngữ. Nếu trùng thì thêm hậu tố `-2`, `-3`...
+- **Ngày đăng** (`published_at`): ghi lại vào lần đầu tiên bản dịch chuyển sang `published`, riêng cho từng bản dịch.
+- **Quyền**: chỉ sửa được bài và bản dịch của mình. Vào trang sửa bài của người khác thì trả lỗi 403.
+- **Xóa bài**: chỉ xóa được bài của mình, phải xác nhận trước khi xóa. Xóa bài thì xóa luôn mọi bản dịch, bình luận và ảnh thumbnail.
 
 ### 4.4. Super Admin
 
@@ -396,7 +416,7 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 - Thêm, sửa, xóa, xem danh sách ngôn ngữ. Các trường: mã (`vi`, `en`..., theo chuẩn ISO 639-1, duy nhất), tên hiển thị, trạng thái hoạt động.
 - Hệ thống luôn có đúng 1 ngôn ngữ mặc định. Chọn ngôn ngữ khác làm mặc định thì ngôn ngữ cũ tự bỏ mặc định.
 - Không được xóa hoặc tắt ngôn ngữ mặc định.
-- Không xóa được ngôn ngữ đang có bài viết, chỉ được tắt. Ngôn ngữ đã tắt sẽ ẩn khỏi bộ chọn ngôn ngữ và các bài của ngôn ngữ đó không hiện ra ngoài trang public.
+- Không xóa được ngôn ngữ đang có bản dịch bài viết (kể cả khi là ngôn ngữ gốc của bài), chỉ được tắt. Ngôn ngữ đã tắt sẽ ẩn khỏi bộ chọn ngôn ngữ, các bản dịch ở ngôn ngữ đó không hiện ra ngoài trang public, và không chọn được làm ngôn ngữ gốc hay thêm bản dịch mới ở ngôn ngữ đó.
 - Khi thêm ngôn ngữ mới, hệ thống sao chép toàn bộ key UI translation từ ngôn ngữ mặc định sang (giữ nguyên giá trị để admin dịch dần).
 
 **UC17 - Quản lý bản dịch giao diện**
@@ -539,7 +559,7 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 ### 6.6. Dữ liệu
 
 - CSDL dùng `utf8mb4` / `utf8mb4_unicode_ci` để lưu đúng tiếng Việt và emoji.
-- Có seeder dữ liệu mẫu: 1 Super Admin, 2 Blog Owner, 2 ngôn ngữ (`vi` mặc định, `en`), 5 danh mục, khoảng 30 bài viết, các UI translation cơ bản, 3 trang tĩnh (`about`, `contact`, `privacy`) có nội dung cho cả `vi` và `en`.
+- Có seeder dữ liệu mẫu: 3 role (`user`, `blog_owner`, `super_admin`), 1 Super Admin, 2 Blog Owner, 2 ngôn ngữ (`vi` mặc định, `en`), 5 danh mục, khoảng 30 bài viết (có cả bài gốc `vi` và bài gốc `en`, một phần bài đã có bản dịch sang ngôn ngữ còn lại, trong đó có bản dịch đang `draft`), các UI translation cơ bản, 3 trang tĩnh (`about`, `contact`, `privacy`) có nội dung cho cả `vi` và `en`.
 
 ---
 
@@ -549,7 +569,7 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 | --- | --- | --- | --- |
 | D1 | Blog Owner là role riêng hay user tự viết bài? | Role riêng `blog_owner`, do Super Admin cấp | Đúng theo use case của đề: User chỉ đọc, Owner mới viết |
 | D2 | Guest có được đọc bài không? | Có. Guest đọc được, chỉ bình luận mới cần đăng nhập | Blog công khai thì hợp lý hơn. Đề chỉ ghi các chức năng của User mà không cấm Guest đọc |
-| D3 | Bài tiếng Việt và tiếng Anh có liên kết với nhau không? | Không. Mỗi post độc lập và thuộc một ngôn ngữ | Đúng theo mục "Chú ý" của đề: đổi ngôn ngữ thì đọc các blog của ngôn ngữ đó |
+| D3 | Bài tiếng Việt và tiếng Anh có liên kết với nhau không? | Có. Mỗi post có một ngôn ngữ gốc và có thể dịch ra nhiều ngôn ngữ (bảng `post_translations`). Ở mỗi ngôn ngữ chỉ hiện các bài có bản dịch `published` ở ngôn ngữ đó, không fallback về bản gốc | Đổi ngôn ngữ thì đọc các blog của ngôn ngữ đó, đang đọc một bài thì chuyển được sang bản dịch của chính bài đó |
 | D4 | Danh mục có tách riêng theo ngôn ngữ không? | Dùng chung, chỉ dịch tên | Tránh trùng lặp, admin quản lý dễ hơn |
 | D5 | Chữ tĩnh (menu, nút) lưu ở đâu? | Lưu trong CSDL (bảng `ui_translations`), frontend tải qua API | Admin thêm ngôn ngữ mới mà không cần sửa code hay build lại frontend |
 | D6 | Bình luận có cần duyệt không? | Không, hiện ngay. Owner và Admin có quyền xóa | Đơn giản, phù hợp quy mô dự án |
@@ -560,6 +580,7 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 | D11 | Token lưu ở đâu? | Refresh token và token reset mật khẩu lưu trong Redis kèm TTL | Thu hồi được, tự hết hạn, và tận dụng Redis theo đề bài |
 | D12 | Admin có tạo thêm trang tĩnh được không? | Không. Danh sách cố định 3 trang (`about`, `contact`, `privacy`), admin chỉ sửa nội dung | Đề chỉ nêu trang About. Danh sách cố định giúp menu, footer và route frontend không phải đổi theo dữ liệu |
 | D13 | "Quản lý trang tĩnh" có cho đổi giao diện trang không? | Không. Chỉ sửa tiêu đề, nội dung và bật/tắt hiển thị. Bố cục do frontend làm sẵn | Làm page builder quá lớn so với 8 tuần. Giao diện thống nhất trên toàn site |
+| D14 | Bản dịch dùng chung những gì với bài gốc? | Dùng chung tác giả, danh mục, thumbnail. Riêng cho từng bản dịch: tiêu đề, slug, tóm tắt, nội dung, trạng thái, ngày đăng, lượt xem, bình luận | Bản dịch có thể soạn và đăng sau bản gốc. Bình luận riêng để mỗi ngôn ngữ không bị lẫn bình luận của ngôn ngữ khác |
 
 ---
 
@@ -571,7 +592,9 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 - Thống kê, dashboard biểu đồ.
 - Lên lịch đăng bài.
 - Công cụ thiết kế trang (page builder), tùy chỉnh bố cục hoặc màu sắc riêng cho từng trang tĩnh.
-- Liên kết các bản dịch của cùng một bài viết.
+- Dịch tự động bài viết (máy dịch, AI).
+- Đánh dấu bản dịch đã lỗi thời khi bản gốc được sửa.
+- Đổi ngôn ngữ gốc của bài sau khi tạo.
 - Deploy lên cloud hoặc hosting thật, dùng tên miền thật và chứng chỉ HTTPS thật (chỉ deploy lên máy ảo, xem phase 5).
 - CI/CD tự động build và deploy.
 

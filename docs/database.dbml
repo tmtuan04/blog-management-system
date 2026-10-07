@@ -6,7 +6,7 @@ Project blog_management_system {
   database_type: 'MySQL'
   Note: '''
     Blog đa ngôn ngữ (xem docs/requirements.md).
-    - Mỗi post thuộc đúng 1 ngôn ngữ (D3).
+    - Mỗi post có 1 ngôn ngữ gốc và có thể dịch ra nhiều ngôn ngữ khác (D3): phần dùng chung ở posts, phần theo ngôn ngữ ở post_translations.
     - Category dùng chung, chỉ dịch tên (D4).
     - Refresh token, token reset mật khẩu, rate limit, đếm lượt xem lưu trong Redis, không có bảng.
   '''
@@ -14,16 +14,9 @@ Project blog_management_system {
 
 // ============ Enums ============
 
-Enum user_role {
-  user
-  blog_owner
-  super_admin
-}
-
 Enum oauth_provider {
   google
   github
-  facebook
 }
 
 Enum post_status {
@@ -34,20 +27,26 @@ Enum post_status {
 
 // ============ Users & Auth ============
 
+Table roles {
+  id int [pk, increment]
+  code varchar(30) [not null, unique, note: 'user, blog_owner, super_admin. Code dùng trong guard phân quyền, không đổi được']
+  name varchar(100) [not null, note: 'Tên hiển thị']
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Danh sách cố định, chỉ tạo bằng seeder, không có màn hình quản lý. Mỗi user có đúng 1 role.'
+}
+
 Table users {
   id bigint [pk, increment]
   full_name varchar(150) [not null, note: '2-150 ký tự']
   email varchar(255) [not null, unique]
   password_hash varchar(255) [null, note: 'NULL với tài khoản tạo qua OAuth chưa đặt mật khẩu']
   avatar varchar(255) [null, note: 'Đường dẫn file trong uploads/']
-  role user_role [not null, default: 'user']
+  role_id int [not null, note: 'Tài khoản mới (đăng ký, OAuth) gán role code = user, lấy id ở service']
   is_active boolean [not null, default: true, note: 'Khóa tài khoản = false. Không xóa cứng (D8)']
   created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
   updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
-
-  indexes {
-    (role, is_active)
-  }
 }
 
 Table oauth_accounts {
@@ -75,10 +74,6 @@ Table languages {
   is_active boolean [not null, default: true, note: 'Không được tắt ngôn ngữ mặc định']
   created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
   updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
-
-  indexes {
-    is_active
-  }
 }
 
 // ============ Categories ============
@@ -113,29 +108,45 @@ Table category_translations {
 Table posts {
   id bigint [pk, increment]
   user_id bigint [not null, note: 'Tác giả']
-  language_id int [not null]
-  category_id int [not null]
-  title varchar(255) [not null, note: '5-255 ký tự']
-  slug varchar(280) [not null]
-  excerpt varchar(500) [null, note: 'Tóm tắt']
-  content mediumtext [not null, note: 'HTML đã lọc XSS']
-  thumbnail varchar(255) [null, note: 'Đường dẫn file trong uploads/']
-  status post_status [not null, default: 'draft']
-  view_count int [not null, default: 0, note: 'UNSIGNED']
-  published_at datetime [null, note: 'Ghi lần đầu chuyển sang published']
+  language_id int [not null, note: 'Ngôn ngữ gốc. Chọn khi tạo bài, không đổi được']
+  category_id int [not null, note: 'Dùng chung cho mọi bản dịch']
+  thumbnail varchar(255) [null, note: 'Đường dẫn file trong uploads/. Dùng chung cho mọi bản dịch']
   created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
   updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
 
   indexes {
+    user_id [note: 'Danh sách bài của owner UC13']
+    category_id [note: 'Bài theo danh mục UC07']
+  }
+
+  Note: 'Phần dùng chung của bài viết. Nội dung theo từng ngôn ngữ nằm ở post_translations.'
+}
+
+Table post_translations {
+  id bigint [pk, increment]
+  post_id bigint [not null]
+  language_id int [not null]
+  title varchar(255) [not null, note: '5-255 ký tự']
+  slug varchar(280) [not null]
+  excerpt varchar(500) [null, note: 'Tóm tắt']
+  content mediumtext [not null, note: 'HTML đã lọc XSS']
+  status post_status [not null, default: 'draft', note: 'Trạng thái riêng của từng bản dịch']
+  view_count int [not null, default: 0, note: 'UNSIGNED. Đếm riêng theo từng bản dịch']
+  published_at datetime [null, note: 'Ghi lần đầu bản dịch chuyển sang published']
+  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (post_id, language_id) [unique, note: 'Mỗi bài có tối đa 1 bản dịch / ngôn ngữ']
     (language_id, slug) [unique, note: 'Slug duy nhất trong cùng ngôn ngữ, trùng thì thêm -2, -3...']
-    (language_id, status, published_at) [note: 'Trang chủ UC05']
-    (category_id, language_id, status, published_at) [note: 'Bài theo danh mục UC07']
-    (user_id, status) [note: 'Danh sách bài của owner UC13']
+    (language_id, status, published_at) [note: 'Trang chủ UC05, bài theo danh mục UC07 (JOIN posts)']
   }
 
   Note: '''
+    Bản dịch có language_id = posts.language_id là bản gốc: bắt buộc có, tạo cùng lúc với bài, không xóa riêng được (kiểm tra ở service).
+    Bản dịch của ngôn ngữ khác thêm/xóa tùy ý. Không fallback: ngôn ngữ nào chưa có bản dịch published thì bài không hiện ở ngôn ngữ đó.
     FULLTEXT index (tạo trong migration bằng raw SQL, DBML không hỗ trợ):
-    CREATE FULLTEXT INDEX ft_posts_search ON posts(title, excerpt, content) WITH PARSER ngram;
+    CREATE FULLTEXT INDEX ft_post_translations_search ON post_translations(title, excerpt, content) WITH PARSER ngram;
   '''
 }
 
@@ -143,15 +154,15 @@ Table posts {
 
 Table comments {
   id bigint [pk, increment]
-  post_id bigint [not null]
+  post_translation_id bigint [not null, note: 'Bình luận gắn với từng bản dịch (mỗi ngôn ngữ có luồng bình luận riêng)']
   user_id bigint [not null]
-  parent_id bigint [null, note: 'NULL = bình luận gốc. Chỉ 1 cấp: parent phải có parent_id = NULL (kiểm tra ở service)']
+  parent_id bigint [null, note: 'NULL = bình luận gốc. Chỉ 1 cấp: parent phải có parent_id = NULL và cùng post_translation_id (kiểm tra ở service)']
   content varchar(1000) [not null, note: 'Văn bản thuần, 1-1000 ký tự']
   created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
   updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
 
   indexes {
-    (post_id, parent_id, created_at)
+    (post_translation_id, parent_id, created_at)
     user_id
   }
 }
@@ -168,7 +179,6 @@ Table ui_translations {
 
   indexes {
     (language_id, key) [unique]
-    key [note: 'Xóa key ở mọi ngôn ngữ, tìm theo key']
   }
 
   Note: 'Thêm ngôn ngữ mới thì copy toàn bộ key từ ngôn ngữ mặc định.'
@@ -202,16 +212,20 @@ Table page_translations {
 
 // ============ Relationships ============
 
+Ref user_role: users.role_id > roles.id [delete: restrict] // không xóa role đang có user
 Ref oauth_user: oauth_accounts.user_id > users.id [delete: cascade]
 
 Ref post_author: posts.user_id > users.id [delete: restrict]
-Ref post_language: posts.language_id > languages.id [delete: restrict] // không xóa ngôn ngữ đang có bài
+Ref post_language: posts.language_id > languages.id [delete: restrict] // không xóa ngôn ngữ gốc của bài
 Ref post_category: posts.category_id > categories.id [delete: restrict] // không xóa danh mục đang có bài
+
+Ref post_tr_post: post_translations.post_id > posts.id [delete: cascade] // xóa bài thì xóa mọi bản dịch
+Ref post_tr_language: post_translations.language_id > languages.id [delete: restrict] // không xóa ngôn ngữ đang có bản dịch bài viết
 
 Ref category_tr_category: category_translations.category_id > categories.id [delete: cascade]
 Ref category_tr_language: category_translations.language_id > languages.id [delete: cascade]
 
-Ref comment_post: comments.post_id > posts.id [delete: cascade] // xóa bài thì xóa bình luận
+Ref comment_post_tr: comments.post_translation_id > post_translations.id [delete: cascade] // xóa bản dịch (hoặc cả bài) thì xóa bình luận
 Ref comment_user: comments.user_id > users.id [delete: restrict]
 Ref comment_parent: comments.parent_id > comments.id [delete: cascade] // xóa cha thì xóa trả lời
 
@@ -227,11 +241,17 @@ Records languages(id, code, name, is_default, is_active) {
   2, 'en', 'English', false, true
 }
 
-Records users(id, full_name, email, role, is_active) {
-  1, 'Super Admin', 'admin@blog.local', 'super_admin', true
-  2, 'Nguyễn Văn An', 'owner1@blog.local', 'blog_owner', true
-  3, 'Trần Thị Bình', 'owner2@blog.local', 'blog_owner', true
-  4, 'Lê Minh Cường', 'user@blog.local', 'user', true
+Records roles(id, code, name) {
+  1, 'user', 'Người dùng'
+  2, 'blog_owner', 'Blog Owner'
+  3, 'super_admin', 'Super Admin'
+}
+
+Records users(id, full_name, email, role_id, is_active) {
+  1, 'Super Admin', 'admin@blog.local', 3, true
+  2, 'Nguyễn Văn An', 'owner1@blog.local', 2, true
+  3, 'Trần Thị Bình', 'owner2@blog.local', 2, true
+  4, 'Lê Minh Cường', 'user@blog.local', 1, true
 }
 
 Records oauth_accounts(id, user_id, provider, provider_user_id, provider_email) {
@@ -249,15 +269,24 @@ Records category_translations(id, category_id, language_id, name, slug) {
   3, 2, 1, 'Đời sống', 'doi-song'
 }
 
-Records posts(id, user_id, language_id, category_id, title, slug, content, status, view_count, published_at) {
-  1, 2, 1, 1, 'Hướng dẫn Angular', 'huong-dan-angular', '<p>Nội dung...</p>', 'published', 120, '2026-09-01 08:00:00'
-  2, 2, 2, 1, 'Getting started with NestJS', 'getting-started-with-nestjs', '<p>Content...</p>', 'published', 45, '2026-09-05 09:30:00'
-  3, 3, 1, 2, 'Bản nháp', 'ban-nhap', '<p>...</p>', 'draft', 0, null
+Records posts(id, user_id, language_id, category_id, thumbnail) {
+  1, 2, 1, 1, 'uploads/posts/1.jpg'
+  2, 2, 2, 1, 'uploads/posts/2.jpg'
+  3, 3, 1, 2, null
 }
 
-Records comments(id, post_id, user_id, parent_id, content) {
+Records post_translations(id, post_id, language_id, title, slug, content, status, view_count, published_at) {
+  1, 1, 1, 'Hướng dẫn Angular', 'huong-dan-angular', '<p>Nội dung...</p>', 'published', 120, '2026-09-01 08:00:00'
+  2, 1, 2, 'Angular tutorial', 'angular-tutorial', '<p>Content...</p>', 'published', 30, '2026-09-03 10:00:00'
+  3, 2, 2, 'Getting started with NestJS', 'getting-started-with-nestjs', '<p>Content...</p>', 'published', 45, '2026-09-05 09:30:00'
+  4, 2, 1, 'Bắt đầu với NestJS', 'bat-dau-voi-nestjs', '<p>Nội dung...</p>', 'draft', 0, null
+  5, 3, 1, 'Bản nháp', 'ban-nhap', '<p>...</p>', 'draft', 0, null
+}
+
+Records comments(id, post_translation_id, user_id, parent_id, content) {
   1, 1, 4, null, 'Bài viết rất hay!'
   2, 1, 2, 1, 'Cảm ơn bạn đã đọc.'
+  3, 2, 4, null, 'Great tutorial!'
 }
 
 Records ui_translations(id, language_id, key, value) {
