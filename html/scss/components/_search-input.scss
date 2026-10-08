@@ -1,0 +1,21 @@
+// Ô tìm kiếm có icon kính lúp bên trái
+//   <div class="search-input">
+//     <i class="bi bi-search search-input__icon" aria-hidden="true"></i>
+//     <input type="search" class="form-control search-input__control" ...>
+//   </div>
+.search-input {
+  position: relative;
+}
+
+.search-input__icon {
+  position: absolute;
+  top: 50%;
+  left: .875rem;
+  color: var(--bl-text-secondary);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.search-input__control {
+  padding-left: 2.5rem;
+}

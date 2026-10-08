@@ -1,0 +1,21 @@
+// Bảng màu chế độ tối (docs mục 3.1). Phải có đủ mọi biến như _light.scss.
+
+[data-bs-theme="dark"] {
+  --bl-bg: #121212;
+  --bl-bg-rgb: 18, 18, 18;
+  --bl-bg-subtle: #1C1C1C;
+  --bl-text: #E6E6E6;
+  --bl-text-rgb: 230, 230, 230;
+  --bl-text-secondary: #A8A8A8;
+  --bl-border: #2B2B2B;
+  --bl-border-strong: #444444;
+  --bl-btn-primary-bg: #F2F2F2;
+  --bl-btn-primary-hover: #FFFFFF;
+  --bl-btn-primary-text: #191919;
+  --bl-accent: #4CC55A;
+  --bl-accent-rgb: 76, 197, 90;
+  --bl-danger: #E57373;
+  --bl-warning: #FFB74D;
+  --bl-success: #4CC55A;
+  --bl-muted: #757575;
+}

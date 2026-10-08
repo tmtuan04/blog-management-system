@@ -1,0 +1,10 @@
+// Cắt chữ sau $lines dòng và thêm dấu "..." (tiêu đề, tóm tắt trên thẻ bài viết).
+// overflow-wrap để chuỗi dài không có khoảng trắng không tràn khỏi khối.
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  line-clamp: $lines;
+}

@@ -1,0 +1,134 @@
+// Bảng danh sách bài viết (UC13, admin/posts.html).
+// Từ md: bảng bình thường. Dưới md: mỗi hàng thành một thẻ
+//   ┌───────┬──────────────────────────┬───┐
+//   │ thumb │ tiêu đề + meta           │ ⋯ │
+//   │       ├──────────────────────────┴───┤
+//   │       │ badge bản dịch               │
+//   └───────┴──────────────────────────────┘
+
+.post-table__thumb {
+  width: 5rem;
+}
+
+.post-table__image,
+.post-table__no-image {
+  display: block;
+  width: 5rem;
+  height: 3.5rem;
+  border-radius: $border-radius;
+}
+
+.post-table__image {
+  object-fit: cover;
+}
+
+.post-table__no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--bl-muted);
+  background-color: var(--bl-bg-subtle);
+}
+
+.post-table__title {
+  @include line-clamp(2);
+
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.375rem;
+  color: var(--bl-text);
+
+  &:hover {
+    color: var(--bl-text);
+  }
+}
+
+.post-table__meta {
+  margin-top: .25rem;
+}
+
+// Bọc badge trong div riêng: đặt flex lên <td> sẽ làm hỏng cột của bảng
+.post-table__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .375rem;
+}
+
+// Từ xl đủ chỗ: các badge nằm trên một hàng
+@include media-breakpoint-up(xl) {
+  .post-table__badges {
+    flex-wrap: nowrap;
+  }
+}
+
+.post-table__updated {
+  white-space: nowrap;
+}
+
+.post-table__actions {
+  width: 3rem;
+  text-align: end;
+}
+
+// Hàng skeleton khi đang tải
+.post-table__skeleton-title {
+  display: block;
+  height: 1rem;
+  margin-bottom: .5rem;
+}
+
+@include media-breakpoint-down(md) {
+  .post-table {
+    thead {
+      display: none;
+    }
+
+    tbody tr {
+      display: grid;
+      grid-template-areas:
+        "thumb title actions"
+        "thumb translations translations";
+      grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+      column-gap: .75rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--bl-border);
+    }
+
+    // Selector dài để thắng padding của .table trong _table.scss
+    &.table > tbody > tr > td {
+      padding: 0;
+      border: 0;
+    }
+
+    .post-table__thumb {
+      grid-area: thumb;
+      width: auto;
+    }
+
+    .post-table__image,
+    .post-table__no-image {
+      width: 3.5rem;
+      height: 3.5rem;
+    }
+
+    .post-table__main {
+      grid-area: title;
+    }
+
+    .post-table__translations {
+      grid-area: translations;
+      margin-top: .5rem;
+    }
+
+    .post-table__actions {
+      grid-area: actions;
+      width: auto;
+    }
+
+    .post-table__title {
+      font-size: .9375rem;
+      line-height: 1.25rem;
+    }
+  }
+}
