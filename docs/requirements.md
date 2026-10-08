@@ -2,7 +2,7 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.6 (bài viết có ngôn ngữ gốc và dịch được ra nhiều ngôn ngữ) |
+| Phiên bản | 1.7 (giao diện clone theo phong cách Medium) |
 | Ngày tạo | 01/10/2026 |
 | Thời gian thực hiện | Khoảng 8 tuần, chia thành 5 phase (xem mục 1.5) |
 | Nhân sự | 3 người, chia theo chức năng (xem mục 1.4) |
@@ -97,7 +97,7 @@ Công việc:
 
 #### Phase 2 - Xây dựng giao diện HTML
 
-Dựng giao diện bằng HTML, Bootstrap 5 và SCSS, dùng dữ liệu giả, chưa gọi API. Mỗi màn hình là một file HTML, dùng chung một bộ SCSS (biến màu, cả chế độ sáng lẫn tối). Ở phase 4, các file này được chuyển thành component Angular.
+Dựng giao diện bằng HTML, Bootstrap 5 và SCSS, clone theo phong cách Medium (medium.com), dùng dữ liệu giả, chưa gọi API. Chi tiết xem [phase-2-html.md](phase-2-html.md). Mỗi màn hình là một file HTML, dùng chung một bộ SCSS (biến màu, cả chế độ sáng lẫn tối). Ở phase 4, các file này được chuyển thành component Angular.
 
 | Người | Màn hình |
 | --- | --- |

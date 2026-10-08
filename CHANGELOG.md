@@ -2,6 +2,27 @@
 
 Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/).
 
+## [1.7] - 2026-10-08
+
+Bắt đầu phase 2: giao diện HTML clone theo phong cách Medium.
+
+### Added
+
+- `docs/phase-2-html.md`: tài liệu phase 2 gồm
+  - Phạm vi "clone Medium" (clone gì, không clone gì) và bảng ánh xạ thành phần Medium sang use case.
+  - Công cụ (Bootstrap 5.3, Dart Sass, Bootstrap Icons, font Inter + Source Serif 4) và cấu trúc thư mục `html/`.
+  - Design tokens: màu sáng/tối (`--bl-*`, theme qua `data-bs-theme`), kiểu chữ, kích thước, breakpoint.
+  - Layout public, auth, admin.
+  - Danh sách 20 màn hình theo người phụ trách, kèm route phase 4, UC, nội dung và trạng thái bắt buộc.
+  - Quy ước HTML (comment ranh giới component, thuộc tính `data-i18n`), trạng thái demo (`demo-state.js`), SCSS (BEM, mobile-first), Git.
+  - Kế hoạch theo ngày, checklist điều kiện hoàn thành, mục ngoài phạm vi.
+
+### Changed
+
+- Requirements:
+  - Phiên bản 1.6 → 1.7.
+  - Phase 2: giao diện clone theo phong cách Medium, link tới `docs/phase-2-html.md`.
+
 ## [1.6] - 2026-10-07
 
 Bài viết có ngôn ngữ gốc và dịch được ra nhiều ngôn ngữ (thay cho mô hình mỗi post thuộc đúng 1 ngôn ngữ). Role chuyển từ enum sang bảng riêng.
