@@ -63,27 +63,10 @@ Medium không có trang quản trị. Trang quản trị dùng chung bộ màu, 
 | Kiểm tra hiển thị | DevTools (Device Toolbar), Chrome, Edge, Firefox bản mới nhất |
 | Chạy thử | Extension Live Server của VS Code |
 
-`html/package.json`:
-
-```json
-{
-  "name": "blog-html",
-  "private": true,
-  "scripts": {
-    "build": "sass scss/main.scss css/main.css --load-path=node_modules --style=compressed --no-source-map",
-    "watch": "sass scss/main.scss css/main.css --load-path=node_modules --watch"
-  },
-  "dependencies": {
-    "bootstrap": "^5.3.3",
-    "bootstrap-icons": "^1.11.3"
-  },
-  "devDependencies": {
-    "sass": "^1.80.0"
-  }
-}
-```
-
-Chạy `npm install` rồi `npm run watch` trong lúc làm. File `css/main.css` được commit để người review mở HTML là xem được ngay.
+- `html/package.json` chỉ cài `bootstrap` (khóa đúng bản 5.3.8) và `sass`. Script build có `--quiet-deps --silence-deprecation=import` để ẩn cảnh báo `@import` của Bootstrap 5.3.
+- Bootstrap JS và Bootstrap Icons nạp từ CDN jsdelivr, để mở HTML là chạy được mà không cần `node_modules`.
+- Chạy `npm install` rồi `npm run watch` trong lúc làm. File `css/main.css` được commit để người review mở HTML là xem được ngay.
+- Khung `<head>` mẫu và danh sách biến, class dùng được xem [html/README.md](../html/README.md).
 
 ### 2.2. Cấu trúc thư mục
 
@@ -142,14 +125,18 @@ Khai báo bằng CSS custom properties để đổi theme không cần build l�
 | `--bl-bg-subtle` | Nền khối phụ, hover, sidebar admin | `#F9F9F9` | `#1C1C1C` |
 | `--bl-text` | Chữ chính | `#242424` | `#E6E6E6` |
 | `--bl-text-secondary` | Tóm tắt, meta, label | `#6B6B6B` | `#A8A8A8` |
-| `--bl-border` | Đường kẻ, viền ô nhập | `#F2F2F2` | `#2B2B2B` |
+| `--bl-border` | Đường kẻ, viền bảng | `#F2F2F2` | `#2B2B2B` |
+| `--bl-border-strong` | Viền ô nhập, viền nút phụ (`--bl-border` quá nhạt cho ô nhập) | `#D9D9D9` | `#444444` |
 | `--bl-btn-primary-bg` | Nút chính (pill đen kiểu Medium) | `#191919` | `#F2F2F2` |
+| `--bl-btn-primary-hover` | Nút chính khi hover | `#000000` | `#FFFFFF` |
 | `--bl-btn-primary-text` | Chữ trên nút chính | `#FFFFFF` | `#191919` |
 | `--bl-accent` | Link, trạng thái active, chip đang chọn | `#1A8917` | `#4CC55A` |
 | `--bl-danger` | Lỗi validate, nút xóa | `#C94A4A` | `#E57373` |
 | `--bl-warning` | Badge `draft` | `#B26A00` | `#FFB74D` |
 | `--bl-success` | Badge `published`, toast thành công | `#1A8917` | `#4CC55A` |
 | `--bl-muted` | Badge `archived`, tài khoản bị khóa | `#9E9E9E` | `#757575` |
+
+`--bl-bg`, `--bl-text`, `--bl-accent` có thêm bản `-rgb` (ví dụ `--bl-accent-rgb: 26, 137, 23`) để dùng với độ trong suốt: `rgba(var(--bl-accent-rgb), .2)`. File `themes/_bootstrap-bridge.scss` nối các biến `--bs-*` của Bootstrap vào token `--bl-*`.
 
 Theme bật bằng thuộc tính `data-bs-theme="light|dark"` trên thẻ `<html>` (color mode có sẵn của Bootstrap 5.3), nên các component Bootstrap (modal, dropdown, form) tự đổi màu theo.
 
@@ -256,7 +243,7 @@ Các component B làm và dùng chung: header, footer, thẻ bài viết, chip d
 
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
-| `admin/posts.html` | `/admin/posts` | UC13 | Tab trạng thái kiểu "Your stories" của Medium (Tất cả, Nháp, Đã đăng, Lưu trữ - theo bản gốc); lọc ngôn ngữ, danh mục; ô tìm tiêu đề. Bảng: thumbnail nhỏ, tiêu đề bản gốc, ngôn ngữ gốc, danh mục, badge từng bản dịch (`VI · Đã đăng`, `EN · Nháp`), ngày cập nhật, menu ⋯ (Sửa, Xem, Xóa) | Bình thường, rỗng, loading, hộp xác nhận xóa bài |
+| `admin/posts.html` (**màn mẫu, đã làm**) | `/admin/posts` | UC13 | Tab trạng thái kiểu "Your stories" của Medium (Tất cả, Nháp, Đã đăng, Lưu trữ - theo bản gốc); lọc ngôn ngữ, danh mục; ô tìm tiêu đề. Bảng: thumbnail nhỏ, tiêu đề bản gốc kèm dòng meta "Gốc: Tiếng Việt · Lập trình" (ngôn ngữ gốc và danh mục), badge từng bản dịch (`VI · Đã đăng`, `EN · Nháp`), ngày cập nhật, menu ⋯ (Sửa, Xem trên blog, Xóa) | Bình thường, rỗng, loading (skeleton), đang xóa (hộp xác nhận xóa bài với nút loading) |
 | `admin/post-create.html` | `/admin/posts/new` | UC13 | Thanh trên: "Nháp" + nút pill "Lưu". Phần dùng chung: chọn ngôn ngữ gốc, danh mục, upload thumbnail (xem trước). Bản gốc: tiêu đề kiểu Medium (Inter 42px, không viền), tóm tắt, editor, trạng thái | Lỗi validate từng trường, lỗi ảnh, đang lưu |
 | `admin/post-edit.html` | `/admin/posts/:id/edit` | UC13 | Phần dùng chung ở trên (ngôn ngữ gốc chỉ đọc). Dưới là tab ngôn ngữ: tab gốc có nhãn "Gốc"; tab đã có bản dịch hiện form + slug (chỉ đọc) + lượt xem + nút "Xóa bản dịch"; tab chưa có bản dịch hiện khối rỗng với nút "Thêm bản dịch" | Tab có dữ liệu, tab chưa có bản dịch, form bản dịch mới đã điền sẵn nội dung bản gốc, lỗi validate, đang lưu, hộp xác nhận xóa bản dịch |
 | `admin/users.html` | `/admin/users` | UC14 | Tìm theo tên/email; lọc role, trạng thái. Bảng: avatar, họ tên, email, role (badge), trạng thái, ngày tạo, hành động (đổi role, khóa/mở khóa). Modal tạo tài khoản | Bình thường, rỗng, modal có lỗi validate, hộp xác nhận khóa tài khoản, hàng của chính mình bị vô hiệu nút khóa/đổi role |
@@ -319,6 +306,8 @@ C viết thêm `js/theme.js` (UC10):
   ```
 
   Key đặt theo dạng `<nhóm>.<tên>`: `menu.*`, `auth.*`, `post.*`, `comment.*`, `admin.*`, `common.*`, `validation.*`.
+- Chữ nằm trong thuộc tính thì dùng `data-i18n-<tên thuộc tính>`: `data-i18n-placeholder="admin.posts.search_placeholder"`, `data-i18n-aria-label="common.actions"`.
+- Dữ liệu lấy từ CSDL (tiêu đề bài, tên danh mục, tên ngôn ngữ, tên người dùng) không gắn `data-i18n`.
 - Ảnh có `alt`; ô nhập có `<label>` (có thể ẩn bằng `visually-hidden`); nút chỉ có icon có `aria-label`.
 - Link giữa các trang dùng đường dẫn tương đối tới file HTML thật, để bấm qua lại được khi review.
 
@@ -326,8 +315,11 @@ C viết thêm `js/theme.js` (UC10):
 
 Mỗi trang có nhiều trạng thái (mục 5) nhưng chỉ là một file. Dùng `js/demo-state.js`:
 
-- Thêm một thanh nhỏ cố định góc dưới phải, chỉ có ở phase 2, gồm các nút: "Bình thường", "Lỗi validate", "Loading", "Rỗng", "Khách / Đã đăng nhập".
-- Bấm nút thì gán `data-demo-state="..."` lên `<body>`. Các khối trạng thái trong HTML được ẩn/hiện bằng CSS theo thuộc tính này.
+- Thêm một thanh nhỏ cố định góc dưới phải, chỉ có ở phase 2, gồm 2 nhóm nút:
+  - Trạng thái trang, khai báo bằng `<body data-demo-states="...">`: `normal` (Bình thường), `error` (Lỗi validate), `loading`, `empty` (Rỗng). Trang cần trạng thái riêng thì tự đặt tên và khai báo nhãn, ví dụ `data-demo-states="normal deleting" data-demo-label-deleting="Đang xóa"`.
+  - Vai trò người xem, khai báo bằng `<body data-demo-auths="...">`: `guest`, `user`, `blog_owner`, `super_admin`. Trang public thường dùng `guest user`, trang quản trị dùng `blog_owner super_admin`.
+- Khối chỉ có ở một vài trạng thái gắn `data-demo="empty"` (hoặc nhiều trạng thái: `data-demo="normal error"`); khối chỉ có với một số vai trò gắn `data-demo-auth="super_admin"` (hoặc `data-demo-auth="user blog_owner super_admin"` cho mọi tài khoản đã đăng nhập). Bấm nút thì JS bật/tắt thuộc tính `hidden` của các khối này. Modal gắn `data-demo-modal="<trạng thái>"` thì tự mở ở trạng thái đó. Cách đánh dấu đầy đủ ghi ở comment đầu file `js/demo-state.js`.
+- Trạng thái được ghi lên URL (`?demo=error&auth=user`) để gửi link hoặc chụp màn hình đúng trạng thái.
 - Trạng thái lỗi dùng đúng class của Bootstrap: `is-invalid` trên ô nhập + `invalid-feedback` ngay dưới, để phase 4 nối thẳng với Angular Validators.
 - Trạng thái loading: nút bị `disabled`, có `spinner-border spinner-border-sm` + chữ "Đang lưu...".
 - Thanh demo và `demo-state.js` bị bỏ khi chuyển sang Angular.
@@ -353,15 +345,17 @@ Mỗi trang có nhiều trạng thái (mục 5) nhưng chỉ là một file. Dù
 
 ## 8. Kế hoạch theo ngày
 
+**Trước ngày 1 (đã xong):** A làm trước phần nền và một màn mẫu, merge vào `dev`: cài đặt `html/`, design tokens, theme sáng/tối, typography, `theme.js`, `demo-state.js`, khung `_templates/admin.html`, màn `admin/posts.html` cùng các component nó dùng (phân trang, hộp xác nhận, trạng thái rỗng, badge, bảng...). Từ đây B sở hữu `abstracts/`, `themes/`, `layouts/` như đã phân công.
+
 | Ngày | A | B | C |
 | --- | --- | --- | --- |
-| 1 | Xem Medium, phác bố cục trang quản lý bài và form bài viết | Cài đặt `html/`, design tokens, theme sáng/tối, typography, `_templates/` (public, auth, admin). **Merge trong ngày** | Xem Medium, viết `theme.js`, chuẩn bị nội dung giả cho 3 trang tĩnh |
-| 2 | Rich text editor (component), `post-create.html` | Header, footer hoàn chỉnh; thẻ bài viết, phân trang, modal xác nhận, toast; `index.html` (trang chủ) | `page.html`, `admin/pages.html` |
-| 3 | `post-edit.html` (tab ngôn ngữ), `posts.html` | `post-detail.html` (gồm bình luận), `category.html`, `search.html`, `404.html` | `admin/page-edit.html` (dùng editor của A), `admin/categories.html` |
-| 4 | `users.html`, `languages.html` | Các trang auth, `profile.html`, `demo-state.js`, trang mục lục `html/index.html` | `admin/ui-translations.html` |
-| 5 | Kiểm tra chéo, sửa lỗi | Kiểm tra chéo toàn bộ, sửa lỗi layout chung | Kiểm tra chéo theo checklist mục 9, sửa lỗi |
+| 1 | Rich text editor (component), `post-create.html` | `_templates/public.html` (header, footer), `_templates/auth.html`, `layouts/_public.scss`, `layouts/_auth.scss`. **Merge trong ngày** vì C cần | `admin/pages.html`, `admin/categories.html` (copy từ khung admin có sẵn) |
+| 2 | `post-edit.html` (tab ngôn ngữ). **Merge editor trong ngày** vì C cần | Thẻ bài viết, toast; `public/index.html` (trang chủ) | `public/page.html` (sau khi khung public của B được merge), `admin/ui-translations.html` |
+| 3 | `users.html` | `post-detail.html` (gồm bình luận), `category.html` | `admin/page-edit.html` (dùng editor của A) |
+| 4 | `languages.html`, trang mục lục `html/index.html` | `search.html`, `404.html`, 4 trang auth, `profile.html` | Hoàn thiện, tự kiểm tra theo mục 9 |
+| 5 | Kiểm tra chéo, sửa lỗi | Kiểm tra chéo, sửa lỗi layout chung | Kiểm tra chéo, sửa lỗi |
 
-- Ngày 1 chỉ có B chạm vào SCSS dùng chung. A và C bắt đầu viết trang sau khi PR khung của B được merge.
+- Hướng dẫn từng bước cho người mới: [phase-2-huong-dan.md](phase-2-huong-dan.md).
 - Kiểm tra chéo ngày 5: A kiểm tra trang của B, B kiểm tra trang của C, C kiểm tra trang của A.
 
 ---

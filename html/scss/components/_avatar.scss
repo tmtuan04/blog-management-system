@@ -1,0 +1,33 @@
+// Ảnh đại diện tròn. Người dùng chưa có ảnh (users.avatar = NULL) thì dùng .avatar--initials với chữ cái đầu.
+//   <img class="avatar" src="..." alt="Nguyễn Văn An">
+//   <span class="avatar avatar--initials" aria-hidden="true">SA</span>
+.avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar--sm {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: .625rem;
+}
+
+.avatar--lg {
+  width: 3rem;
+  height: 3rem;
+  font-size: 1rem;
+}
+
+.avatar--initials {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--bl-text-secondary);
+  background-color: var(--bl-bg-subtle);
+  border: 1px solid var(--bl-border-strong);
+}

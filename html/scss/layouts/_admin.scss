@@ -1,0 +1,128 @@
+// Layout trang quản trị (docs mục 4.3): sidebar trái + topbar + nội dung.
+// Sidebar dùng .offcanvas-lg của Bootstrap: từ lg là cột cố định, dưới lg là offcanvas mở bằng nút ☰.
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+// ---------------------------------------------------------------------------
+// Sidebar
+// ---------------------------------------------------------------------------
+.admin-sidebar {
+  --bs-offcanvas-width: 280px;
+  --bs-offcanvas-bg: var(--bl-bg);
+  --bs-offcanvas-border-color: var(--bl-border);
+
+  @include media-breakpoint-up(lg) {
+    position: sticky;
+    top: 0;
+    flex-shrink: 0;
+    width: $admin-sidebar-width;
+    height: 100vh;
+    border-right: 1px solid var(--bl-border);
+  }
+
+  .offcanvas-body {
+    flex-direction: column;
+    padding: 0;
+  }
+}
+
+.admin-sidebar__brand {
+  display: flex;
+  align-items: center;
+  height: $header-height;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--bl-border);
+}
+
+.admin-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: .125rem;
+  padding: 1rem .75rem;
+  margin: 0;
+  list-style: none;
+}
+
+.admin-sidebar__link {
+  display: flex;
+  gap: .75rem;
+  align-items: center;
+  padding: .5rem .75rem;
+  color: var(--bl-text-secondary);
+  border-radius: $border-radius;
+
+  .bi {
+    font-size: 1.125rem;
+  }
+
+  &:hover {
+    color: var(--bl-text);
+    text-decoration: none;
+    background-color: var(--bl-bg-subtle);
+  }
+
+  &.is-active {
+    font-weight: 600;
+    color: var(--bl-text);
+    background-color: var(--bl-bg-subtle);
+  }
+}
+
+.admin-sidebar__footer {
+  padding: 1rem .75rem;
+  margin-top: auto;
+  border-top: 1px solid var(--bl-border);
+}
+
+// ---------------------------------------------------------------------------
+// Vùng chính: topbar + nội dung
+// ---------------------------------------------------------------------------
+.admin-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: $zindex-sticky;
+  display: flex;
+  gap: .25rem;
+  align-items: center;
+  height: $header-height;
+  padding: 0 .75rem;
+  background-color: var(--bl-bg);
+  border-bottom: 1px solid var(--bl-border);
+
+  @include media-breakpoint-up(lg) {
+    padding: 0 2rem;
+  }
+}
+
+.admin-content {
+  width: 100%;
+  max-width: 1200px;
+  padding: 1.5rem 1rem 6rem;
+
+  @include media-breakpoint-up(md) {
+    padding: 2rem 2rem 6rem;
+  }
+
+  @include media-breakpoint-up(lg) {
+    padding: 2.5rem 3rem 6rem;
+  }
+}
+
+.admin-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}

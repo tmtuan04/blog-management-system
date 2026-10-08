@@ -1,0 +1,17 @@
+// Nút đổi sáng/tối (UC10), JS ở js/theme.js.
+// Icon đổi bằng CSS theo data-bs-theme trên <html>, nên đúng ngay từ lúc tải trang, không chờ JS.
+// Sáng: hiện mặt trăng (bấm để sang tối). Tối: hiện mặt trời.
+
+.theme-toggle__icon--sun {
+  display: none;
+}
+
+[data-bs-theme="dark"] {
+  .theme-toggle__icon--sun {
+    display: inline-block;
+  }
+
+  .theme-toggle__icon--moon {
+    display: none;
+  }
+}

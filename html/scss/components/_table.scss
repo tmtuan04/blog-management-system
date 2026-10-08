@@ -1,0 +1,24 @@
+// Bảng quản trị (docs mục 4.3): không kẻ dọc, kẻ ngang nhạt, hover nền nhạt
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--bl-text);
+  --bs-table-border-color: var(--bl-border);
+  --bs-table-hover-bg: var(--bl-bg-subtle);
+  --bs-table-hover-color: var(--bl-text);
+
+  margin-bottom: 0;
+
+  > thead th {
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    font-size: .75rem;
+    font-weight: 500;
+    color: var(--bl-text-secondary);
+    white-space: nowrap;
+  }
+
+  > tbody td {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}

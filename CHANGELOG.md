@@ -2,6 +2,33 @@
 
 Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- Thư mục `html/` (phase 2), phần nền cho màn mẫu:
+  - `package.json`: Bootstrap 5.3.8, Dart Sass; script `build`, `watch`.
+  - `scss/`: `main.scss`; `abstracts/` (biến Bootstrap ghi đè, font, kích thước layout, mixin `line-clamp`); `themes/` (token `--bl-*` sáng/tối, `_bootstrap-bridge.scss` nối biến `--bs-*` vào token); `base/` (kiểu chữ theo vai trò `.text-*`, `.prose`); `components/` (nút đổi theme, thanh demo).
+  - `js/theme.js`: đổi sáng/tối, lưu `localStorage`, lần đầu theo `prefers-color-scheme`, không nháy màu khi tải trang.
+  - `js/demo-state.js`: thanh chuyển trạng thái demo (bình thường, lỗi validate, loading, rỗng, khách/đã đăng nhập), lưu trạng thái trên URL.
+  - `README.md`: cách chạy, khung `<head>` mẫu, danh sách biến và class dùng được.
+- Màn mẫu cho cả nhóm tham khảo:
+  - `_templates/admin.html`: khung trang quản trị (sidebar `offcanvas-lg`, topbar có bộ chọn ngôn ngữ, nút theme, menu tài khoản; mục chỉ Super Admin thấy).
+  - `admin/posts.html`: danh sách bài viết (UC13) với tab trạng thái, bộ lọc, bảng có badge bản dịch (thành thẻ dưới `md`), menu ⋯, phân trang, hộp xác nhận xóa; trạng thái bình thường, loading (skeleton), rỗng, đang xóa; vai trò Blog Owner / Super Admin.
+  - `layouts/_admin.scss` và component `avatar`, `brand`, `dropdown`, `empty-state`, `icon-btn`, `page-tabs`, `pagination`, `post-table`, `search-input`, `status-badge`, `table`.
+  - Ảnh giả SVG trong `assets/img/posts/` và `assets/img/avatars/`.
+- `demo-state.js`: trạng thái tự đặt tên (`data-demo-label-<tên>`), vai trò `guest` / `user` / `blog_owner` / `super_admin` (`data-demo-auths`), tự mở modal (`data-demo-modal`), chọn trạng thái cho `data-demo-invalid` / `data-demo-loading`.
+- Nút `.btn-outline-secondary`, `.btn-danger` theo token màu.
+- Phase 2 doc: token `--bl-border-strong`, `--bl-btn-primary-hover` và các token `-rgb`; quy ước `data-i18n-placeholder`, `data-i18n-aria-label`; dữ liệu từ CSDL không gắn `data-i18n`.
+
+### Changed
+
+- Phase 2 doc: mục 2.1 thay khối `package.json` mẫu bằng mô tả file thật; Bootstrap JS và Bootstrap Icons nạp từ CDN. Mục 7.2 ghi cách đánh dấu trạng thái demo bằng `data-demo`, `data-demo-auth`.
+- Phase 2 doc: `--bl-border` chỉ dùng cho đường kẻ, viền bảng; viền ô nhập dùng `--bl-border-strong`.
+- Phase 2 doc: mục 8 lập lại kế hoạch theo ngày vì phần nền và màn mẫu đã làm trước; B làm khung public/auth ngày 1, C bắt đầu từ các trang admin.
+- `docs/phase-2-huong-dan.md` (mới): hướng dẫn từng bước cho B và C (cài máy, chạy dự án, thứ tự việc của từng người, quy trình làm một màn, trạng thái demo, checklist PR, Git và xử lý conflict, lỗi hay gặp).
+- Phase 2 doc: mục 7.2 thay "Khách / Đã đăng nhập" bằng 4 vai trò; mục 5.2 `admin/posts.html` gộp ngôn ngữ gốc và danh mục vào dòng meta dưới tiêu đề.
+
 ## [1.7] - 2026-10-08
 
 Bắt đầu phase 2: giao diện HTML clone theo phong cách Medium.

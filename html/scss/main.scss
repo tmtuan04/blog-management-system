@@ -1,0 +1,34 @@
+// Điểm vào duy nhất của SCSS, build ra css/main.css.
+// Thứ tự import theo docs/phase-2-html.md mục 2.2:
+// abstracts → bootstrap → themes → base → layouts → components → pages
+// Dùng @import (không phải @use) vì Bootstrap 5.3 chỉ cho ghi đè biến qua @import.
+
+@import "abstracts/variables";
+@import "abstracts/mixins";
+
+@import "bootstrap/scss/bootstrap";
+
+@import "themes/light";
+@import "themes/dark";
+@import "themes/bootstrap-bridge";
+
+@import "base/base";
+@import "base/typography";
+
+// Layouts (public, auth do B thêm)
+@import "layouts/admin";
+
+// Components: mỗi component một file, xếp theo tên
+@import "components/avatar";
+@import "components/brand";
+@import "components/demo-state";
+@import "components/dropdown";
+@import "components/empty-state";
+@import "components/icon-btn";
+@import "components/page-tabs";
+@import "components/pagination";
+@import "components/post-table";
+@import "components/search-input";
+@import "components/status-badge";
+@import "components/table";
+@import "components/theme-toggle";
