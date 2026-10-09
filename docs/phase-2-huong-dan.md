@@ -1,4 +1,4 @@
-# Hướng dẫn làm phase 2 (dành cho B và C)
+# Hướng dẫn làm phase 2
 
 File này hướng dẫn từng bước: cài máy, chạy dự án, làm một màn hình từ đầu đến khi tạo PR. Quy định đầy đủ nằm ở [phase-2-html.md](phase-2-html.md). Khi file này và file đó nói khác nhau thì theo [phase-2-html.md](phase-2-html.md).
 
@@ -6,9 +6,9 @@ File này hướng dẫn từng bước: cài máy, chạy dự án, làm một 
 
 ## 1. Đọc trước (khoảng 30 phút)
 
-1. [phase-2-html.md](phase-2-html.md): đọc mục 1 (clone Medium là gì), mục 5 (**phần màn hình của bạn**) và mục 7 (quy ước code).
+1. [phase-2-html.md](phase-2-html.md): đọc mục 1 (clone Medium là gì), mục 5 (danh sách màn hình), mục 7 (quy ước code) và mục 8 (**thứ tự làm**).
 2. [html/README.md](../html/README.md): những class và biến đã có sẵn để dùng.
-3. Mở màn mẫu `html/admin/posts.html` trên trình duyệt (xem mục 3), bấm thử thanh Demo ở góc dưới phải và nút đổi sáng/tối. Sau đó mở file này trong VS Code, đọc code kèm comment. **Mọi màn hình của bạn đều làm theo cách của màn này.**
+3. Mở màn mẫu `html/admin/posts.html` trên trình duyệt (xem mục 3), bấm thử thanh Demo ở góc dưới phải và nút đổi sáng/tối. Sau đó mở file này trong VS Code, đọc code kèm comment. **Mọi màn hình còn lại đều làm theo cách của màn này.**
 
 ---
 
@@ -60,41 +60,17 @@ npm install
 
 ---
 
-## 4. Việc của từng người, theo thứ tự
+## 4. Thứ tự làm
 
-Làm lần lượt từ trên xuống. Mỗi dòng là **một nhánh và một PR riêng**, làm xong dòng nào thì tạo PR dòng đó, đừng gom nhiều màn vào một PR.
+Danh sách việc và thứ tự nằm ở [phase-2-html.md](phase-2-html.md) mục 8. Làm lần lượt từ trên xuống. Mỗi dòng là **một nhánh và một PR riêng**, làm xong dòng nào thì tạo PR dòng đó, đừng gom nhiều màn vào một PR.
 
-### B
-
-| # | Việc | Ghi chú |
-| --- | --- | --- |
-| 1 | `_templates/public.html` (header, footer), `_templates/auth.html`, `scss/layouts/_public.scss`, `_auth.scss` | **Làm đầu tiên, merge trong ngày 1** vì C cần khung public. Xem bố cục ở mục 4.1, 4.2 của tài liệu. Header làm 4 biến thể theo vai trò (`data-demo-auths="guest user blog_owner super_admin"`) |
-| 2 | Thẻ bài viết (`components/_post-card.scss`), toast, `public/index.html` (trang chủ) | Thẻ bài viết dùng lại ở trang danh mục, tìm kiếm, bài liên quan, nên làm kỹ |
-| 3 | `public/post-detail.html` (gồm bình luận) | Nội dung bài dùng class `.prose` có sẵn |
-| 4 | `public/category.html` | Dùng lại thẻ bài viết |
-| 5 | `public/search.html`, `public/404.html` | |
-| 6 | `public/register.html`, `login.html`, `forgot-password.html`, `reset-password.html` | Form: xem mục 6.1 |
-| 7 | `public/profile.html` | |
-
-Từ bây giờ B sở hữu `scss/abstracts/`, `scss/themes/`, `scss/layouts/`. A đã làm sẵn một số component mà theo phân công là của B (phân trang, hộp xác nhận, trạng thái rỗng). B xem lại, muốn sửa thì sửa và báo A.
-
-### C
-
-| # | Việc | Ghi chú |
-| --- | --- | --- |
-| 1 | `admin/pages.html` | **Màn dễ nhất, làm trước để quen.** Copy khung admin, bảng 3 dòng, không phân trang. Bảng tham khảo `posts.html` |
-| 2 | `admin/categories.html` | Bảng + modal thêm/sửa (một ô tên cho mỗi ngôn ngữ) + hộp xác nhận xóa (copy từ `posts.html`) |
-| 3 | `admin/ui-translations.html` | Bảng nhiều cột ngôn ngữ, ô sửa tại chỗ (làm dạng tĩnh: một ô đang ở trạng thái sửa) |
-| 4 | `public/page.html` | **Chờ B merge khung public** (việc #1 của B). Nội dung dùng class `.prose` |
-| 5 | `admin/page-edit.html` | **Chờ A merge rich text editor.** Tab ngôn ngữ dùng `.nav-tabs` của Bootstrap |
-
-`js/theme.js` (UC10) A đã viết sẵn. C đọc qua để hiểu, sau này phase 4 C làm phần này trong Angular.
+Các component đã có sẵn từ màn mẫu (phân trang, hộp xác nhận, trạng thái rỗng, badge, bảng...) cứ dùng lại. Cần sửa thì sửa, rồi mở lại các trang đang dùng component đó để kiểm tra.
 
 ---
 
 ## 5. Quy trình làm một màn hình
 
-Ví dụ C làm `admin/categories.html`. Màn khác làm tương tự.
+Ví dụ làm `admin/categories.html`. Màn khác làm tương tự.
 
 **Bước 1. Tạo nhánh mới từ `dev` mới nhất**
 
@@ -109,7 +85,7 @@ Tên nhánh: `feature/html-<tên màn>`.
 **Bước 2. Tạo file từ khung mẫu**
 
 - Trang admin: copy `html/_templates/admin.html` thành `html/admin/categories.html`.
-- Trang public: copy `html/_templates/public.html` (B làm). Trang auth: copy `html/_templates/auth.html`.
+- Trang public: copy `html/_templates/public.html`. Trang auth: copy `html/_templates/auth.html` (hai khung này làm ở việc #1, mục 8 của tài liệu).
 
 Sau đó sửa trong file mới:
 
@@ -243,8 +219,8 @@ git push -u origin feature/html-admin-categories
 1. Mở trang repo trên GitHub, bấm nút **Compare & pull request** vừa hiện ra.
 2. Chọn **base: `dev`** (không phải `master`).
 3. Dán checklist ở mục 7, đánh dấu từng mục, kéo thả ảnh chụp vào.
-4. Chọn người review: PR của C thì chọn A; PR có sửa `abstracts/`, `themes/`, `layouts/` thì chọn B.
-5. Người review góp ý thì sửa tiếp trên cùng nhánh, commit, push. PR tự cập nhật, không cần tạo PR mới.
+4. Không có người review: tự xem lại tab **Files changed** một lượt, kiểm tra không lọt file thừa hay đoạn code thử.
+5. Thấy cần sửa thì sửa tiếp trên cùng nhánh, commit, push. PR tự cập nhật, không cần tạo PR mới. Xong thì bấm **Merge pull request** rồi xóa nhánh.
 
 **Trước khi tạo PR, cập nhật code mới nhất từ `dev`:**
 
@@ -264,8 +240,8 @@ Nếu báo **conflict** (xung đột):
   git commit
   ```
 
-- Ở file `html/scss/main.scss`: thường do 2 người cùng thêm dòng `@import`. Giữ **cả hai** dòng, xóa các dấu `<<<<<<<`, `=======`, `>>>>>>>`, lưu file, rồi `git add` và `git commit`.
-- Conflict ở file khác: nhắn nhóm, đừng tự đoán.
+- Ở file `html/scss/main.scss`: thường do 2 nhánh cùng thêm dòng `@import`. Giữ **cả hai** dòng, xóa các dấu `<<<<<<<`, `=======`, `>>>>>>>`, lưu file, rồi `git add` và `git commit`.
+- Conflict ở file khác: xem kỹ cả hai phía (`git log` của từng nhánh nếu cần), đừng chọn bừa một bên.
 
 ---
 
@@ -286,7 +262,7 @@ Nếu báo **conflict** (xung đột):
 
 ## 10. Những điều không làm
 
-- Không sửa file của người khác mà không báo. Cần sửa header, sidebar hay component dùng chung thì nhắn người phụ trách trước.
+- Không sửa header, sidebar hay component dùng chung mà không kiểm tra lại các trang đang dùng.
 - Không sửa gì trong `node_modules/`.
 - Không dùng `style="..."`, không viết mã màu, không dùng `!important`.
 - Không copy code, ảnh hay logo từ Medium.

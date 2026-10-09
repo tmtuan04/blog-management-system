@@ -2,7 +2,7 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.0 (theo requirements 1.7) |
+| Phiên bản | 1.1 (theo requirements 1.8) |
 | Ngày tạo | 08/10/2026 |
 | Thời gian | ~1 tuần (5 ngày làm việc) |
 | Đầu vào | [requirements.md](requirements.md) (mục 1.5 - Phase 2, mục 4, mục 6.3), [sample-data.md](sample-data.md) |
@@ -22,7 +22,7 @@
 
 | Clone | Không clone |
 | --- | --- |
-| Bố cục trang chủ: cột feed ở giữa, sidebar bên phải | Logo, tên "Medium" và mọi hình ảnh thương hiệu. Blog dùng tên riêng của nhóm |
+| Bố cục trang chủ: cột feed ở giữa, sidebar bên phải | Logo, tên "Medium" và mọi hình ảnh thương hiệu. Blog dùng tên riêng |
 | Kiểu chữ: tiêu đề sans-serif đậm, nội dung bài serif cỡ lớn, dòng thoáng | Font độc quyền của Medium (`sohne`, `charter`). Thay bằng font miễn phí, xem mục 3.2 |
 | Thẻ bài viết: dòng tác giả, tiêu đề, tóm tắt, thumbnail bên phải, dòng meta | Chức năng ngoài phạm vi (requirements mục 8): clap/like, bookmark, share, follow, highlight, membership, thông báo |
 | Trang chi tiết: cột đọc hẹp (~680px), thanh tác giả, thanh hành động có viền trên dưới | Infinite scroll. Hệ thống dùng phân trang (UC05) |
@@ -65,14 +65,14 @@ Medium không có trang quản trị. Trang quản trị dùng chung bộ màu, 
 
 - `html/package.json` chỉ cài `bootstrap` (khóa đúng bản 5.3.8) và `sass`. Script build có `--quiet-deps --silence-deprecation=import` để ẩn cảnh báo `@import` của Bootstrap 5.3.
 - Bootstrap JS và Bootstrap Icons nạp từ CDN jsdelivr, để mở HTML là chạy được mà không cần `node_modules`.
-- Chạy `npm install` rồi `npm run watch` trong lúc làm. File `css/main.css` được commit để người review mở HTML là xem được ngay.
+- Chạy `npm install` rồi `npm run watch` trong lúc làm. File `css/main.css` được commit để clone về mở HTML là xem được ngay, không cần build.
 - Khung `<head>` mẫu và danh sách biến, class dùng được xem [html/README.md](../html/README.md).
 
 ### 2.2. Cấu trúc thư mục
 
 ```text
 html/
-├── index.html                  # Mục lục: link tới mọi màn hình, dùng để review
+├── index.html                  # Mục lục: link tới mọi màn hình, dùng để kiểm tra
 ├── package.json
 ├── scss/
 │   ├── main.scss               # Import theo thứ tự: abstracts → bootstrap → themes → base → layouts → components → pages
@@ -106,18 +106,18 @@ html/
 
 HTML tĩnh không có include, nên header, footer, sidebar được copy vào từng file. Quy định:
 
-- B làm xong `_templates/` trước, A và C copy từ đây.
-- Khi đổi header/footer/sidebar, người đổi phải cập nhật ở mọi file trong cùng một PR.
+- Làm xong `_templates/` trước, các trang copy từ đây.
+- Khi đổi header/footer/sidebar thì cập nhật ở mọi file đang dùng trong cùng một PR.
 
 ---
 
-## 3. Design tokens (B phụ trách)
+## 3. Design tokens
 
 Mọi màu, font, khoảng cách dùng qua biến, không viết mã màu trực tiếp trong file component hay trang.
 
 ### 3.1. Màu
 
-Khai báo bằng CSS custom properties để đổi theme không cần build lại. Medium không có dark mode trên web, nên bảng màu tối do nhóm tự đặt, giữ độ tương phản tương đương.
+Khai báo bằng CSS custom properties để đổi theme không cần build lại. Medium không có dark mode trên web, nên bảng màu tối là tự đặt, giữ độ tương phản tương đương.
 
 | Token | Dùng cho | Sáng | Tối |
 | --- | --- | --- | --- |
@@ -170,7 +170,7 @@ Font load từ Google Fonts với `subset` có `vietnamese`. Kiểm tra hiển t
 
 ---
 
-## 4. Layout (B phụ trách)
+## 4. Layout
 
 ### 4.1. Layout public
 
@@ -222,7 +222,7 @@ Trang trắng, chỉ có logo ở trên, giữa là một khối rộng tối đ
 
 Cột "Route phase 4" là đường dẫn dự kiến trong Angular, ghi lại để đặt tên file và link giữa các trang cho thống nhất.
 
-### 5.1. B - Public và tài khoản
+### 5.1. Public và tài khoản
 
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
@@ -237,9 +237,9 @@ Cột "Route phase 4" là đường dẫn dự kiến trong Angular, ghi lại �
 | `public/reset-password.html` | `/reset-password?token=` | UC03 | Mật khẩu mới, xác nhận | Bình thường, lỗi validate, loading, token hết hạn/không hợp lệ |
 | `public/profile.html` | `/profile` | UC12 | Avatar lớn + nút đổi ảnh, họ tên, email (chỉ đọc), role (chỉ đọc); khối đổi mật khẩu riêng | Lỗi validate, lỗi ảnh (sai định dạng, > 2MB), loading, lưu thành công; biến thể tài khoản OAuth chưa có mật khẩu (ẩn ô mật khẩu cũ) |
 
-Các component B làm và dùng chung: header, footer, thẻ bài viết, chip danh mục, phân trang, hộp xác nhận (modal), toast, skeleton, khối trạng thái rỗng, bình luận.
+Các component dùng chung làm cùng các màn này: header, footer, thẻ bài viết, chip danh mục, phân trang, hộp xác nhận (modal), toast, skeleton, khối trạng thái rỗng, bình luận.
 
-### 5.2. A - Quản trị bài viết, người dùng, ngôn ngữ
+### 5.2. Quản trị bài viết, người dùng, ngôn ngữ
 
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
@@ -249,24 +249,24 @@ Các component B làm và dùng chung: header, footer, thẻ bài viết, chip d
 | `admin/users.html` | `/admin/users` | UC14 | Tìm theo tên/email; lọc role, trạng thái. Bảng: avatar, họ tên, email, role (badge), trạng thái, ngày tạo, hành động (đổi role, khóa/mở khóa). Modal tạo tài khoản | Bình thường, rỗng, modal có lỗi validate, hộp xác nhận khóa tài khoản, hàng của chính mình bị vô hiệu nút khóa/đổi role |
 | `admin/languages.html` | `/admin/languages` | UC16 | Bảng: mã, tên, mặc định (radio/badge), hoạt động (switch), hành động. Modal thêm/sửa | Ngôn ngữ mặc định không tắt/xóa được (nút disabled + tooltip), lỗi xóa ngôn ngữ đang có bản dịch, modal lỗi validate (mã trùng, sai ISO 639-1) |
 
-A làm thêm component **rich text editor** (giao diện tĩnh) dùng chung với C:
+Component **rich text editor** (giao diện tĩnh), dùng ở form bài viết và form sửa trang tĩnh:
 
 - Thanh công cụ: H2, H3, đậm, nghiêng, gạch chân, danh sách, trích dẫn, link, ảnh (đúng danh sách ở UC18).
 - Vùng nhập dùng `contenteditable`, font Source Serif 4 20px giống trang chi tiết, không khung viền, có placeholder "Kể câu chuyện của bạn...".
 - Có trạng thái lỗi (viền dưới đỏ + dòng lỗi) và trạng thái đang upload ảnh.
 - Phase 2 chỉ dựng giao diện, chưa cần nút bấm hoạt động. Phase 4 sẽ thay bằng thư viện editor và giữ style này.
 
-### 5.3. C - Trang tĩnh, danh mục, bản dịch giao diện
+### 5.3. Trang tĩnh, danh mục, bản dịch giao diện
 
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
-| `public/page.html` | `/pages/:key` | UC11 | Cột đọc 680px: tiêu đề lớn, nội dung rich text (dùng chung style nội dung bài). Làm mẫu đủ 3 trang `about`, `contact`, `privacy` bằng dữ liệu giả | - (404 dùng trang của B) |
+| `public/page.html` | `/pages/:key` | UC11 | Cột đọc 680px: tiêu đề lớn, nội dung rich text (dùng chung style nội dung bài). Làm mẫu đủ 3 trang `about`, `contact`, `privacy` bằng dữ liệu giả | - (route lỗi dùng `public/404.html`) |
 | `admin/categories.html` | `/admin/categories` | UC15 | Bảng: tên theo ngôn ngữ mặc định, các cột tên theo từng ngôn ngữ (ô trống hiện chữ xám "Chưa có, dùng: Đời sống"), slug, số bài, hành động. Modal thêm/sửa có một ô tên cho mỗi ngôn ngữ | Modal lỗi validate (thiếu tên ngôn ngữ mặc định), lỗi xóa danh mục đang có bài, hộp xác nhận xóa, rỗng |
 | `admin/ui-translations.html` | `/admin/ui-translations` | UC17 | Ô tìm theo key/giá trị; bảng: cột key (font monospace), mỗi ngôn ngữ một cột, ô bấm vào thì sửa tại chỗ; ô thiếu giá trị tô nền nhạt + chữ xám. Modal thêm key | Đang sửa một ô, đang lưu, key trùng, rỗng, hộp xác nhận xóa key |
 | `admin/pages.html` | `/admin/pages` | UC18 | Bảng: tên trang, key, badge các ngôn ngữ đã có nội dung, trạng thái hiển thị, ngày cập nhật, nút "Sửa". Không phân trang | - |
-| `admin/page-edit.html` | `/admin/pages/:key/edit` | UC18 | Thông tin key + URL (chỉ đọc), switch "Hiển thị", tab ngôn ngữ (mỗi tab: tiêu đề + editor của A), nút "Lưu" và "Xem trên trang public" (mở tab mới) | Lỗi validate tab ngôn ngữ mặc định, lỗi "điền đủ cả hai hoặc để trống cả hai" ở tab khác, tab có lỗi được đánh dấu chấm đỏ, đang lưu, toast thành công |
+| `admin/page-edit.html` | `/admin/pages/:key/edit` | UC18 | Thông tin key + URL (chỉ đọc), switch "Hiển thị", tab ngôn ngữ (mỗi tab: tiêu đề + rich text editor), nút "Lưu" và "Xem trên trang public" (mở tab mới) | Lỗi validate tab ngôn ngữ mặc định, lỗi "điền đủ cả hai hoặc để trống cả hai" ở tab khác, tab có lỗi được đánh dấu chấm đỏ, đang lưu, toast thành công |
 
-C viết thêm `js/theme.js` (UC10):
+`js/theme.js` (UC10, **đã làm**):
 
 - Lần đầu: đọc `prefers-color-scheme`. Sau đó đọc/ghi `localStorage` key `theme`.
 - Gán `data-bs-theme` lên `<html>` **trong `<head>`** (script chặn) để không bị nháy màu khi tải trang.
@@ -309,7 +309,7 @@ C viết thêm `js/theme.js` (UC10):
 - Chữ nằm trong thuộc tính thì dùng `data-i18n-<tên thuộc tính>`: `data-i18n-placeholder="admin.posts.search_placeholder"`, `data-i18n-aria-label="common.actions"`.
 - Dữ liệu lấy từ CSDL (tiêu đề bài, tên danh mục, tên ngôn ngữ, tên người dùng) không gắn `data-i18n`.
 - Ảnh có `alt`; ô nhập có `<label>` (có thể ẩn bằng `visually-hidden`); nút chỉ có icon có `aria-label`.
-- Link giữa các trang dùng đường dẫn tương đối tới file HTML thật, để bấm qua lại được khi review.
+- Link giữa các trang dùng đường dẫn tương đối tới file HTML thật, để bấm qua lại được khi kiểm tra.
 
 ### 7.2. Trạng thái demo
 
@@ -332,31 +332,38 @@ Mỗi trang có nhiều trạng thái (mục 5) nhưng chỉ là một file. Dù
 - Màu luôn dùng `var(--bl-...)`, không viết mã hex trong component. Đây là điều kiện để dark mode chạy đúng.
 - Không dùng `style="..."` inline, không dùng `!important` (trừ khi ghi đè Bootstrap bắt buộc, phải có comment giải thích).
 - Viết mobile-first: style mặc định cho màn nhỏ, mở rộng bằng `@include media-breakpoint-up(md)`.
-- Mỗi component một file `_ten-component.scss` trong `components/`; người tạo component nào thì sở hữu file đó.
+- Mỗi component một file `_ten-component.scss` trong `components/`.
 
 ### 7.4. Git
 
-- Mỗi người làm trên nhánh `feature/html-<phần>`, ví dụ `feature/html-layout`, `feature/html-admin-posts`.
+- Mỗi phần làm trên một nhánh `feature/html-<phần>` tạo từ `dev`, ví dụ `feature/html-layout`, `feature/html-admin-posts`.
 - Commit theo Conventional Commits: `feat(html): add post detail page`, `style(html): adjust dark mode colors`.
-- PR đính kèm ảnh chụp màn hình ở 360px và desktop, cả sáng lẫn tối.
-- Mỗi PR có ít nhất 1 người khác review. A review PR của C; B review mọi PR có đụng tới `abstracts/`, `themes/`, `layouts/`.
+- Merge vào `dev` qua PR. Không có người review, nên trước khi merge tự đi qua checklist ở [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 7 và đính kèm ảnh chụp ở 360px và desktop, cả sáng lẫn tối.
+- PR có sửa `abstracts/`, `themes/`, `layouts/` hay component dùng chung thì mở lại các trang đang dùng để kiểm tra.
 
 ---
 
-## 8. Kế hoạch theo ngày
+## 8. Thứ tự làm
 
-**Trước ngày 1 (đã xong):** A làm trước phần nền và một màn mẫu, merge vào `dev`: cài đặt `html/`, design tokens, theme sáng/tối, typography, `theme.js`, `demo-state.js`, khung `_templates/admin.html`, màn `admin/posts.html` cùng các component nó dùng (phân trang, hộp xác nhận, trạng thái rỗng, badge, bảng...). Từ đây B sở hữu `abstracts/`, `themes/`, `layouts/` như đã phân công.
+**Đã xong:** cài đặt `html/`, design tokens, theme sáng/tối, typography, `theme.js`, `demo-state.js`, khung `_templates/admin.html`, màn mẫu `admin/posts.html` cùng các component nó dùng (phân trang, hộp xác nhận, trạng thái rỗng, badge, bảng...).
 
-| Ngày | A | B | C |
-| --- | --- | --- | --- |
-| 1 | Rich text editor (component), `post-create.html` | `_templates/public.html` (header, footer), `_templates/auth.html`, `layouts/_public.scss`, `layouts/_auth.scss`. **Merge trong ngày** vì C cần | `admin/pages.html`, `admin/categories.html` (copy từ khung admin có sẵn) |
-| 2 | `post-edit.html` (tab ngôn ngữ). **Merge editor trong ngày** vì C cần | Thẻ bài viết, toast; `public/index.html` (trang chủ) | `public/page.html` (sau khi khung public của B được merge), `admin/ui-translations.html` |
-| 3 | `users.html` | `post-detail.html` (gồm bình luận), `category.html` | `admin/page-edit.html` (dùng editor của A) |
-| 4 | `languages.html`, trang mục lục `html/index.html` | `search.html`, `404.html`, 4 trang auth, `profile.html` | Hoàn thiện, tự kiểm tra theo mục 9 |
-| 5 | Kiểm tra chéo, sửa lỗi | Kiểm tra chéo, sửa lỗi layout chung | Kiểm tra chéo, sửa lỗi |
+Các việc còn lại làm theo thứ tự dưới đây. Việc sau dùng lại kết quả của việc trước (khung trang, thẻ bài viết, editor), nên không đảo thứ tự. Mỗi dòng là một nhánh và một PR.
 
-- Hướng dẫn từng bước cho người mới: [phase-2-huong-dan.md](phase-2-huong-dan.md).
-- Kiểm tra chéo ngày 5: A kiểm tra trang của B, B kiểm tra trang của C, C kiểm tra trang của A.
+| # | Việc | Ghi chú |
+| --- | --- | --- |
+| 1 | `_templates/public.html` (header, footer), `_templates/auth.html`, `layouts/_public.scss`, `layouts/_auth.scss` | Mọi trang public và auth copy từ đây. Header làm 4 biến thể theo vai trò (`data-demo-auths="guest user blog_owner super_admin"`) |
+| 2 | Thẻ bài viết (`components/_post-card.scss`), toast, `public/index.html` | Thẻ bài viết dùng lại ở trang danh mục, tìm kiếm, bài liên quan |
+| 3 | `public/post-detail.html` (gồm bình luận), `public/category.html` | Nội dung bài dùng class `.prose` |
+| 4 | `public/search.html`, `public/404.html`, `public/page.html` | |
+| 5 | `public/register.html`, `login.html`, `forgot-password.html`, `reset-password.html`, `profile.html` | Form: xem [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 6.1 |
+| 6 | Rich text editor (component), `admin/post-create.html` | |
+| 7 | `admin/post-edit.html` | Tab ngôn ngữ dùng `.nav-tabs` của Bootstrap |
+| 8 | `admin/users.html`, `admin/languages.html` | |
+| 9 | `admin/categories.html`, `admin/pages.html` | Hộp xác nhận xóa copy từ `posts.html` |
+| 10 | `admin/ui-translations.html`, `admin/page-edit.html` | `page-edit` dùng lại rich text editor |
+| 11 | Trang mục lục `html/index.html`; tự kiểm tra toàn bộ theo mục 9, sửa lỗi | |
+
+Hướng dẫn từng bước (cài máy, quy trình làm một màn, trạng thái demo, Git): [phase-2-huong-dan.md](phase-2-huong-dan.md).
 
 ---
 
@@ -391,7 +398,7 @@ Phase 2 kết thúc khi đạt hết các mục sau (mở rộng từ requiremen
 - [ ] `npm run build` không lỗi, không cảnh báo deprecation của Sass.
 - [ ] Không có mã màu viết trực tiếp ngoài `abstracts/` và `themes/`, không có style inline.
 - [ ] Chữ tĩnh đã gắn `data-i18n`.
-- [ ] Mọi PR đã được review và merge vào `dev`.
+- [ ] Mọi PR đã tự kiểm tra theo checklist và merge vào `dev`.
 
 ---
 

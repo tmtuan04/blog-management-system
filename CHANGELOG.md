@@ -12,7 +12,7 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
   - `js/theme.js`: đổi sáng/tối, lưu `localStorage`, lần đầu theo `prefers-color-scheme`, không nháy màu khi tải trang.
   - `js/demo-state.js`: thanh chuyển trạng thái demo (bình thường, lỗi validate, loading, rỗng, khách/đã đăng nhập), lưu trạng thái trên URL.
   - `README.md`: cách chạy, khung `<head>` mẫu, danh sách biến và class dùng được.
-- Màn mẫu cho cả nhóm tham khảo:
+- Màn mẫu để các màn khác làm theo:
   - `_templates/admin.html`: khung trang quản trị (sidebar `offcanvas-lg`, topbar có bộ chọn ngôn ngữ, nút theme, menu tài khoản; mục chỉ Super Admin thấy).
   - `admin/posts.html`: danh sách bài viết (UC13) với tab trạng thái, bộ lọc, bảng có badge bản dịch (thành thẻ dưới `md`), menu ⋯, phân trang, hộp xác nhận xóa; trạng thái bình thường, loading (skeleton), rỗng, đang xóa; vai trò Blog Owner / Super Admin.
   - `layouts/_admin.scss` và component `avatar`, `brand`, `dropdown`, `empty-state`, `icon-btn`, `page-tabs`, `pagination`, `post-table`, `search-input`, `status-badge`, `table`.
@@ -28,6 +28,11 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 - Phase 2 doc: mục 8 lập lại kế hoạch theo ngày vì phần nền và màn mẫu đã làm trước; B làm khung public/auth ngày 1, C bắt đầu từ các trang admin.
 - `docs/phase-2-huong-dan.md` (mới): hướng dẫn từng bước cho B và C (cài máy, chạy dự án, thứ tự việc của từng người, quy trình làm một màn, trạng thái demo, checklist PR, Git và xử lý conflict, lỗi hay gặp).
 - Phase 2 doc: mục 7.2 thay "Khách / Đã đăng nhập" bằng 4 vai trò; mục 5.2 `admin/posts.html` gộp ngôn ngữ gốc và danh mục vào dòng meta dưới tiêu đề.
+- Dự án chuyển sang 1 người làm toàn bộ, bỏ phân công A/B/C và review chéo:
+  - Requirements 1.7 → 1.8: mục 1.4 "Phân công" thành "Nhân sự" (làm phần nền trước, Must trước Should, tự kiểm tra theo checklist trước khi merge); bỏ bảng người phụ trách ở phase 1, 2, 5 và cột "Phụ trách" ở bảng use case; phase 5 thay "mỗi thành viên làm lại" bằng làm lại trên một máy ảo mới để kiểm tra tài liệu deploy.
+  - Phase 2 doc 1.0 → 1.1: bỏ tên người ở tiêu đề mục 3, 4, 5; mục 7.4 bỏ quy định người review; mục 8 "Kế hoạch theo ngày" thành "Thứ tự làm" (11 việc theo thứ tự phụ thuộc).
+  - `docs/phase-2-huong-dan.md`: bỏ "dành cho B và C"; mục 4 trỏ sang thứ tự làm ở phase 2 doc; bỏ bước chọn người review, thay bằng tự xem lại và tự merge PR.
+  - `html/README.md`, comment trong `scss/main.scss`: bỏ nhắc tới B và nhóm.
 
 ## [1.7] - 2026-10-08
 
