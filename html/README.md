@@ -16,7 +16,7 @@ Mở file HTML bằng Live Server của VS Code. Trước khi commit chạy `npm
 
 - Trang quản trị: copy [_templates/admin.html](_templates/admin.html) vào `admin/`, đổi `<title>`, chuyển `.is-active` + `aria-current="page"` sang mục sidebar của trang, viết nội dung trong `<main class="admin-content">`.
 - Xem [admin/posts.html](admin/posts.html) làm mẫu: chia component bằng comment, `data-i18n`, trạng thái demo (bình thường, loading, rỗng, đang xóa), vai trò Blog Owner / Super Admin, bảng chuyển thành thẻ trên mobile.
-- Khung public và auth chưa có (việc #1 ở mục 8 của tài liệu). Trong lúc chưa có, phần `<head>` dùng đoạn dưới đây.
+- Khung public và auth chưa có (việc A1 ở mục 8 của tài liệu). Trong lúc chưa có, phần `<head>` dùng đoạn dưới đây.
 - Tên blog "Inkwell" là tên tạm, gắn `data-i18n="common.site_name"`. Chốt tên thì thay ở mọi file.
 
 ## Khung `<head>` và cuối `<body>`
@@ -76,4 +76,4 @@ Mở file HTML bằng Live Server của VS Code. Trước khi commit chạy `npm
 | Nút đổi theme | Xem comment đầu [js/theme.js](js/theme.js) |
 | Trạng thái demo | Xem comment đầu [js/demo-state.js](js/demo-state.js). Mở trang với `?demo=empty&auth=super_admin` để vào thẳng một trạng thái |
 
-Sửa component dùng chung (phân trang, trạng thái rỗng, hộp xác nhận...) thì kiểm tra lại các trang đang dùng nó.
+Sửa component dùng chung (phân trang, trạng thái rỗng, hộp xác nhận...) thì báo người kia và kiểm tra lại các trang đang dùng nó.

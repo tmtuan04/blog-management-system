@@ -33,6 +33,11 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
   - Phase 2 doc 1.0 → 1.1: bỏ tên người ở tiêu đề mục 3, 4, 5; mục 7.4 bỏ quy định người review; mục 8 "Kế hoạch theo ngày" thành "Thứ tự làm" (11 việc theo thứ tự phụ thuộc).
   - `docs/phase-2-huong-dan.md`: bỏ "dành cho B và C"; mục 4 trỏ sang thứ tự làm ở phase 2 doc; bỏ bước chọn người review, thay bằng tự xem lại và tự merge PR.
   - `html/README.md`, comment trong `scss/main.scss`: bỏ nhắc tới B và nhóm.
+- Dự án chuyển sang 2 người: A làm chủ đạo (~60%), B (~40%); có lại review chéo:
+  - Requirements 1.8 → 1.9: mục 1.4 "Nhân sự" thành "Phân công" (bảng việc của A và B; A dựng khung backend/Angular trước, B bắt đầu sau khi khung được merge; mỗi PR do người còn lại review, PR sửa phần nền thì A duyệt); thêm lại bảng người phụ trách ở phase 1, 2 và cột "Phụ trách" ở bảng use case (B: UC08, UC11, UC12, UC14-UC18; còn lại là A); phase 3, 4 ghi rõ ai dựng khung; phase 5 A deploy, B làm lại trên máy ảo mới theo tài liệu.
+  - Phase 2 doc 1.1 → 1.2: mục 3, 4 ghi A phụ trách; mục 7.4 thêm review chéo; mục 8 chia thành bảng việc của A (A1-A6) và B (B1-B5), có cột "Chờ" ghi việc phụ thuộc; mục 9 đổi lại "Mọi PR đã được người còn lại review".
+  - `docs/phase-2-huong-dan.md`: mục 4 trỏ sang bảng việc của từng người và cách xử lý việc phải chờ; mục 8 thêm bước chọn người review và Approve trước khi merge; conflict và sửa component dùng chung thì báo người kia.
+  - `html/README.md`: đổi "việc #1" thành "việc A1", sửa component dùng chung thì báo người kia.
 
 ## [1.7] - 2026-10-08
 

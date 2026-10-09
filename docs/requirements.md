@@ -2,10 +2,10 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.8 (dự án do 1 người thực hiện) |
+| Phiên bản | 1.9 (dự án do 2 người thực hiện) |
 | Ngày tạo | 01/10/2026 |
 | Thời gian thực hiện | Khoảng 8 tuần, chia thành 5 phase (xem mục 1.5) |
-| Nhân sự | 1 người làm toàn bộ (xem mục 1.4) |
+| Nhân sự | 2 người, A làm chủ đạo (~60%), B (~40%) (xem mục 1.4) |
 
 ---
 
@@ -47,13 +47,18 @@ Xây dựng hệ thống Blog đa ngôn ngữ, gồm trang đọc blog cho ngư�
 | Access token | JWT ngắn hạn dùng để gọi API |
 | Refresh token | Token dài hạn dùng để xin access token mới, lưu trong Redis |
 
-### 1.4. Nhân sự
+### 1.4. Phân công
 
-Dự án do 1 người làm toàn bộ: cơ sở dữ liệu, giao diện HTML, backend, frontend và deploy.
+Nhóm gồm 2 thành viên. A làm chủ đạo, khoảng 60% khối lượng: phần nền tảng và các chức năng nhiều ràng buộc (xác thực, bài viết và bản dịch, tìm kiếm). B khoảng 40%: bình luận, hồ sơ cá nhân và các chức năng quản trị thêm/sửa/xóa. Mỗi người làm cả backend lẫn frontend cho phần của mình (cột "Phụ trách" ở mục 3).
 
-- Làm phần nền trước rồi mới tới các chức năng: ở phase 3 dựng xong khung backend rồi mới code API cho từng use case; ở phase 4 dựng xong khung Angular rồi mới làm từng màn hình.
+| Thành viên | Khối lượng | Phụ trách |
+| --- | --- | --- |
+| A - Nền tảng + Auth + Bài viết | ~60% | Thiết kế ERD, migrations; khung backend NestJS (cấu trúc module, interceptor format response, exception filter xử lý lỗi, guard xác thực và phân quyền, upload file, lọc HTML, Redis, Swagger); khung Angular (module, routing, interceptors, guards, đa ngôn ngữ, layout, component dùng chung: phân trang, hộp xác nhận, thông báo, rich text editor); xác thực (UC01-UC04); OAuth (UC20); trang chủ, chi tiết bài viết, bài theo danh mục (UC05-UC07); đổi ngôn ngữ (UC09); đổi giao diện sáng/tối (UC10); quản lý bài viết và bản dịch (UC13); tìm kiếm toàn văn (UC19); deploy (phase 5) |
+| B - Quản trị + Bình luận | ~40% | Tài liệu mô tả bảng, seeders; bình luận (UC08); xem trang tĩnh (UC11); hồ sơ cá nhân (UC12); quản lý người dùng (UC14), danh mục (UC15), ngôn ngữ (UC16), bản dịch giao diện (UC17), trang tĩnh (UC18); làm lại deploy trên máy ảo mới để kiểm tra tài liệu |
+
+- Ở phase 3 và phase 4, A dựng khung trước. B bắt đầu code sau khi khung được merge, làm theo mẫu module có sẵn và dùng lại các component dùng chung (rich text editor, phân trang, hộp xác nhận).
 - Trong mỗi phase, làm các use case Must trước, Should sau (mục 3).
-- Mỗi việc vẫn làm trên nhánh riêng và merge qua PR. Không có người review, nên trước khi merge tự đi qua checklist của phase đó.
+- Mỗi việc làm trên nhánh riêng và merge qua PR. Mỗi PR phải được người còn lại review trước khi merge. PR có sửa phần nền (khung backend, khung Angular, SCSS dùng chung) thì A phải duyệt.
 
 ### 1.5. Kế hoạch theo phase
 
@@ -76,11 +81,16 @@ Công việc:
 - Viết migrations Sequelize, gồm cả FULLTEXT index (parser `ngram`) cho bảng `post_translations`.
 - Viết seeders theo mục 6.6.
 
+| Người | Việc |
+| --- | --- |
+| A | Thiết kế ERD, viết migrations (gồm FULLTEXT index) |
+| B | Review ERD; viết tài liệu mô tả bảng; viết seeders theo mục 6.6 |
+
 Đầu ra: file ERD (link dbdiagram và ảnh export) và tài liệu mô tả bảng trong `docs/`, migrations và seeders trong source backend.
 
 Điều kiện hoàn thành:
 
-- ERD đã chốt, tài liệu mô tả bảng khớp với ERD.
+- Cả hai thống nhất ERD, tài liệu mô tả bảng khớp với ERD.
 - Trên một database trống, chạy migrate rồi seed không lỗi, và rollback (`db:migrate:undo:all`) cũng không lỗi.
 
 #### Phase 2 - Xây dựng giao diện HTML
@@ -94,6 +104,11 @@ Màn hình cần làm:
 - Tài khoản: đăng ký, đăng nhập, quên mật khẩu, đặt lại mật khẩu, hồ sơ cá nhân.
 - Trang quản trị: danh sách bài viết, form thêm/sửa bài viết (có tab cho từng ngôn ngữ), quản lý người dùng, quản lý danh mục, quản lý ngôn ngữ, quản lý bản dịch giao diện, danh sách trang tĩnh, sửa trang tĩnh.
 
+| Người | Màn hình |
+| --- | --- |
+| A | Bộ SCSS dùng chung; layout trang public, auth và trang quản trị; trang chủ, chi tiết bài viết (kèm bình luận), bài theo danh mục; danh sách bài viết, form thêm/sửa bài viết, rich text editor; trang mục lục và kiểm tra tổng |
+| B | Kết quả tìm kiếm, trang tĩnh, trang 404; đăng ký, đăng nhập, quên mật khẩu, đặt lại mật khẩu, hồ sơ cá nhân; quản lý người dùng, danh mục, ngôn ngữ, bản dịch giao diện, danh sách trang tĩnh, sửa trang tĩnh |
+
 Đầu ra: thư mục `html/` chứa các file HTML và SCSS.
 
 Điều kiện hoàn thành:
@@ -106,8 +121,8 @@ Màn hình cần làm:
 
 Công việc:
 
-- Dựng khung backend NestJS trước (cấu trúc module, interceptor format response, exception filter xử lý lỗi, guard xác thực và phân quyền, upload, lọc HTML, Redis, Swagger), merge xong mới code API cho từng use case.
-- Code API cho từng use case (mục 3), kèm validate, test, tài liệu Swagger và request trong Postman collection.
+- A dựng khung backend NestJS trước (cấu trúc module, interceptor format response, exception filter xử lý lỗi, guard xác thực và phân quyền, upload, lọc HTML, Redis, Swagger). B bắt đầu code API sau khi khung backend được merge.
+- Mỗi người code API cho các use case mình phụ trách (mục 3), kèm validate, test, tài liệu Swagger và request trong Postman collection.
 
 Đầu ra: API dưới `/api/v1`, Swagger tại `/api-docs`, Postman collection trong `docs/`.
 
@@ -121,8 +136,8 @@ Công việc:
 
 Công việc:
 
-- Dựng khung Angular trước (module, routing, interceptors, guards, đa ngôn ngữ, layout, component dùng chung: phân trang, hộp xác nhận, thông báo, rich text editor), merge xong mới làm từng màn hình.
-- Chuyển các trang HTML của phase 2 thành component Angular, nối với API thật.
+- A dựng khung Angular trước (module, routing, interceptors, guards, đa ngôn ngữ, layout, component dùng chung: phân trang, hộp xác nhận, thông báo, rich text editor). B bắt đầu sau khi khung Angular được merge.
+- Mỗi người chuyển các trang HTML của phase 2 thuộc use case mình phụ trách thành component Angular, nối với API thật.
 
 Đầu ra: ứng dụng Angular chạy với backend ở local.
 
@@ -156,7 +171,7 @@ Công việc:
    - Đặt `client_max_body_size` đủ cho upload ảnh 2MB; bật gzip.
 8. **Kiểm tra:** đi qua checklist ở mục "Điều kiện hoàn thành".
 
-Vừa làm vừa ghi lại lệnh vào tài liệu hướng dẫn deploy. Sau khi deploy xong, **làm lại toàn bộ các bước trên một máy ảo mới** chỉ theo tài liệu, để chắc tài liệu đủ và đúng.
+A deploy, vừa làm vừa ghi lại lệnh vào tài liệu hướng dẫn deploy. Sau khi A deploy xong, **B làm lại toàn bộ các bước trên một máy ảo mới** chỉ theo tài liệu, để chắc tài liệu đủ và đúng. Chỗ nào B làm theo mà không chạy được thì A sửa tài liệu.
 
 Đầu ra:
 
@@ -194,28 +209,28 @@ Trong CSDL, role lưu ở bảng `roles` (danh sách cố định `user`, `blog_
 
 Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có), **Could** (làm nếu còn thời gian).
 
-| Mã | Use case | Actor | Ưu tiên | Ghi chú |
-| --- | --- | --- | --- | --- |
-| UC01 | Đăng ký (Register) | Guest | Must | |
-| UC02 | Đăng nhập (Login) | Guest | Must | |
-| UC03 | Khôi phục mật khẩu (Recover password) | Guest | Must | |
-| UC04 | Đăng xuất (Logout) | Authenticated User | Must | Bổ sung, đề bài không ghi |
-| UC05 | Xem danh sách bài viết (trang chủ) | Guest, Authenticated User | Must | Bổ sung, đề bài không ghi |
-| UC06 | Xem chi tiết bài viết (View post detail) | Guest, Authenticated User | Must | |
-| UC07 | Xem bài viết theo danh mục (View posts by category) | Guest, Authenticated User | Must | |
-| UC08 | Bình luận (Comment) | Authenticated User | Must | |
-| UC09 | Đổi ngôn ngữ (Change blog language) | Guest, Authenticated User | Must | Dùng API ngôn ngữ (UC16) và API bản dịch giao diện (UC17) |
-| UC10 | Đổi giao diện sáng/tối (Change theme) | Guest, Authenticated User | Should | Mở rộng |
-| UC11 | Xem trang tĩnh (Giới thiệu, Liên hệ, Chính sách bảo mật) | Guest, Authenticated User | Must | |
-| UC12 | Quản lý hồ sơ cá nhân | Authenticated User | Should | Bổ sung, đề bài không ghi |
-| UC13 | Quản lý bài viết (Manage posts) | Blog Owner | Must | Thêm, sửa, xóa, xem danh sách, thêm/sửa/xóa bản dịch theo ngôn ngữ |
-| UC14 | Quản lý người dùng (Manage users) | Super Admin | Must | |
-| UC15 | Quản lý danh mục (Manage categories) | Super Admin | Must | |
-| UC16 | Quản lý ngôn ngữ (Manage languages) | Super Admin | Must | |
-| UC17 | Quản lý bản dịch giao diện (Manage UI translations) | Super Admin | Must | Cần để đổi được menu và chữ tĩnh theo ngôn ngữ |
-| UC18 | Quản lý trang tĩnh (Manage pages) | Super Admin | Must | Chỉ sửa nội dung của các trang có sẵn, không đổi bố cục giao diện |
-| UC19 | Tìm kiếm toàn văn (Full text search) | Guest, Authenticated User | Should | Mở rộng |
-| UC20 | Đăng nhập bằng OAuth (Google, Github, Facebook) | Guest | Should | Mở rộng, làm Google và Github trước |
+| Mã | Use case | Actor | Ưu tiên | Phụ trách | Ghi chú |
+| --- | --- | --- | --- | --- | --- |
+| UC01 | Đăng ký (Register) | Guest | Must | A | |
+| UC02 | Đăng nhập (Login) | Guest | Must | A | |
+| UC03 | Khôi phục mật khẩu (Recover password) | Guest | Must | A | |
+| UC04 | Đăng xuất (Logout) | Authenticated User | Must | A | Bổ sung, đề bài không ghi |
+| UC05 | Xem danh sách bài viết (trang chủ) | Guest, Authenticated User | Must | A | Bổ sung, đề bài không ghi |
+| UC06 | Xem chi tiết bài viết (View post detail) | Guest, Authenticated User | Must | A | |
+| UC07 | Xem bài viết theo danh mục (View posts by category) | Guest, Authenticated User | Must | A | |
+| UC08 | Bình luận (Comment) | Authenticated User | Must | B | |
+| UC09 | Đổi ngôn ngữ (Change blog language) | Guest, Authenticated User | Must | A | Dùng API ngôn ngữ (UC16) và API bản dịch giao diện (UC17) |
+| UC10 | Đổi giao diện sáng/tối (Change theme) | Guest, Authenticated User | Should | A | Mở rộng |
+| UC11 | Xem trang tĩnh (Giới thiệu, Liên hệ, Chính sách bảo mật) | Guest, Authenticated User | Must | B | |
+| UC12 | Quản lý hồ sơ cá nhân | Authenticated User | Should | B | Bổ sung, đề bài không ghi |
+| UC13 | Quản lý bài viết (Manage posts) | Blog Owner | Must | A | Thêm, sửa, xóa, xem danh sách, thêm/sửa/xóa bản dịch theo ngôn ngữ |
+| UC14 | Quản lý người dùng (Manage users) | Super Admin | Must | B | |
+| UC15 | Quản lý danh mục (Manage categories) | Super Admin | Must | B | |
+| UC16 | Quản lý ngôn ngữ (Manage languages) | Super Admin | Must | B | |
+| UC17 | Quản lý bản dịch giao diện (Manage UI translations) | Super Admin | Must | B | Cần để đổi được menu và chữ tĩnh theo ngôn ngữ |
+| UC18 | Quản lý trang tĩnh (Manage pages) | Super Admin | Must | B | Chỉ sửa nội dung của các trang có sẵn, không đổi bố cục giao diện |
+| UC19 | Tìm kiếm toàn văn (Full text search) | Guest, Authenticated User | Should | A | Mở rộng |
+| UC20 | Đăng nhập bằng OAuth (Google, Github, Facebook) | Guest | Should | A | Mở rộng, làm Google và Github trước |
 
 ---
 

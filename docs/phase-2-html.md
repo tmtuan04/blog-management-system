@@ -2,7 +2,7 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.1 (theo requirements 1.8) |
+| Phiên bản | 1.2 (theo requirements 1.9) |
 | Ngày tạo | 08/10/2026 |
 | Thời gian | ~1 tuần (5 ngày làm việc) |
 | Đầu vào | [requirements.md](requirements.md) (mục 1.5 - Phase 2, mục 4, mục 6.3), [sample-data.md](sample-data.md) |
@@ -106,12 +106,12 @@ html/
 
 HTML tĩnh không có include, nên header, footer, sidebar được copy vào từng file. Quy định:
 
-- Làm xong `_templates/` trước, các trang copy từ đây.
+- A làm xong `_templates/` trước, các trang copy từ đây.
 - Khi đổi header/footer/sidebar thì cập nhật ở mọi file đang dùng trong cùng một PR.
 
 ---
 
-## 3. Design tokens
+## 3. Design tokens (A phụ trách)
 
 Mọi màu, font, khoảng cách dùng qua biến, không viết mã màu trực tiếp trong file component hay trang.
 
@@ -170,7 +170,7 @@ Font load từ Google Fonts với `subset` có `vietnamese`. Kiểm tra hiển t
 
 ---
 
-## 4. Layout
+## 4. Layout (A phụ trách)
 
 ### 4.1. Layout public
 
@@ -220,7 +220,7 @@ Trang trắng, chỉ có logo ở trên, giữa là một khối rộng tối đ
 
 ## 5. Danh sách màn hình
 
-Cột "Route phase 4" là đường dẫn dự kiến trong Angular, ghi lại để đặt tên file và link giữa các trang cho thống nhất.
+Cột "Route phase 4" là đường dẫn dự kiến trong Angular, ghi lại để đặt tên file và link giữa các trang cho thống nhất. Ai làm màn nào xem mục 8.
 
 ### 5.1. Public và tài khoản
 
@@ -338,30 +338,40 @@ Mỗi trang có nhiều trạng thái (mục 5) nhưng chỉ là một file. Dù
 
 - Mỗi phần làm trên một nhánh `feature/html-<phần>` tạo từ `dev`, ví dụ `feature/html-layout`, `feature/html-admin-posts`.
 - Commit theo Conventional Commits: `feat(html): add post detail page`, `style(html): adjust dark mode colors`.
-- Merge vào `dev` qua PR. Không có người review, nên trước khi merge tự đi qua checklist ở [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 7 và đính kèm ảnh chụp ở 360px và desktop, cả sáng lẫn tối.
-- PR có sửa `abstracts/`, `themes/`, `layouts/` hay component dùng chung thì mở lại các trang đang dùng để kiểm tra.
+- Merge vào `dev` qua PR. Trước khi tạo PR tự đi qua checklist ở [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 7 và đính kèm ảnh chụp ở 360px và desktop, cả sáng lẫn tối.
+- Mỗi PR có người còn lại review rồi mới merge: A review PR của B, B review PR của A.
+- PR có sửa `abstracts/`, `themes/`, `layouts/` hay component dùng chung thì mở lại các trang đang dùng để kiểm tra, và A phải duyệt.
 
 ---
 
 ## 8. Thứ tự làm
 
-**Đã xong:** cài đặt `html/`, design tokens, theme sáng/tối, typography, `theme.js`, `demo-state.js`, khung `_templates/admin.html`, màn mẫu `admin/posts.html` cùng các component nó dùng (phân trang, hộp xác nhận, trạng thái rỗng, badge, bảng...).
+**Đã xong (A):** cài đặt `html/`, design tokens, theme sáng/tối, typography, `theme.js`, `demo-state.js`, khung `_templates/admin.html`, màn mẫu `admin/posts.html` cùng các component nó dùng (phân trang, hộp xác nhận, trạng thái rỗng, badge, bảng...).
 
-Các việc còn lại làm theo thứ tự dưới đây. Việc sau dùng lại kết quả của việc trước (khung trang, thẻ bài viết, editor), nên không đảo thứ tự. Mỗi dòng là một nhánh và một PR.
+Các việc còn lại chia cho 2 người, mỗi người làm phần của mình theo thứ tự từ trên xuống. Mỗi dòng là một nhánh và một PR. Cột "Chờ" ghi việc của người kia phải merge xong thì mới bắt đầu được.
 
-| # | Việc | Ghi chú |
-| --- | --- | --- |
-| 1 | `_templates/public.html` (header, footer), `_templates/auth.html`, `layouts/_public.scss`, `layouts/_auth.scss` | Mọi trang public và auth copy từ đây. Header làm 4 biến thể theo vai trò (`data-demo-auths="guest user blog_owner super_admin"`) |
-| 2 | Thẻ bài viết (`components/_post-card.scss`), toast, `public/index.html` | Thẻ bài viết dùng lại ở trang danh mục, tìm kiếm, bài liên quan |
-| 3 | `public/post-detail.html` (gồm bình luận), `public/category.html` | Nội dung bài dùng class `.prose` |
-| 4 | `public/search.html`, `public/404.html`, `public/page.html` | |
-| 5 | `public/register.html`, `login.html`, `forgot-password.html`, `reset-password.html`, `profile.html` | Form: xem [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 6.1 |
-| 6 | Rich text editor (component), `admin/post-create.html` | |
-| 7 | `admin/post-edit.html` | Tab ngôn ngữ dùng `.nav-tabs` của Bootstrap |
-| 8 | `admin/users.html`, `admin/languages.html` | |
-| 9 | `admin/categories.html`, `admin/pages.html` | Hộp xác nhận xóa copy từ `posts.html` |
-| 10 | `admin/ui-translations.html`, `admin/page-edit.html` | `page-edit` dùng lại rich text editor |
-| 11 | Trang mục lục `html/index.html`; tự kiểm tra toàn bộ theo mục 9, sửa lỗi | |
+### A
+
+| # | Việc | Chờ | Ghi chú |
+| --- | --- | --- | --- |
+| A1 | `_templates/public.html` (header, footer), `_templates/auth.html`, `layouts/_public.scss`, `layouts/_auth.scss` | | **Làm đầu tiên, merge sớm** vì B cần. Header làm 4 biến thể theo vai trò (`data-demo-auths="guest user blog_owner super_admin"`) |
+| A2 | Thẻ bài viết (`components/_post-card.scss`), toast, `public/index.html` | | Thẻ bài viết dùng lại ở trang danh mục, tìm kiếm, bài liên quan. **Merge sớm** vì B cần cho trang tìm kiếm |
+| A3 | Rich text editor (component), `admin/post-create.html` | | **Merge sớm** vì B cần cho `page-edit` |
+| A4 | `public/post-detail.html` (gồm bình luận), `public/category.html` | | Nội dung bài dùng class `.prose` |
+| A5 | `admin/post-edit.html` | | Tab ngôn ngữ dùng `.nav-tabs` của Bootstrap |
+| A6 | Trang mục lục `html/index.html`; kiểm tra toàn bộ theo mục 9, sửa lỗi | B5 | Làm cùng B |
+
+### B
+
+| # | Việc | Chờ | Ghi chú |
+| --- | --- | --- | --- |
+| B1 | `admin/categories.html`, `admin/pages.html` | | Copy từ khung admin có sẵn. Hộp xác nhận xóa copy từ `posts.html` |
+| B2 | `admin/users.html`, `admin/languages.html` | | |
+| B3 | `public/register.html`, `login.html`, `forgot-password.html`, `reset-password.html`, `profile.html` | A1 | Form: xem [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 6.1 |
+| B4 | `public/search.html`, `public/404.html`, `public/page.html` | A1, A2 | Trang tìm kiếm dùng lại thẻ bài viết |
+| B5 | `admin/ui-translations.html`, `admin/page-edit.html` | A3 | `page-edit` dùng lại rich text editor |
+
+Nếu đến lượt mà việc phải chờ chưa merge, B làm trước việc tiếp theo không phải chờ.
 
 Hướng dẫn từng bước (cài máy, quy trình làm một màn, trạng thái demo, Git): [phase-2-huong-dan.md](phase-2-huong-dan.md).
 
@@ -398,7 +408,7 @@ Phase 2 kết thúc khi đạt hết các mục sau (mở rộng từ requiremen
 - [ ] `npm run build` không lỗi, không cảnh báo deprecation của Sass.
 - [ ] Không có mã màu viết trực tiếp ngoài `abstracts/` và `themes/`, không có style inline.
 - [ ] Chữ tĩnh đã gắn `data-i18n`.
-- [ ] Mọi PR đã tự kiểm tra theo checklist và merge vào `dev`.
+- [ ] Mọi PR đã được người còn lại review và merge vào `dev`.
 
 ---
 
