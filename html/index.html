@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mục lục giao diện · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="js/theme.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<!--
+  Trang mục lục để kiểm tra giao diện phase 2 (docs/phase-2-html.md mục 9), là trang đầu tiên khi mở GitHub Pages.
+  Không có ở sản phẩm thật nên chữ không gắn data-i18n.
+  Làm xong một màn: đổi dòng của màn đó từ <span> sang <a href="..."> và badge "Chưa làm" sang "Đã xong".
+  Chỉ để link tới file đã có: chạy npm run check-links trước khi commit.
+-->
+<body>
+  <main class="container py-5">
+
+    <header class="d-flex align-items-start justify-content-between gap-3 mb-4">
+      <div>
+        <p class="brand mb-2">Inkwell</p>
+        <h1 class="text-page-title mb-2">Mục lục giao diện</h1>
+        <p class="text-meta mb-0">Giao diện HTML tĩnh của phase 2, dữ liệu giả. Mỗi trang có thanh demo ở góc dưới để chuyển trạng thái và vai trò.</p>
+      </div>
+      <!-- component: theme-toggle -->
+      <button type="button" class="icon-btn theme-toggle flex-shrink-0" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối">
+        <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+        <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+      </button>
+      <!-- /component: theme-toggle -->
+    </header>
+
+    <!-- Public và tài khoản (mục 5.1, 5.3) -->
+    <section class="mb-5" aria-labelledby="publicHeading">
+      <h2 class="h5 mb-3" id="publicHeading">Public và tài khoản</h2>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th scope="col">Màn hình</th>
+              <th scope="col">File</th>
+              <th scope="col">Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span>Trang chủ</span></td>
+              <td class="text-meta">public/index.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Chi tiết bài viết</span></td>
+              <td class="text-meta">public/post-detail.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Bài viết theo danh mục</span></td>
+              <td class="text-meta">public/category.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Kết quả tìm kiếm</span></td>
+              <td class="text-meta">public/search.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Trang tĩnh</span></td>
+              <td class="text-meta">public/page.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Không tìm thấy trang (404)</span></td>
+              <td class="text-meta">public/404.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Đăng ký</span></td>
+              <td class="text-meta">public/register.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Đăng nhập</span></td>
+              <td class="text-meta">public/login.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Quên mật khẩu</span></td>
+              <td class="text-meta">public/forgot-password.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Đặt lại mật khẩu</span></td>
+              <td class="text-meta">public/reset-password.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Hồ sơ cá nhân</span></td>
+              <td class="text-meta">public/profile.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Quản trị (mục 5.2, 5.3) -->
+    <section class="mb-5" aria-labelledby="adminHeading">
+      <h2 class="h5 mb-3" id="adminHeading">Quản trị</h2>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th scope="col">Màn hình</th>
+              <th scope="col">File</th>
+              <th scope="col">Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="admin/posts.html">Quản lý bài viết</a></td>
+              <td class="text-meta">admin/posts.html</td>
+              <td><span class="status-badge status-badge--success">Đã xong</span></td>
+            </tr>
+            <tr>
+              <td><span>Viết bài mới</span></td>
+              <td class="text-meta">admin/post-create.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Sửa bài viết</span></td>
+              <td class="text-meta">admin/post-edit.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Quản lý người dùng</span></td>
+              <td class="text-meta">admin/users.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Quản lý ngôn ngữ</span></td>
+              <td class="text-meta">admin/languages.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Quản lý danh mục</span></td>
+              <td class="text-meta">admin/categories.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Quản lý bản dịch giao diện</span></td>
+              <td class="text-meta">admin/ui-translations.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Quản lý trang tĩnh</span></td>
+              <td class="text-meta">admin/pages.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+            <tr>
+              <td><span>Sửa trang tĩnh</span></td>
+              <td class="text-meta">admin/page-edit.html</td>
+              <td><span class="status-badge status-badge--muted">Chưa làm</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
