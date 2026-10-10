@@ -6,6 +6,13 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Deploy giao diện phase 2 lên GitHub Pages (<https://tmtuan04.github.io/blog-management-system/>):
+  - `.github/workflows/deploy-pages.yml`: push vào `master` (có thay đổi trong `html/`) hoặc chạy tay thì build CSS, kiểm tra link, deploy thư mục `html/` (bỏ `node_modules`). Link chết chỉ báo thành annotation, chưa chặn deploy.
+  - `html/index.html`: trang mục lục 20 màn, màn đã xong có link, màn chưa làm ghi "Chưa làm" và không có link.
+  - `html/scripts/check-links.mjs` (`npm run check-links`): báo `href`/`src` trỏ tới file không tồn tại, sai hoa/thường, đường dẫn bắt đầu bằng `/` hoặc ra ngoài `html/`; bỏ qua link ngoài, `#`, comment HTML và `_templates/`.
+  - Phase 2 doc 1.2 → 1.3: đầu ra có link GitHub Pages; mục 2.2 thêm `scripts/`; mục 7.4 ghi deploy khi merge `master`; mục 8 A6 đổi thành kiểm tra cuối (trang mục lục đã có, mỗi PR tự cập nhật); mục 9 thêm quy tắc "danh sách nhiều mục chỉ bắt buộc link mục đầu tiên", `check-links` sạch, kiểm tra bản trên GitHub Pages.
+  - `docs/phase-2-huong-dan.md`: checklist PR thêm chạy `check-links`, cập nhật `index.html`; lỗi hay gặp thêm 404 do sai hoa/thường và mất CSS do đường dẫn bắt đầu bằng `/`.
+  - `html/README.md`: lệnh `check-links`, mục Deploy.
 - Thư mục `html/` (phase 2), phần nền cho màn mẫu:
   - `package.json`: Bootstrap 5.3.8, Dart Sass; script `build`, `watch`.
   - `scss/`: `main.scss`; `abstracts/` (biến Bootstrap ghi đè, font, kích thước layout, mixin `line-clamp`); `themes/` (token `--bl-*` sáng/tối, `_bootstrap-bridge.scss` nối biến `--bs-*` vào token); `base/` (kiểu chữ theo vai trò `.text-*`, `.prose`); `components/` (nút đổi theme, thanh demo).

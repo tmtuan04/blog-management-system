@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "sass scss/main.scss css/main.css --load-path=node_modules --style=compressed --no-source-map --quiet-deps --silence-deprecation=import",
-    "watch": "sass scss/main.scss css/main.css --load-path=node_modules --watch --quiet-deps --silence-deprecation=import"
+    "watch": "sass scss/main.scss css/main.css --load-path=node_modules --watch --quiet-deps --silence-deprecation=import",
+    "check-links": "node scripts/check-links.mjs"
   },
   "dependencies": {
     "bootstrap": "5.3.8"

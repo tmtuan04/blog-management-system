@@ -1,0 +1,66 @@
+# Deploy thư mục html/ (giao diện phase 2) lên GitHub Pages mỗi khi có commit vào master.
+# Cần bật một lần trên GitHub: Settings → Pages → Build and deployment → Source: GitHub Actions.
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "html/**"
+      - ".github/workflows/deploy-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Chỉ chạy một lần deploy tại một thời điểm, không hủy lần đang chạy dở
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: html
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: html/package-lock.json
+
+      - run: npm ci
+
+      # Build lại CSS để bản deploy luôn khớp với SCSS, kể cả khi quên commit css/main.css
+      - run: npm run build
+
+      # Báo link chết thành annotation trên tab Actions. Chưa chặn deploy vì còn nhiều màn chưa làm;
+      # khi đủ 20 màn thì bỏ continue-on-error để link chết làm hỏng build.
+      - name: Check links
+        run: npm run check-links
+        continue-on-error: true
+
+      # node_modules không được đưa lên Pages
+      - run: rm -rf node_modules
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: html
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

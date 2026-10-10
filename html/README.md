@@ -12,6 +12,19 @@ npm run watch   # build lại css/main.css mỗi khi sửa SCSS
 
 Mở file HTML bằng Live Server của VS Code. Trước khi commit chạy `npm run build` và commit cả `css/main.css`.
 
+```bash
+npm run check-links   # báo link chết, sai hoa/thường, đường dẫn bắt đầu bằng "/"
+```
+
+## Deploy
+
+Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu là [index.html](index.html) (mục lục các màn).
+
+- Mỗi lần merge vào `master` có thay đổi trong `html/`, workflow [deploy-pages.yml](../.github/workflows/deploy-pages.yml) tự build CSS, chạy `check-links` và deploy cả thư mục `html/` (trừ `node_modules`). Chạy tay được ở tab **Actions** → **Deploy GitHub Pages** → **Run workflow**.
+- Hiện link chết chỉ hiện thành cảnh báo ở tab Actions, chưa chặn deploy vì còn màn chưa làm.
+- Làm xong một màn: đổi dòng của màn đó trong `index.html` thành link.
+- Chỉ dùng đường dẫn tương đối, đúng hoa/thường như tên file.
+
 ## Bắt đầu một trang mới
 
 - Trang quản trị: copy [_templates/admin.html](_templates/admin.html) vào `admin/`, đổi `<title>`, chuyển `.is-active` + `aria-current="page"` sang mục sidebar của trang, viết nội dung trong `<main class="admin-content">`.
