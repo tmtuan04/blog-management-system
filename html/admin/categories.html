@@ -1,0 +1,538 @@
+<!doctype html>
+<!--
+  Khung mẫu trang quản trị (docs/phase-2-html.md mục 4.3).
+  Cách dùng: copy file này vào admin/, đổi <title>, đổi mục .is-active + aria-current trong sidebar,
+  rồi viết nội dung trong <main class="admin-content">. Màn mẫu đầy đủ: admin/posts.html.
+  Sửa sidebar hoặc topbar thì sửa ở mọi file trong admin/ trong cùng một PR.
+-->
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tên trang · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="../js/theme.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body data-demo-states="normal" data-demo-auths="blog_owner super_admin">
+  <div class="admin-layout">
+
+    <!-- component: admin-sidebar -->
+    <aside class="admin-sidebar offcanvas-lg offcanvas-start" id="adminSidebar" tabindex="-1" aria-labelledby="adminSidebarLabel">
+      <div class="offcanvas-header admin-sidebar__brand">
+        <a class="brand" href="../public/index.html" id="adminSidebarLabel" data-i18n="common.site_name">Inkwell</a>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" data-bs-target="#adminSidebar" aria-label="Đóng menu" data-i18n-aria-label="common.close_menu"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="admin-sidebar__brand d-none d-lg-flex">
+          <a class="brand" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+        </div>
+        <nav aria-label="Menu quản trị" data-i18n-aria-label="admin.nav.label">
+          <ul class="admin-sidebar__nav">
+            <li>
+              <a class="admin-sidebar__link" href="../admin/posts.html">
+                <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.posts">Bài viết</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/users.html">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.users">Người dùng</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link is-active" href="../admin/categories.html" aria-current="page">
+                <i class="bi bi-folder2" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.categories">Danh mục</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/languages.html">
+                <i class="bi bi-globe2" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.languages">Ngôn ngữ</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/ui-translations.html">
+                <i class="bi bi-translate" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.ui_translations">Bản dịch giao diện</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/pages.html">
+                <i class="bi bi-journal-richtext" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.pages">Trang tĩnh</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <div class="admin-sidebar__footer">
+          <a class="admin-sidebar__link" href="../public/index.html">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+            <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+    <!-- /component: admin-sidebar -->
+
+    <div class="admin-main">
+
+      <!-- component: admin-topbar -->
+      <header class="admin-topbar">
+        <button type="button" class="icon-btn d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Mở menu" data-i18n-aria-label="common.open_menu">
+          <i class="bi bi-list" aria-hidden="true"></i>
+        </button>
+        <a class="brand d-lg-none ms-1" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+
+        <div class="d-flex align-items-center gap-1 ms-auto">
+
+          <!-- component: language-switcher -->
+          <div class="dropdown">
+            <button type="button" class="icon-btn icon-btn--text" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Ngôn ngữ" data-i18n-aria-label="common.language">
+              VI <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item active" href="#" aria-current="true">Tiếng Việt <i class="bi bi-check2 ms-auto" aria-hidden="true"></i></a></li>
+              <li><a class="dropdown-item" href="#">English</a></li>
+            </ul>
+          </div>
+          <!-- /component: language-switcher -->
+
+          <!-- component: theme-toggle -->
+          <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối" data-i18n-aria-label="common.dark_mode">
+            <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+            <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+          </button>
+          <!-- /component: theme-toggle -->
+
+          <!-- component: user-menu -->
+          <div class="dropdown ms-1">
+            <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản" data-i18n-aria-label="menu.account">
+              <img class="avatar" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+              <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+              <div class="px-3 py-2" data-demo-auth="blog_owner">
+                <div class="fw-semibold">Nguyễn Văn An</div>
+                <div class="text-meta">owner1@blog.local</div>
+              </div>
+              <div class="px-3 py-2" data-demo-auth="super_admin">
+                <div class="fw-semibold">Super Admin</div>
+                <div class="text-meta">admin@blog.local</div>
+              </div>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="../public/profile.html">
+                <i class="bi bi-person" aria-hidden="true"></i>
+                <span data-i18n="menu.profile">Hồ sơ</span>
+              </a>
+              <a class="dropdown-item" href="../public/index.html">
+                <i class="bi bi-house" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+              </a>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="../public/login.html">
+                <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                <span data-i18n="menu.logout">Đăng xuất</span>
+              </a>
+            </div>
+          </div>
+          <!-- /component: user-menu -->
+
+        </div>
+      </header>
+      <!-- /component: admin-topbar -->
+
+      <main class="admin-content">
+        <div class="admin-page-header">
+          <div>
+            <h1 class="text-page-title mb-1">Danh mục</h1>
+            <p class="text-meta mb-0">Tên ở ngôn ngữ mặc định (Tiếng Việt) là bắt buộc. Ngôn ngữ chưa có tên sẽ hiện tên tiếng
+              Việt.</p>
+          </div>
+
+          <button type="button" class="btn btn-primary" onclick="openAddCategory()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+              stroke-linejoin="round" data-lucide="plus" class="lucide lucide-plus bi bi-plus-lg me-1" aria-hidden="true">
+              <path d="M5 12h14"></path>
+              <path d="M12 5v14"></path>
+            </svg>Thêm danh mục
+          </button>
+
+          <div class="modal-dialog" id="categoryModal" style="display: none">
+            <div class="modal-content">
+              <div class="modal-header border-0 pb-0">
+                <div>
+                  <h2 class="modal-title fs-5" id="catAddTitle">Thêm danh mục</h2>
+                </div>
+                <button type="button" class="btn-close close-modal-dialog" aria-label="Đóng"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label fw-medium" for="catVi">Tiếng Việt <span class="role-chip">Mặc định</span></label>
+                  <input type="text" class="form-control" id="catVi" value="" placeholder="Ví dụ: Du lịch">
+                  <div class="invalid-feedback">Nhập tên ở ngôn ngữ mặc định (Tiếng Việt).</div>
+                </div>
+                <div>
+                  <label class="form-label fw-medium" for="catEn">English</label>
+                  <input type="text" class="form-control" id="catEn" value="" placeholder="Để trống thì hiện tên tiếng Việt">
+                  <div class="lang-field-hint mt-1">Không bắt buộc.</div>
+                </div>
+                <p class="text-meta mt-3 mb-0">Slug tạo tự động từ tên của từng ngôn ngữ.</p>
+              </div>
+              <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary close-modal-dialog">Hủy</button>
+                <button type="button" class="btn btn-primary" data-loading-on="" data-loading-text="Đang lưu..."
+                  data-idle="Lưu">Lưu</button>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            function openAddCategory() {
+              const modal = document.getElementById('categoryModal');
+              modal.style.display = 'block';
+            }
+            // Lấy khung hiển thị
+            const categoryModal = document.getElementById("categoryModal");
+
+              // Gắn sự kiện đóng cho tất cả nút có class close-modal-dialog
+            document.querySelectorAll(".close-modal-dialog").forEach(button => {
+              button.addEventListener("click", function () {
+                categoryModal.style.display = "none";
+              });
+            });
+          </script>
+        </div>
+
+        <form class="row g-2 mb-3" role="search">
+          <div class="col-12 col-md-6">
+            <label class="visually-hidden" for="categorySearch">Tìm theo tên ở mọi ngôn ngữ...</label>
+            <div class="search-input">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="search"
+                class="lucide lucide-search bi bi-search search-input__icon" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </svg>
+              <input type="search" class="form-control search-input__control" id="categorySearch"
+                placeholder="Tìm theo tên ở mọi ngôn ngữ...">
+            </div>
+          </div>
+        </form>
+
+        <div class="table-responsive" data-state-hide="empty">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th scope="col">Tiếng Việt <span class="role-chip">Mặc định</span></th>
+                <th scope="col">English</th>
+                <th scope="col" class="d-none d-md-table-cell">Slug</th>
+                <th scope="col" class="text-end">Số bài</th>
+                <th scope="col"><span class="visually-hidden">Thao tác</span></th>
+              </tr>
+            </thead>
+            <tbody data-state-hide="loading">
+              <tr>
+                <td class="fw-semibold">Lập trình</td>
+                <td>Programming</td>
+                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">lap-trinh</span></td>
+                <td class="text-end font-monospace">6</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
+                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
+                            <path
+                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
+                            </path>
+                            <path d="m15 5 4 4"></path>
+                          </svg><span>Sửa</span></button></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
+                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                          </svg><span>Xóa</span></button></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Đời sống</td>
+                <td><span class="cell-fallback">Chưa có, dùng: Đời sống</span></td>
+                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">doi-song</span></td>
+                <td class="text-end font-monospace">3</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
+                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
+                            <path
+                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
+                            </path>
+                            <path d="m15 5 4 4"></path>
+                          </svg><span>Sửa</span></button></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
+                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                          </svg><span>Xóa</span></button></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Du lịch</td>
+                <td>Travel</td>
+                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">du-lich</span></td>
+                <td class="text-end font-monospace">2</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
+                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
+                            <path
+                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
+                            </path>
+                            <path d="m15 5 4 4"></path>
+                          </svg><span>Sửa</span></button></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
+                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                          </svg><span>Xóa</span></button></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Thiết kế</td>
+                <td><span class="cell-fallback">Chưa có, dùng: Thiết kế</span></td>
+                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">thiet-ke</span></td>
+                <td class="text-end font-monospace">1</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
+                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
+                            <path
+                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
+                            </path>
+                            <path d="m15 5 4 4"></path>
+                          </svg><span>Sửa</span></button></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
+                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                          </svg><span>Xóa</span></button></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Công nghệ</td>
+                <td>Technology</td>
+                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">cong-nghe</span></td>
+                <td class="text-end font-monospace">0</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
+                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
+                            <path
+                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
+                            </path>
+                            <path d="m15 5 4 4"></path>
+                          </svg><span>Sửa</span></button></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
+                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                          </svg><span>Xóa</span></button></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Khởi nghiệp và quản trị doanh nghiệp vừa và nhỏ</td>
+                <td>Startups and small business management</td>
+                <td class="d-none d-md-table-cell"><span
+                    class="cell-key text-body-secondary text-break">khoi-nghiep-va-quan-tri-doanh-nghiep-vua-va-nho</span></td>
+                <td class="text-end font-monospace">0</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
+                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
+                            <path
+                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
+                            </path>
+                            <path d="m15 5 4 4"></path>
+                          </svg><span>Sửa</span></button></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
+                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                            <line x1="10" x2="10" y1="11" y2="17"></line>
+                            <line x1="14" x2="14" y1="11" y2="17"></line>
+                          </svg><span>Xóa</span></button></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tbody data-state-show="loading" hidden="">
+              <tr>
+                <td><span class="skeleton" style="width:70%"></span></td>
+                <td><span class="skeleton" style="width:55%"></span></td>
+                <td><span class="skeleton" style="width:45%"></span></td>
+                <td><span class="skeleton" style="width:30%"></span></td>
+                <td><span class="skeleton" style="width:20%"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton" style="width:70%"></span></td>
+                <td><span class="skeleton" style="width:55%"></span></td>
+                <td><span class="skeleton" style="width:45%"></span></td>
+                <td><span class="skeleton" style="width:30%"></span></td>
+                <td><span class="skeleton" style="width:20%"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton" style="width:70%"></span></td>
+                <td><span class="skeleton" style="width:55%"></span></td>
+                <td><span class="skeleton" style="width:45%"></span></td>
+                <td><span class="skeleton" style="width:30%"></span></td>
+                <td><span class="skeleton" style="width:20%"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton" style="width:70%"></span></td>
+                <td><span class="skeleton" style="width:55%"></span></td>
+                <td><span class="skeleton" style="width:45%"></span></td>
+                <td><span class="skeleton" style="width:30%"></span></td>
+                <td><span class="skeleton" style="width:20%"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Nội dung trang -->
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/demo-state.js"></script>
+</body>
+</html>

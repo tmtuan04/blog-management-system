@@ -1,0 +1,647 @@
+<!doctype html>
+<!--
+  Khung mẫu trang quản trị (docs/phase-2-html.md mục 4.3).
+  Cách dùng: copy file này vào admin/, đổi <title>, đổi mục .is-active + aria-current trong sidebar,
+  rồi viết nội dung trong <main class="admin-content">. Màn mẫu đầy đủ: admin/posts.html.
+  Sửa sidebar hoặc topbar thì sửa ở mọi file trong admin/ trong cùng một PR.
+-->
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tên trang · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="../js/theme.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body data-demo-states="normal" data-demo-auths="blog_owner super_admin">
+  <div class="admin-layout">
+
+    <!-- component: admin-sidebar -->
+    <aside class="admin-sidebar offcanvas-lg offcanvas-start" id="adminSidebar" tabindex="-1" aria-labelledby="adminSidebarLabel">
+      <div class="offcanvas-header admin-sidebar__brand">
+        <a class="brand" href="../public/index.html" id="adminSidebarLabel" data-i18n="common.site_name">Inkwell</a>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" data-bs-target="#adminSidebar" aria-label="Đóng menu" data-i18n-aria-label="common.close_menu"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="admin-sidebar__brand d-none d-lg-flex">
+          <a class="brand" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+        </div>
+        <nav aria-label="Menu quản trị" data-i18n-aria-label="admin.nav.label">
+          <ul class="admin-sidebar__nav">
+            <li>
+              <a class="admin-sidebar__link" href="../admin/posts.html">
+                <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.posts">Bài viết</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/users.html">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.users">Người dùng</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/categories.html">
+                <i class="bi bi-folder2" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.categories">Danh mục</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/languages.html">
+                <i class="bi bi-globe2" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.languages">Ngôn ngữ</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/ui-translations.html">
+                <i class="bi bi-translate" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.ui_translations">Bản dịch giao diện</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/pages.html">
+                <i class="bi bi-journal-richtext" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.pages">Trang tĩnh</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <div class="admin-sidebar__footer">
+          <a class="admin-sidebar__link" href="../public/index.html">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+            <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+    <!-- /component: admin-sidebar -->
+
+    <div class="admin-main">
+
+      <!-- component: admin-topbar -->
+      <header class="admin-topbar">
+        <button type="button" class="icon-btn d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Mở menu" data-i18n-aria-label="common.open_menu">
+          <i class="bi bi-list" aria-hidden="true"></i>
+        </button>
+        <a class="brand d-lg-none ms-1" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+
+        <div class="d-flex align-items-center gap-1 ms-auto">
+
+          <!-- component: language-switcher -->
+          <div class="dropdown">
+            <button type="button" class="icon-btn icon-btn--text" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Ngôn ngữ" data-i18n-aria-label="common.language">
+              VI <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item active" href="#" aria-current="true">Tiếng Việt <i class="bi bi-check2 ms-auto" aria-hidden="true"></i></a></li>
+              <li><a class="dropdown-item" href="#">English</a></li>
+            </ul>
+          </div>
+          <!-- /component: language-switcher -->
+
+          <!-- component: theme-toggle -->
+          <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối" data-i18n-aria-label="common.dark_mode">
+            <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+            <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+          </button>
+          <!-- /component: theme-toggle -->
+
+          <!-- component: user-menu -->
+          <div class="dropdown ms-1">
+            <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản" data-i18n-aria-label="menu.account">
+              <img class="avatar" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+              <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+              <div class="px-3 py-2" data-demo-auth="blog_owner">
+                <div class="fw-semibold">Nguyễn Văn An</div>
+                <div class="text-meta">owner1@blog.local</div>
+              </div>
+              <div class="px-3 py-2" data-demo-auth="super_admin">
+                <div class="fw-semibold">Super Admin</div>
+                <div class="text-meta">admin@blog.local</div>
+              </div>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="../public/profile.html">
+                <i class="bi bi-person" aria-hidden="true"></i>
+                <span data-i18n="menu.profile">Hồ sơ</span>
+              </a>
+              <a class="dropdown-item" href="../public/index.html">
+                <i class="bi bi-house" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+              </a>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="../public/login.html">
+                <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                <span data-i18n="menu.logout">Đăng xuất</span>
+              </a>
+            </div>
+          </div>
+          <!-- /component: user-menu -->
+
+        </div>
+      </header>
+      <!-- /component: admin-topbar -->
+
+      <main class="admin-content">
+      
+        <div class="admin-page-header">
+          <h1 class="text-page-title mb-0">Người dùng</h1>
+          <button type="button" class="btn btn-primary" onclick="openAddUser()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+              stroke-linejoin="round" data-lucide="user-plus" class="lucide lucide-user-plus bi bi-person-plus me-1"
+              aria-hidden="true">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <line x1="19" x2="19" y1="8" y2="14"></line>
+              <line x1="22" x2="16" y1="11" y2="11"></line>
+            </svg>Tạo tài khoản
+          </button>
+
+          <div class="modal-dialog modal-dialog-centered" style="display: none;" id="userModal">
+            <div class="modal-content">
+              <div class="modal-header border-0 pb-0">
+                <div>
+                  <h2 class="modal-title fs-5" id="uAddTitle">Tạo tài khoản</h2>
+                </div>
+                <button type="button" class="btn-close close-modal-dialog" aria-label="Đóng"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label fw-medium" for="uName">Họ tên</label>
+                  <input type="text" class="form-control" id="uName" value="">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-medium" for="uEmail">Email</label>
+                  <input type="email" class="form-control" id="uEmail" value="">
+                  <div class="invalid-feedback">Email này đã được dùng cho tài khoản khác.</div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-medium" for="uPass">Mật khẩu tạm</label>
+                  <input type="password" class="form-control" id="uPass" value="">
+                  <div class="invalid-feedback">Mật khẩu cần ít nhất 8 ký tự, có cả chữ và số.</div>
+                  <div class="lang-field-hint mt-1">Ít nhất 8 ký tự, có cả chữ và số. Người dùng nên đổi sau lần đăng nhập đầu.
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label fw-medium" for="uRole">Vai trò</label>
+                  <select class="form-select" id="uRole">
+                    <option>Người dùng</option>
+                    <option>Blog Owner</option>
+                    <option>Super Admin</option>
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary close-modal-dialog">Hủy</button>
+                <button type="button" class="btn btn-primary">Tạo tài khoản</button>
+              </div>
+            </div>
+          </div>
+
+
+
+          <script>
+            function openAddUser() {
+              const modal = document.getElementById('userModal');
+              modal.style.display = 'block';
+            }
+              // Lấy khung hiển thị
+            const categoryModal = document.getElementById("userModal");
+
+              // Gắn sự kiện đóng cho tất cả nút có class close-modal-dialog
+            document.querySelectorAll(".close-modal-dialog").forEach(button => {
+              button.addEventListener("click", function () {
+                categoryModal.style.display = "none";
+              });
+            });
+          </script>
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+      
+        <form class="row g-2 mb-3" role="search">
+          <div class="col-12 col-md">
+            <label class="visually-hidden" for="userSearch">Tìm theo tên hoặc email...</label>
+            <div class="search-input">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="search"
+                class="lucide lucide-search bi bi-search search-input__icon" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </svg>
+              <input type="search" class="form-control search-input__control" id="userSearch"
+                placeholder="Tìm theo tên hoặc email...">
+            </div>
+          </div>
+          <div class="col-6 col-md-auto">
+            <label class="visually-hidden" for="userRole">Vai trò</label>
+            <select class="form-select" id="userRole">
+              <option>Tất cả vai trò</option>
+              <option>Người dùng</option>
+              <option>Blog Owner</option>
+              <option>Super Admin</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-auto">
+            <label class="visually-hidden" for="userStatus">Trạng thái</label>
+            <select class="form-select" id="userStatus">
+              <option>Tất cả trạng thái</option>
+              <option>Hoạt động</option>
+              <option>Đã khóa</option>
+            </select>
+          </div>
+        </form>
+      
+        <div class="table-responsive" data-state-hide="empty">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th scope="col">Người dùng</th>
+                <th scope="col">Vai trò</th>
+                <th scope="col">Trạng thái</th>
+                <th scope="col" class="d-none d-md-table-cell">Ngày tạo</th>
+                <th scope="col"><span class="visually-hidden">Thao tác</span></th>
+              </tr>
+            </thead>
+            <tbody data-state-hide="loading">
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <span class="avatar avatar--initials" aria-hidden="true">SA</span>
+                    <div class="min-w-0">
+                      <div class="user-cell__name">Super Admin<span class="self-tag">(Bạn)</span></div>
+                      <div class="user-cell__email">admin@blog.local</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-badge role-badge--admin">Super Admin</span></td>
+                <td><span class="status-badge status-badge--success">Hoạt động</span></td>
+                <td class="text-meta d-none d-md-table-cell">01/08/2026</td>
+                <td class="text-end"><span class="has-tooltip">
+                    <button type="button" class="icon-btn" disabled="" aria-label="Thao tác"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <span class="mock-tooltip" data-state-show="tooltip" role="tooltip" hidden="">Không thể tự khóa hoặc đổi
+                      vai trò của chính mình</span>
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <img class="avatar" src="../img/avatar-2.svg" alt="">
+                    <div class="min-w-0">
+                      <div class="user-cell__name">Nguyễn Văn An</div>
+                      <div class="user-cell__email">owner1@blog.local</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-badge">Blog Owner</span></td>
+                <td><span class="status-badge status-badge--success">Hoạt động</span></td>
+                <td class="text-meta d-none d-md-table-cell">10/08/2026</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end" data-open-on="menu">
+                      <li>
+                        <h6 class="dropdown-header">Đổi vai trò</h6>
+                      </li>
+                      <li><button type="button" class="dropdown-item">Người dùng</button></li>
+                      <li><button type="button" class="dropdown-item active">Blog Owner<svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="check"
+                            class="lucide lucide-check bi bi-check2 ms-auto" aria-hidden="true">
+                            <path d="M20 6 9 17l-5-5"></path>
+                          </svg></button></li>
+                      <li><button type="button" class="dropdown-item">Super Admin</button></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="lock"
+                            class="lucide lucide-lock bi bi-lock" aria-hidden="true">
+                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg><span>Khóa tài khoản</span></button></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <span class="avatar avatar--initials" aria-hidden="true">TB</span>
+                    <div class="min-w-0">
+                      <div class="user-cell__name">Trần Thị Bình</div>
+                      <div class="user-cell__email">owner2@blog.local</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-badge">Blog Owner</span></td>
+                <td><span class="status-badge status-badge--success">Hoạt động</span></td>
+                <td class="text-meta d-none d-md-table-cell">12/08/2026</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <h6 class="dropdown-header">Đổi vai trò</h6>
+                      </li>
+                      <li><button type="button" class="dropdown-item">Người dùng</button></li>
+                      <li><button type="button" class="dropdown-item active">Blog Owner<svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="check"
+                            class="lucide lucide-check bi bi-check2 ms-auto" aria-hidden="true">
+                            <path d="M20 6 9 17l-5-5"></path>
+                          </svg></button></li>
+                      <li><button type="button" class="dropdown-item">Super Admin</button></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="lock"
+                            class="lucide lucide-lock bi bi-lock" aria-hidden="true">
+                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg><span>Khóa tài khoản</span></button></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <span class="avatar avatar--initials" aria-hidden="true">LC</span>
+                    <div class="min-w-0">
+                      <div class="user-cell__name">Lê Minh Cường</div>
+                      <div class="user-cell__email">user@blog.local · <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                          height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                          stroke-linecap="round" stroke-linejoin="round" data-lucide="github"
+                          class="lucide lucide-github bi bi-github" aria-hidden="true">
+                          <path
+                            d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4">
+                          </path>
+                          <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                        </svg> GitHub</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-badge">Người dùng</span></td>
+                <td><span class="status-badge status-badge--success">Hoạt động</span></td>
+                <td class="text-meta d-none d-md-table-cell">20/08/2026</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <h6 class="dropdown-header">Đổi vai trò</h6>
+                      </li>
+                      <li><button type="button" class="dropdown-item active">Người dùng<svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="check"
+                            class="lucide lucide-check bi bi-check2 ms-auto" aria-hidden="true">
+                            <path d="M20 6 9 17l-5-5"></path>
+                          </svg></button></li>
+                      <li><button type="button" class="dropdown-item">Blog Owner</button></li>
+                      <li><button type="button" class="dropdown-item">Super Admin</button></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="lock"
+                            class="lucide lucide-lock bi bi-lock" aria-hidden="true">
+                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg><span>Khóa tài khoản</span></button></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr class="row-locked">
+                <td>
+                  <div class="user-cell">
+                    <span class="avatar avatar--initials" aria-hidden="true">PD</span>
+                    <div class="min-w-0">
+                      <div class="user-cell__name">Phạm Thu Dung</div>
+                      <div class="user-cell__email">dung.pham@gmail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-badge">Người dùng</span></td>
+                <td><span class="status-badge status-badge--muted">Đã khóa</span></td>
+                <td class="text-meta d-none d-md-table-cell">02/09/2026</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <h6 class="dropdown-header">Đổi vai trò</h6>
+                      </li>
+                      <li><button type="button" class="dropdown-item active">Người dùng<svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="check"
+                            class="lucide lucide-check bi bi-check2 ms-auto" aria-hidden="true">
+                            <path d="M20 6 9 17l-5-5"></path>
+                          </svg></button></li>
+                      <li><button type="button" class="dropdown-item">Blog Owner</button></li>
+                      <li><button type="button" class="dropdown-item">Super Admin</button></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="lock-open"
+                            class="lucide lucide-lock-open bi bi-unlock" aria-hidden="true">
+                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                          </svg><span>Mở khóa</span></button></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <span class="avatar avatar--initials" aria-hidden="true">NT</span>
+                    <div class="min-w-0">
+                      <div class="user-cell__name">Nguyễn Hoàng Bảo Ngọc Phương Thảo</div>
+                      <div class="user-cell__email">nguyenhoangbaongocphuongthao.contact@outlook.com.vn</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="role-badge">Người dùng</span></td>
+                <td><span class="status-badge status-badge--success">Hoạt động</span></td>
+                <td class="text-meta d-none d-md-table-cell">15/09/2026</td>
+                <td class="text-end">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
+                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="19" cy="12" r="1"></circle>
+                        <circle cx="5" cy="12" r="1"></circle>
+                      </svg></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <h6 class="dropdown-header">Đổi vai trò</h6>
+                      </li>
+                      <li><button type="button" class="dropdown-item active">Người dùng<svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="check"
+                            class="lucide lucide-check bi bi-check2 ms-auto" aria-hidden="true">
+                            <path d="M20 6 9 17l-5-5"></path>
+                          </svg></button></li>
+                      <li><button type="button" class="dropdown-item">Blog Owner</button></li>
+                      <li><button type="button" class="dropdown-item">Super Admin</button></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="lock"
+                            class="lucide lucide-lock bi bi-lock" aria-hidden="true">
+                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg><span>Khóa tài khoản</span></button></li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tbody data-state-show="loading" hidden="">
+              <tr>
+                <td><span class="skeleton" style="width:70%"></span></td>
+                <td><span class="skeleton" style="width:55%"></span></td>
+                <td><span class="skeleton" style="width:45%"></span></td>
+                <td><span class="skeleton" style="width:30%"></span></td>
+                <td><span class="skeleton" style="width:20%"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton" style="width:70%"></span></td>
+                <td><span class="skeleton" style="width:55%"></span></td>
+                <td><span class="skeleton" style="width:45%"></span></td>
+                <td><span class="skeleton" style="width:30%"></span></td>
+                <td><span class="skeleton" style="width:20%"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton" style="width:70%"></span></td>
+                <td><span class="skeleton" style="width:55%"></span></td>
+                <td><span class="skeleton" style="width:45%"></span></td>
+                <td><span class="skeleton" style="width:30%"></span></td>
+                <td><span class="skeleton" style="width:20%"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton" style="width:70%"></span></td>
+                <td><span class="skeleton" style="width:55%"></span></td>
+                <td><span class="skeleton" style="width:45%"></span></td>
+                <td><span class="skeleton" style="width:30%"></span></td>
+                <td><span class="skeleton" style="width:20%"></span></td>
+              </tr>
+              <tr>
+                <td><span class="skeleton" style="width:70%"></span></td>
+                <td><span class="skeleton" style="width:55%"></span></td>
+                <td><span class="skeleton" style="width:45%"></span></td>
+                <td><span class="skeleton" style="width:30%"></span></td>
+                <td><span class="skeleton" style="width:20%"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      
+        <div class="empty-state" data-state-show="empty" hidden="">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="search"
+            class="lucide lucide-search bi bi-search empty-state__icon" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+          <h2 class="empty-state__title">Không tìm thấy người dùng</h2>
+          <p class="empty-state__text">Không có tài khoản nào khớp với “hoang.long@”. Thử từ khóa khác hoặc bỏ bộ lọc.</p>
+          <button type="button" class="btn btn-outline-secondary">Xóa bộ lọc</button>
+        </div>
+      
+        <div class="pagination-bar" data-state-hide="empty loading">
+          <p class="text-meta mb-0">Hiển thị 1–6 / 26</p>
+          <nav aria-label="Phân trang">
+            <ul class="pagination">
+              <li class="page-item disabled"><span class="page-link"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                    height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                    stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-left"
+                    class="lucide lucide-chevron-left bi bi-chevron-left" aria-hidden="true">
+                    <path d="m15 18-6-6 6-6"></path>
+                  </svg></span></li>
+              <li class="page-item active"><span class="page-link">1</span></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item"><a class="page-link" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                    height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                    stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-right"
+                    class="lucide lucide-chevron-right bi bi-chevron-right" aria-hidden="true">
+                    <path d="m9 18 6-6-6-6"></path>
+                  </svg></a></li>
+            </ul>
+          </nav>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/demo-state.js"></script>
+</body>
+</html>
