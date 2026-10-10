@@ -2,11 +2,11 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.2 (theo requirements 1.9) |
+| Phiên bản | 1.3 (theo requirements 1.9) |
 | Ngày tạo | 08/10/2026 |
 | Thời gian | ~1 tuần (5 ngày làm việc) |
 | Đầu vào | [requirements.md](requirements.md) (mục 1.5 - Phase 2, mục 4, mục 6.3), [sample-data.md](sample-data.md) |
-| Đầu ra | Thư mục `html/` chứa các file HTML, SCSS, CSS đã build, JS demo |
+| Đầu ra | Thư mục `html/` chứa các file HTML, SCSS, CSS đã build, JS demo; bản deploy trên GitHub Pages: <https://tmtuan04.github.io/blog-management-system/> |
 
 ---
 
@@ -72,8 +72,10 @@ Medium không có trang quản trị. Trang quản trị dùng chung bộ màu, 
 
 ```text
 html/
-├── index.html                  # Mục lục: link tới mọi màn hình, dùng để kiểm tra
+├── index.html                  # Mục lục: link tới mọi màn hình, dùng để kiểm tra; trang đầu trên GitHub Pages
 ├── package.json
+├── scripts/
+│   └── check-links.mjs         # npm run check-links: báo link chết trước khi deploy
 ├── scss/
 │   ├── main.scss               # Import theo thứ tự: abstracts → bootstrap → themes → base → layouts → components → pages
 │   ├── abstracts/
@@ -341,6 +343,7 @@ Mỗi trang có nhiều trạng thái (mục 5) nhưng chỉ là một file. Dù
 - Merge vào `dev` qua PR. Trước khi tạo PR tự đi qua checklist ở [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 7 và đính kèm ảnh chụp ở 360px và desktop, cả sáng lẫn tối.
 - Mỗi PR có người còn lại review rồi mới merge: A review PR của B, B review PR của A.
 - PR có sửa `abstracts/`, `themes/`, `layouts/` hay component dùng chung thì mở lại các trang đang dùng để kiểm tra, và A phải duyệt.
+- Merge vào `master` thì GitHub Actions (`.github/workflows/deploy-pages.yml`) tự build và deploy thư mục `html/` lên GitHub Pages. Site nằm dưới `/blog-management-system/` và phân biệt hoa/thường, nên mọi đường dẫn phải là đường dẫn tương đối, viết đúng hoa/thường như tên file (xem lỗi hay gặp ở [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 9).
 
 ---
 
@@ -359,7 +362,7 @@ Các việc còn lại chia cho 2 người, mỗi người làm phần của mì
 | A3 | Rich text editor (component), `admin/post-create.html` | | **Merge sớm** vì B cần cho `page-edit` |
 | A4 | `public/post-detail.html` (gồm bình luận), `public/category.html` | | Nội dung bài dùng class `.prose` |
 | A5 | `admin/post-edit.html` | | Tab ngôn ngữ dùng `.nav-tabs` của Bootstrap |
-| A6 | Trang mục lục `html/index.html`; kiểm tra toàn bộ theo mục 9, sửa lỗi | B5 | Làm cùng B |
+| A6 | Kiểm tra toàn bộ theo mục 9, sửa lỗi, bật chặn link chết trong workflow deploy | B5 | Làm cùng B. Trang mục lục `html/index.html` đã có từ lúc dựng deploy; mỗi PR làm xong màn nào thì tự đổi dòng của màn đó thành link |
 
 ### B
 
@@ -384,7 +387,9 @@ Phase 2 kết thúc khi đạt hết các mục sau (mở rộng từ requiremen
 **Đủ màn hình**
 
 - [ ] Có đủ 20 file HTML ở mục 5, mở từ `html/index.html` bấm tới được tất cả.
-- [ ] Các link giữa trang (menu, thẻ bài, nút) dẫn đúng file.
+- [ ] Các link giữa trang (menu, thẻ bài, nút) dẫn đúng file. Danh sách nhiều mục (bảng, thẻ bài) chỉ bắt buộc link của mục đầu tiên dẫn đúng trang; các mục sau trỏ cùng file đó.
+- [ ] `npm run check-links` báo "Không có link chết".
+- [ ] Bản trên GitHub Pages mở được từ trang mục lục, bấm tới được mọi màn, CSS, ảnh, icon tải đủ.
 
 **Giống Medium**
 

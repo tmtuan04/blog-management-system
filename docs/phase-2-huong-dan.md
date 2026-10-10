@@ -188,7 +188,9 @@ Copy khối `<!-- component: confirm-dialog -->` ở cuối `admin/posts.html`, 
 Copy danh sách này vào mô tả PR và đánh dấu từng mục.
 
 ```markdown
-- [ ] Mở trang không lỗi; tất cả link bấm được, đi đúng trang
+- [ ] Mở trang không lỗi; tất cả link bấm được, đi đúng trang (danh sách nhiều mục: ít nhất mục đầu tiên)
+- [ ] Đã chạy npm run check-links, link của trang mình không còn báo lỗi
+- [ ] Đã đổi dòng của màn trong html/index.html thành link, badge "Đã xong"
 - [ ] 360px: không có thanh cuộn ngang, chữ không tràn, không bị che
 - [ ] Tablet (768px) và desktop (1280px) hiển thị đúng
 - [ ] Chế độ tối: không còn chỗ nào nền trắng hay chữ đen
@@ -259,6 +261,8 @@ Nếu báo **conflict** (xung đột):
 | Icon không hiện | Sai tên icon, hoặc máy không có mạng |
 | Khối không ẩn/hiện theo thanh Demo | Tên trong `data-demo` không có trong `data-demo-states` ở `<body>`, hoặc gõ sai tên |
 | Ảnh, CSS không tải (trang trắng trơn) | Sai đường dẫn tương đối. File trong `admin/` và `public/` phải dùng `../css/...`, `../assets/...` |
+| Máy mình mở được nhưng trên GitHub Pages ra 404 | Sai hoa/thường giữa link và tên file (Windows bỏ qua, GitHub Pages thì không). `npm run check-links` sẽ chỉ ra chỗ sai |
+| Trên GitHub Pages mất CSS, ảnh, hoặc link về sai trang | Đường dẫn bắt đầu bằng `/` (ví dụ `/css/main.css`). Đổi sang đường dẫn tương đối `../css/main.css` |
 | `npm` báo "command not found" | Chưa cài NodeJS, hoặc cần mở lại VS Code sau khi cài |
 
 ---
