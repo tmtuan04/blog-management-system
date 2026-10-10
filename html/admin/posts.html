@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bài viết của bạn · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="../js/theme.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body data-demo-states="normal loading empty deleting" data-demo-label-deleting="Đang xóa" data-demo-auths="blog_owner super_admin">
+  <div class="admin-layout">
+
+    <!-- component: admin-sidebar -->
+    <aside class="admin-sidebar offcanvas-lg offcanvas-start" id="adminSidebar" tabindex="-1" aria-labelledby="adminSidebarLabel">
+      <div class="offcanvas-header admin-sidebar__brand">
+        <a class="brand" href="../public/index.html" id="adminSidebarLabel" data-i18n="common.site_name">Inkwell</a>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" data-bs-target="#adminSidebar" aria-label="Đóng menu" data-i18n-aria-label="common.close_menu"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="admin-sidebar__brand d-none d-lg-flex">
+          <a class="brand" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+        </div>
+        <nav aria-label="Menu quản trị" data-i18n-aria-label="admin.nav.label">
+          <ul class="admin-sidebar__nav">
+            <li>
+              <a class="admin-sidebar__link is-active" href="../admin/posts.html" aria-current="page">
+                <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.posts">Bài viết</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/users.html">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.users">Người dùng</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/categories.html">
+                <i class="bi bi-folder2" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.categories">Danh mục</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/languages.html">
+                <i class="bi bi-globe2" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.languages">Ngôn ngữ</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/ui-translations.html">
+                <i class="bi bi-translate" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.ui_translations">Bản dịch giao diện</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/pages.html">
+                <i class="bi bi-journal-richtext" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.pages">Trang tĩnh</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <div class="admin-sidebar__footer">
+          <a class="admin-sidebar__link" href="../public/index.html">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+            <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+    <!-- /component: admin-sidebar -->
+
+    <div class="admin-main">
+
+      <!-- component: admin-topbar -->
+      <header class="admin-topbar">
+        <button type="button" class="icon-btn d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Mở menu" data-i18n-aria-label="common.open_menu">
+          <i class="bi bi-list" aria-hidden="true"></i>
+        </button>
+        <a class="brand d-lg-none ms-1" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+
+        <div class="d-flex align-items-center gap-1 ms-auto">
+
+          <!-- component: language-switcher -->
+          <div class="dropdown">
+            <button type="button" class="icon-btn icon-btn--text" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Ngôn ngữ" data-i18n-aria-label="common.language">
+              VI <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item active" href="#" aria-current="true">Tiếng Việt <i class="bi bi-check2 ms-auto" aria-hidden="true"></i></a></li>
+              <li><a class="dropdown-item" href="#">English</a></li>
+            </ul>
+          </div>
+          <!-- /component: language-switcher -->
+
+          <!-- component: theme-toggle -->
+          <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối" data-i18n-aria-label="common.dark_mode">
+            <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+            <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+          </button>
+          <!-- /component: theme-toggle -->
+
+          <!-- component: user-menu -->
+          <div class="dropdown ms-1">
+            <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản" data-i18n-aria-label="menu.account">
+              <img class="avatar" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+              <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+              <div class="px-3 py-2" data-demo-auth="blog_owner">
+                <div class="fw-semibold">Nguyễn Văn An</div>
+                <div class="text-meta">owner1@blog.local</div>
+              </div>
+              <div class="px-3 py-2" data-demo-auth="super_admin">
+                <div class="fw-semibold">Super Admin</div>
+                <div class="text-meta">admin@blog.local</div>
+              </div>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="../public/profile.html">
+                <i class="bi bi-person" aria-hidden="true"></i>
+                <span data-i18n="menu.profile">Hồ sơ</span>
+              </a>
+              <a class="dropdown-item" href="../public/index.html">
+                <i class="bi bi-house" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+              </a>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="../public/login.html">
+                <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                <span data-i18n="menu.logout">Đăng xuất</span>
+              </a>
+            </div>
+          </div>
+          <!-- /component: user-menu -->
+
+        </div>
+      </header>
+      <!-- /component: admin-topbar -->
+
+      <main class="admin-content">
+        <div class="admin-page-header">
+          <h1 class="text-page-title mb-0" data-i18n="admin.posts.title">Bài viết của bạn</h1>
+          <a class="btn btn-primary" href="post-create.html">
+            <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>
+            <span data-i18n="post.write">Viết bài</span>
+          </a>
+        </div>
+
+        <!-- component: post-status-tabs -->
+        <!-- Lọc theo trạng thái của bản gốc (UC13) -->
+        <nav class="page-tabs" aria-label="Lọc theo trạng thái" data-i18n-aria-label="admin.posts.filter_status">
+          <a class="page-tabs__link is-active" href="posts.html" aria-current="page">
+            <span data-i18n="admin.posts.tab_all">Tất cả</span><span class="page-tabs__count" data-demo="normal deleting">12</span>
+          </a>
+          <a class="page-tabs__link" href="posts.html?status=draft">
+            <span data-i18n="post.status.draft">Nháp</span><span class="page-tabs__count" data-demo="normal deleting">3</span>
+          </a>
+          <a class="page-tabs__link" href="posts.html?status=published">
+            <span data-i18n="post.status.published">Đã đăng</span><span class="page-tabs__count" data-demo="normal deleting">8</span>
+          </a>
+          <a class="page-tabs__link" href="posts.html?status=archived">
+            <span data-i18n="post.status.archived">Lưu trữ</span><span class="page-tabs__count" data-demo="normal deleting">1</span>
+          </a>
+        </nav>
+        <!-- /component: post-status-tabs -->
+
+        <!-- component: post-filter -->
+        <form class="row g-2 mb-3" role="search" aria-label="Lọc bài viết" data-i18n-aria-label="admin.posts.filter">
+          <div class="col-12 col-md">
+            <label class="visually-hidden" for="postSearch" data-i18n="admin.posts.search_label">Tìm theo tiêu đề</label>
+            <div class="search-input">
+              <i class="bi bi-search search-input__icon" aria-hidden="true"></i>
+              <input type="search" class="form-control search-input__control" id="postSearch" name="q" placeholder="Tìm theo tiêu đề ở mọi bản dịch..." data-i18n-placeholder="admin.posts.search_placeholder">
+            </div>
+          </div>
+          <div class="col-6 col-md-auto">
+            <label class="visually-hidden" for="postLanguage" data-i18n="admin.posts.language_label">Ngôn ngữ</label>
+            <select class="form-select" id="postLanguage" name="language">
+              <option value="" data-i18n="admin.posts.all_languages">Tất cả ngôn ngữ</option>
+              <option value="vi">Tiếng Việt</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-auto">
+            <label class="visually-hidden" for="postCategory" data-i18n="admin.posts.category_label">Danh mục</label>
+            <select class="form-select" id="postCategory" name="category">
+              <option value="" data-i18n="admin.posts.all_categories">Tất cả danh mục</option>
+              <option value="1">Lập trình</option>
+              <option value="2">Đời sống</option>
+              <option value="3">Du lịch</option>
+              <option value="4">Thiết kế</option>
+              <option value="5">Công nghệ</option>
+            </select>
+          </div>
+        </form>
+        <!-- /component: post-filter -->
+
+        <p class="visually-hidden" role="status" data-demo="loading" data-i18n="common.loading">Đang tải...</p>
+
+        <!-- component: post-table -->
+        <table class="table table-hover align-middle post-table" data-demo="normal loading deleting">
+          <thead>
+            <tr>
+              <th scope="col"><span class="visually-hidden" data-i18n="admin.posts.col_thumbnail">Ảnh</span></th>
+              <th scope="col" data-i18n="admin.posts.col_post">Bài viết</th>
+              <th scope="col" data-i18n="admin.posts.col_translations">Bản dịch</th>
+              <th scope="col" class="d-none d-md-table-cell" data-i18n="admin.posts.col_updated">Cập nhật</th>
+              <th scope="col"><span class="visually-hidden" data-i18n="common.actions">Thao tác</span></th>
+            </tr>
+          </thead>
+          <tbody data-demo="normal deleting">
+              <!-- component: post-table-row -->
+              <tr>
+                <td class="post-table__thumb">
+                  <img class="post-table__image" src="../assets/img/posts/3.svg" alt="" loading="lazy">
+                </td>
+                <td class="post-table__main">
+                  <a class="post-table__title" href="post-edit.html">Tối ưu truy vấn MySQL với index: những điều tôi ước mình biết sớm hơn</a>
+                  <div class="post-table__meta text-meta">
+                    <span data-i18n="admin.posts.original_language">Gốc</span>: Tiếng Việt · Lập trình<span class="d-md-none"> · 05/10/2026</span>
+                  </div>
+                </td>
+                <td class="post-table__translations">
+                  <div class="post-table__badges">
+                    <span class="status-badge status-badge--success"><span class="status-badge__code">VI</span> <span data-i18n="post.status.published">Đã đăng</span></span>
+                  </div>
+                </td>
+                <td class="post-table__updated text-meta d-none d-md-table-cell">05/10/2026</td>
+                <td class="post-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="post-edit.html">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="../public/post-detail.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <!-- /component: post-table-row -->
+              <!-- component: post-table-row -->
+              <tr>
+                <td class="post-table__thumb">
+                  <span class="post-table__no-image" aria-hidden="true"><i class="bi bi-image"></i></span>
+                </td>
+                <td class="post-table__main">
+                  <a class="post-table__title" href="post-edit.html">Một ngày làm việc từ xa ở Đà Lạt</a>
+                  <div class="post-table__meta text-meta">
+                    <span data-i18n="admin.posts.original_language">Gốc</span>: Tiếng Việt · Đời sống<span class="d-md-none"> · 04/10/2026</span>
+                  </div>
+                </td>
+                <td class="post-table__translations">
+                  <div class="post-table__badges">
+                    <span class="status-badge status-badge--warning"><span class="status-badge__code">VI</span> <span data-i18n="post.status.draft">Nháp</span></span>
+                  </div>
+                </td>
+                <td class="post-table__updated text-meta d-none d-md-table-cell">04/10/2026</td>
+                <td class="post-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="post-edit.html">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <!-- /component: post-table-row -->
+              <!-- component: post-table-row -->
+              <tr>
+                <td class="post-table__thumb">
+                  <img class="post-table__image" src="../assets/img/posts/4.svg" alt="" loading="lazy">
+                </td>
+                <td class="post-table__main">
+                  <a class="post-table__title" href="post-edit.html">Why I switched from Express to NestJS</a>
+                  <div class="post-table__meta text-meta">
+                    <span data-i18n="admin.posts.original_language">Gốc</span>: English · Lập trình<span class="d-md-none"> · 01/10/2026</span>
+                  </div>
+                </td>
+                <td class="post-table__translations">
+                  <div class="post-table__badges">
+                    <span class="status-badge status-badge--success"><span class="status-badge__code">EN</span> <span data-i18n="post.status.published">Đã đăng</span></span>
+                    <span class="status-badge status-badge--success"><span class="status-badge__code">VI</span> <span data-i18n="post.status.published">Đã đăng</span></span>
+                  </div>
+                </td>
+                <td class="post-table__updated text-meta d-none d-md-table-cell">01/10/2026</td>
+                <td class="post-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="post-edit.html">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="../public/post-detail.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <!-- /component: post-table-row -->
+              <!-- component: post-table-row -->
+              <tr>
+                <td class="post-table__thumb">
+                  <img class="post-table__image" src="../assets/img/posts/5.svg" alt="" loading="lazy">
+                </td>
+                <td class="post-table__main">
+                  <a class="post-table__title" href="post-edit.html">Redis cho người mới: cache, TTL và hơn thế nữa</a>
+                  <div class="post-table__meta text-meta">
+                    <span data-i18n="admin.posts.original_language">Gốc</span>: Tiếng Việt · Lập trình<span class="d-md-none"> · 28/09/2026</span>
+                  </div>
+                </td>
+                <td class="post-table__translations">
+                  <div class="post-table__badges">
+                    <span class="status-badge status-badge--success"><span class="status-badge__code">VI</span> <span data-i18n="post.status.published">Đã đăng</span></span>
+                    <span class="status-badge status-badge--warning"><span class="status-badge__code">EN</span> <span data-i18n="post.status.draft">Nháp</span></span>
+                  </div>
+                </td>
+                <td class="post-table__updated text-meta d-none d-md-table-cell">28/09/2026</td>
+                <td class="post-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="post-edit.html">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="../public/post-detail.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <!-- /component: post-table-row -->
+              <!-- component: post-table-row -->
+              <tr>
+                <td class="post-table__thumb">
+                  <img class="post-table__image" src="../assets/img/posts/6.svg" alt="" loading="lazy">
+                </td>
+                <td class="post-table__main">
+                  <a class="post-table__title" href="post-edit.html">Ghi chép sau 30 ngày tự học thiết kế giao diện: những sai lầm phổ biến khi bắt đầu và cách tôi khắc phục từng cái một</a>
+                  <div class="post-table__meta text-meta">
+                    <span data-i18n="admin.posts.original_language">Gốc</span>: Tiếng Việt · Thiết kế<span class="d-md-none"> · 25/09/2026</span>
+                  </div>
+                </td>
+                <td class="post-table__translations">
+                  <div class="post-table__badges">
+                    <span class="status-badge status-badge--success"><span class="status-badge__code">VI</span> <span data-i18n="post.status.published">Đã đăng</span></span>
+                  </div>
+                </td>
+                <td class="post-table__updated text-meta d-none d-md-table-cell">25/09/2026</td>
+                <td class="post-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="post-edit.html">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="../public/post-detail.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <!-- /component: post-table-row -->
+              <!-- component: post-table-row -->
+              <tr>
+                <td class="post-table__thumb">
+                  <img class="post-table__image" src="../assets/img/posts/7.svg" alt="" loading="lazy">
+                </td>
+                <td class="post-table__main">
+                  <a class="post-table__title" href="post-edit.html">Sổ tay du lịch Hà Giang mùa lúa chín</a>
+                  <div class="post-table__meta text-meta">
+                    <span data-i18n="admin.posts.original_language">Gốc</span>: Tiếng Việt · Du lịch<span class="d-md-none"> · 20/09/2026</span>
+                  </div>
+                </td>
+                <td class="post-table__translations">
+                  <div class="post-table__badges">
+                    <span class="status-badge status-badge--muted"><span class="status-badge__code">VI</span> <span data-i18n="post.status.archived">Lưu trữ</span></span>
+                  </div>
+                </td>
+                <td class="post-table__updated text-meta d-none d-md-table-cell">20/09/2026</td>
+                <td class="post-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="post-edit.html">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <!-- /component: post-table-row -->
+              <!-- component: post-table-row -->
+              <tr>
+                <td class="post-table__thumb">
+                  <img class="post-table__image" src="../assets/img/posts/1.svg" alt="" loading="lazy">
+                </td>
+                <td class="post-table__main">
+                  <a class="post-table__title" href="post-edit.html">Docker Compose cho môi trường phát triển</a>
+                  <div class="post-table__meta text-meta">
+                    <span data-i18n="admin.posts.original_language">Gốc</span>: Tiếng Việt · Lập trình<span class="d-md-none"> · 15/09/2026</span>
+                  </div>
+                </td>
+                <td class="post-table__translations">
+                  <div class="post-table__badges">
+                    <span class="status-badge status-badge--success"><span class="status-badge__code">VI</span> <span data-i18n="post.status.published">Đã đăng</span></span>
+                    <span class="status-badge status-badge--success"><span class="status-badge__code">EN</span> <span data-i18n="post.status.published">Đã đăng</span></span>
+                  </div>
+                </td>
+                <td class="post-table__updated text-meta d-none d-md-table-cell">15/09/2026</td>
+                <td class="post-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="post-edit.html">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="../public/post-detail.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <!-- /component: post-table-row -->
+              <!-- component: post-table-row -->
+              <tr>
+                <td class="post-table__thumb">
+                  <span class="post-table__no-image" aria-hidden="true"><i class="bi bi-image"></i></span>
+                </td>
+                <td class="post-table__main">
+                  <a class="post-table__title" href="post-edit.html">Ten books that changed how I work</a>
+                  <div class="post-table__meta text-meta">
+                    <span data-i18n="admin.posts.original_language">Gốc</span>: English · Đời sống<span class="d-md-none"> · 12/09/2026</span>
+                  </div>
+                </td>
+                <td class="post-table__translations">
+                  <div class="post-table__badges">
+                    <span class="status-badge status-badge--warning"><span class="status-badge__code">EN</span> <span data-i18n="post.status.draft">Nháp</span></span>
+                  </div>
+                </td>
+                <td class="post-table__updated text-meta d-none d-md-table-cell">12/09/2026</td>
+                <td class="post-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="post-edit.html">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <!-- /component: post-table-row -->
+              <!-- component: post-table-row -->
+              <tr>
+                <td class="post-table__thumb">
+                  <img class="post-table__image" src="../assets/img/posts/2.svg" alt="" loading="lazy">
+                </td>
+                <td class="post-table__main">
+                  <a class="post-table__title" href="post-edit.html">Getting started with NestJS</a>
+                  <div class="post-table__meta text-meta">
+                    <span data-i18n="admin.posts.original_language">Gốc</span>: English · Lập trình<span class="d-md-none"> · 06/09/2026</span>
+                  </div>
+                </td>
+                <td class="post-table__translations">
+                  <div class="post-table__badges">
+                    <span class="status-badge status-badge--success"><span class="status-badge__code">EN</span> <span data-i18n="post.status.published">Đã đăng</span></span>
+                    <span class="status-badge status-badge--warning"><span class="status-badge__code">VI</span> <span data-i18n="post.status.draft">Nháp</span></span>
+                  </div>
+                </td>
+                <td class="post-table__updated text-meta d-none d-md-table-cell">06/09/2026</td>
+                <td class="post-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="post-edit.html">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="../public/post-detail.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <!-- /component: post-table-row -->
+              <!-- component: post-table-row -->
+              <tr>
+                <td class="post-table__thumb">
+                  <img class="post-table__image" src="../assets/img/posts/1.svg" alt="" loading="lazy">
+                </td>
+                <td class="post-table__main">
+                  <a class="post-table__title" href="post-edit.html">Hướng dẫn Angular</a>
+                  <div class="post-table__meta text-meta">
+                    <span data-i18n="admin.posts.original_language">Gốc</span>: Tiếng Việt · Lập trình<span class="d-md-none"> · 03/09/2026</span>
+                  </div>
+                </td>
+                <td class="post-table__translations">
+                  <div class="post-table__badges">
+                    <span class="status-badge status-badge--success"><span class="status-badge__code">VI</span> <span data-i18n="post.status.published">Đã đăng</span></span>
+                    <span class="status-badge status-badge--success"><span class="status-badge__code">EN</span> <span data-i18n="post.status.published">Đã đăng</span></span>
+                  </div>
+                </td>
+                <td class="post-table__updated text-meta d-none d-md-table-cell">03/09/2026</td>
+                <td class="post-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="post-edit.html">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="../public/post-detail.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              <!-- /component: post-table-row -->
+          </tbody>
+          <tbody class="placeholder-glow" aria-hidden="true" data-demo="loading">
+              <tr>
+                <td class="post-table__thumb"><span class="post-table__image placeholder"></span></td>
+                <td class="post-table__main">
+                  <span class="placeholder col-10 post-table__skeleton-title"></span>
+                  <span class="placeholder placeholder-sm col-6"></span>
+                </td>
+                <td class="post-table__translations"><span class="placeholder col-8"></span></td>
+                <td class="d-none d-md-table-cell"><span class="placeholder col-10"></span></td>
+                <td class="post-table__actions"></td>
+              </tr>
+              <tr>
+                <td class="post-table__thumb"><span class="post-table__image placeholder"></span></td>
+                <td class="post-table__main">
+                  <span class="placeholder col-10 post-table__skeleton-title"></span>
+                  <span class="placeholder placeholder-sm col-6"></span>
+                </td>
+                <td class="post-table__translations"><span class="placeholder col-8"></span></td>
+                <td class="d-none d-md-table-cell"><span class="placeholder col-10"></span></td>
+                <td class="post-table__actions"></td>
+              </tr>
+              <tr>
+                <td class="post-table__thumb"><span class="post-table__image placeholder"></span></td>
+                <td class="post-table__main">
+                  <span class="placeholder col-10 post-table__skeleton-title"></span>
+                  <span class="placeholder placeholder-sm col-6"></span>
+                </td>
+                <td class="post-table__translations"><span class="placeholder col-8"></span></td>
+                <td class="d-none d-md-table-cell"><span class="placeholder col-10"></span></td>
+                <td class="post-table__actions"></td>
+              </tr>
+              <tr>
+                <td class="post-table__thumb"><span class="post-table__image placeholder"></span></td>
+                <td class="post-table__main">
+                  <span class="placeholder col-10 post-table__skeleton-title"></span>
+                  <span class="placeholder placeholder-sm col-6"></span>
+                </td>
+                <td class="post-table__translations"><span class="placeholder col-8"></span></td>
+                <td class="d-none d-md-table-cell"><span class="placeholder col-10"></span></td>
+                <td class="post-table__actions"></td>
+              </tr>
+              <tr>
+                <td class="post-table__thumb"><span class="post-table__image placeholder"></span></td>
+                <td class="post-table__main">
+                  <span class="placeholder col-10 post-table__skeleton-title"></span>
+                  <span class="placeholder placeholder-sm col-6"></span>
+                </td>
+                <td class="post-table__translations"><span class="placeholder col-8"></span></td>
+                <td class="d-none d-md-table-cell"><span class="placeholder col-10"></span></td>
+                <td class="post-table__actions"></td>
+              </tr>
+          </tbody>
+        </table>
+        <!-- /component: post-table -->
+
+        <!-- component: empty-state -->
+        <div class="empty-state" data-demo="empty">
+          <i class="bi bi-journal-text empty-state__icon" aria-hidden="true"></i>
+          <h2 class="empty-state__title" data-i18n="admin.posts.empty_title">Bạn chưa có bài viết nào</h2>
+          <p class="empty-state__text" data-i18n="admin.posts.empty_text">Bài viết bạn tạo sẽ hiện ở đây. Hãy bắt đầu với bài viết đầu tiên.</p>
+          <a class="btn btn-primary" href="post-create.html" data-i18n="admin.posts.write_first">Viết bài đầu tiên</a>
+        </div>
+        <!-- /component: empty-state -->
+
+        <!-- component: pagination -->
+        <div class="pagination-bar" data-demo="normal deleting">
+          <p class="text-meta mb-0"><span data-i18n="common.pagination.showing">Hiển thị</span> 1–10 / 12</p>
+          <nav aria-label="Phân trang" data-i18n-aria-label="common.pagination.label">
+            <ul class="pagination">
+              <li class="page-item disabled">
+                <span class="page-link" aria-label="Trang trước" data-i18n-aria-label="common.pagination.previous"><i class="bi bi-chevron-left" aria-hidden="true"></i></span>
+              </li>
+              <li class="page-item active" aria-current="page"><span class="page-link">1</span></li>
+              <li class="page-item"><a class="page-link" href="posts.html?page=2">2</a></li>
+              <li class="page-item">
+                <a class="page-link" href="posts.html?page=2" aria-label="Trang sau" data-i18n-aria-label="common.pagination.next"><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <!-- /component: pagination -->
+      </main>
+    </div>
+  </div>
+
+  <!-- component: confirm-dialog -->
+  <div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="deletePostModalTitle" aria-hidden="true" data-demo-modal="deleting">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="deletePostModalTitle" data-i18n="admin.posts.delete_title">Xóa bài viết?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-semibold mb-2">Hướng dẫn Angular</p>
+          <p class="text-body-secondary mb-0" data-i18n="admin.posts.delete_warning">Bài viết cùng toàn bộ bản dịch, bình luận và ảnh thumbnail sẽ bị xóa vĩnh viễn. Không thể hoàn tác.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="button" class="btn btn-danger" data-demo-loading="deleting" data-loading-text="Đang xóa..." data-loading-i18n="common.deleting">
+            <span data-i18n="common.delete">Xóa</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: confirm-dialog -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/demo-state.js"></script>
+</body>
+</html>

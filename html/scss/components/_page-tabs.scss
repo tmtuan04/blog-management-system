@@ -1,0 +1,36 @@
+// Tab gạch chân kiểu Medium ("Drafts / Published" trong Your stories).
+// Dùng làm bộ lọc dạng link; không phải tab nội dung (tab nội dung dùng .nav-tabs của Bootstrap).
+//   <nav class="page-tabs" aria-label="...">
+//     <a class="page-tabs__link is-active" aria-current="page" href="#">Tất cả <span class="page-tabs__count">12</span></a>
+.page-tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--bl-border);
+  scrollbar-width: none;
+}
+
+.page-tabs__link {
+  flex-shrink: 0;
+  padding: .75rem 0;
+  margin-bottom: -1px;
+  color: var(--bl-text-secondary);
+  white-space: nowrap;
+  border-bottom: 1px solid transparent;
+
+  &:hover {
+    color: var(--bl-text);
+    text-decoration: none;
+  }
+
+  &.is-active {
+    color: var(--bl-text);
+    border-bottom-color: var(--bl-text);
+  }
+}
+
+.page-tabs__count {
+  margin-left: .25rem;
+  color: var(--bl-text-secondary);
+}

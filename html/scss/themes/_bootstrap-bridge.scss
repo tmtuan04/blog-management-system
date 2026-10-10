@@ -1,0 +1,77 @@
+// Nối biến CSS của Bootstrap với token --bl-* để component Bootstrap (modal, dropdown, form, bảng...)
+// tự đổi màu theo theme. Selector trùng với selector Bootstrap dùng và import sau Bootstrap nên ghi đè được.
+
+:root,
+[data-bs-theme="light"],
+[data-bs-theme="dark"] {
+  --bs-body-bg: var(--bl-bg);
+  --bs-body-bg-rgb: var(--bl-bg-rgb);
+  --bs-body-color: var(--bl-text);
+  --bs-body-color-rgb: var(--bl-text-rgb);
+  --bs-emphasis-color: var(--bl-text);
+  --bs-heading-color: var(--bl-text);
+  --bs-secondary-color: var(--bl-text-secondary);
+  --bs-secondary-bg: var(--bl-bg-subtle);
+  --bs-tertiary-bg: var(--bl-bg-subtle);
+  --bs-border-color: var(--bl-border);
+  --bs-link-color: var(--bl-accent);
+  --bs-link-color-rgb: var(--bl-accent-rgb);
+  --bs-link-hover-color: var(--bl-accent);
+  --bs-link-hover-color-rgb: var(--bl-accent-rgb);
+  --bs-form-invalid-color: var(--bl-danger);
+  --bs-form-invalid-border-color: var(--bl-danger);
+  --bs-form-valid-color: var(--bl-success);
+  --bs-form-valid-border-color: var(--bl-success);
+}
+
+// --bl-border quá nhạt cho viền ô nhập, dùng --bl-border-strong để ô nhập vẫn nhìn rõ
+.form-control,
+.form-select {
+  --bs-border-color: var(--bl-border-strong);
+}
+
+// Nút chính kiểu Medium: pill đen ở chế độ sáng, pill sáng ở chế độ tối
+.btn-primary {
+  --bs-btn-color: var(--bl-btn-primary-text);
+  --bs-btn-bg: var(--bl-btn-primary-bg);
+  --bs-btn-border-color: var(--bl-btn-primary-bg);
+  --bs-btn-hover-color: var(--bl-btn-primary-text);
+  --bs-btn-hover-bg: var(--bl-btn-primary-hover);
+  --bs-btn-hover-border-color: var(--bl-btn-primary-hover);
+  --bs-btn-active-color: var(--bl-btn-primary-text);
+  --bs-btn-active-bg: var(--bl-btn-primary-hover);
+  --bs-btn-active-border-color: var(--bl-btn-primary-hover);
+  --bs-btn-disabled-color: var(--bl-btn-primary-text);
+  --bs-btn-disabled-bg: var(--bl-btn-primary-bg);
+  --bs-btn-disabled-border-color: var(--bl-btn-primary-bg);
+}
+
+// Nút phụ kiểu Medium: pill viền xám, chữ theo màu chữ chính
+.btn-outline-secondary {
+  --bs-btn-color: var(--bl-text);
+  --bs-btn-border-color: var(--bl-border-strong);
+  --bs-btn-hover-color: var(--bl-text);
+  --bs-btn-hover-bg: var(--bl-bg-subtle);
+  --bs-btn-hover-border-color: var(--bl-text-secondary);
+  --bs-btn-active-color: var(--bl-text);
+  --bs-btn-active-bg: var(--bl-bg-subtle);
+  --bs-btn-active-border-color: var(--bl-text-secondary);
+  --bs-btn-disabled-color: var(--bl-muted);
+  --bs-btn-disabled-border-color: var(--bl-border);
+}
+
+// Nút nguy hiểm (xóa) theo màu --bl-danger của từng theme
+.btn-danger {
+  --bs-btn-color: var(--bl-bg);
+  --bs-btn-bg: var(--bl-danger);
+  --bs-btn-border-color: var(--bl-danger);
+  --bs-btn-hover-color: var(--bl-bg);
+  --bs-btn-hover-bg: var(--bl-danger);
+  --bs-btn-hover-border-color: var(--bl-danger);
+  --bs-btn-active-color: var(--bl-bg);
+  --bs-btn-active-bg: var(--bl-danger);
+  --bs-btn-active-border-color: var(--bl-danger);
+  --bs-btn-disabled-color: var(--bl-bg);
+  --bs-btn-disabled-bg: var(--bl-danger);
+  --bs-btn-disabled-border-color: var(--bl-danger);
+}

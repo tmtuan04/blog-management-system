@@ -2,6 +2,64 @@
 
 Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- Thư mục `html/` (phase 2), phần nền cho màn mẫu:
+  - `package.json`: Bootstrap 5.3.8, Dart Sass; script `build`, `watch`.
+  - `scss/`: `main.scss`; `abstracts/` (biến Bootstrap ghi đè, font, kích thước layout, mixin `line-clamp`); `themes/` (token `--bl-*` sáng/tối, `_bootstrap-bridge.scss` nối biến `--bs-*` vào token); `base/` (kiểu chữ theo vai trò `.text-*`, `.prose`); `components/` (nút đổi theme, thanh demo).
+  - `js/theme.js`: đổi sáng/tối, lưu `localStorage`, lần đầu theo `prefers-color-scheme`, không nháy màu khi tải trang.
+  - `js/demo-state.js`: thanh chuyển trạng thái demo (bình thường, lỗi validate, loading, rỗng, khách/đã đăng nhập), lưu trạng thái trên URL.
+  - `README.md`: cách chạy, khung `<head>` mẫu, danh sách biến và class dùng được.
+- Màn mẫu để các màn khác làm theo:
+  - `_templates/admin.html`: khung trang quản trị (sidebar `offcanvas-lg`, topbar có bộ chọn ngôn ngữ, nút theme, menu tài khoản; mục chỉ Super Admin thấy).
+  - `admin/posts.html`: danh sách bài viết (UC13) với tab trạng thái, bộ lọc, bảng có badge bản dịch (thành thẻ dưới `md`), menu ⋯, phân trang, hộp xác nhận xóa; trạng thái bình thường, loading (skeleton), rỗng, đang xóa; vai trò Blog Owner / Super Admin.
+  - `layouts/_admin.scss` và component `avatar`, `brand`, `dropdown`, `empty-state`, `icon-btn`, `page-tabs`, `pagination`, `post-table`, `search-input`, `status-badge`, `table`.
+  - Ảnh giả SVG trong `assets/img/posts/` và `assets/img/avatars/`.
+- `demo-state.js`: trạng thái tự đặt tên (`data-demo-label-<tên>`), vai trò `guest` / `user` / `blog_owner` / `super_admin` (`data-demo-auths`), tự mở modal (`data-demo-modal`), chọn trạng thái cho `data-demo-invalid` / `data-demo-loading`.
+- Nút `.btn-outline-secondary`, `.btn-danger` theo token màu.
+- Phase 2 doc: token `--bl-border-strong`, `--bl-btn-primary-hover` và các token `-rgb`; quy ước `data-i18n-placeholder`, `data-i18n-aria-label`; dữ liệu từ CSDL không gắn `data-i18n`.
+
+### Changed
+
+- Phase 2 doc: mục 2.1 thay khối `package.json` mẫu bằng mô tả file thật; Bootstrap JS và Bootstrap Icons nạp từ CDN. Mục 7.2 ghi cách đánh dấu trạng thái demo bằng `data-demo`, `data-demo-auth`.
+- Phase 2 doc: `--bl-border` chỉ dùng cho đường kẻ, viền bảng; viền ô nhập dùng `--bl-border-strong`.
+- Phase 2 doc: mục 8 lập lại kế hoạch theo ngày vì phần nền và màn mẫu đã làm trước; B làm khung public/auth ngày 1, C bắt đầu từ các trang admin.
+- `docs/phase-2-huong-dan.md` (mới): hướng dẫn từng bước cho B và C (cài máy, chạy dự án, thứ tự việc của từng người, quy trình làm một màn, trạng thái demo, checklist PR, Git và xử lý conflict, lỗi hay gặp).
+- Phase 2 doc: mục 7.2 thay "Khách / Đã đăng nhập" bằng 4 vai trò; mục 5.2 `admin/posts.html` gộp ngôn ngữ gốc và danh mục vào dòng meta dưới tiêu đề.
+- Dự án chuyển sang 1 người làm toàn bộ, bỏ phân công A/B/C và review chéo:
+  - Requirements 1.7 → 1.8: mục 1.4 "Phân công" thành "Nhân sự" (làm phần nền trước, Must trước Should, tự kiểm tra theo checklist trước khi merge); bỏ bảng người phụ trách ở phase 1, 2, 5 và cột "Phụ trách" ở bảng use case; phase 5 thay "mỗi thành viên làm lại" bằng làm lại trên một máy ảo mới để kiểm tra tài liệu deploy.
+  - Phase 2 doc 1.0 → 1.1: bỏ tên người ở tiêu đề mục 3, 4, 5; mục 7.4 bỏ quy định người review; mục 8 "Kế hoạch theo ngày" thành "Thứ tự làm" (11 việc theo thứ tự phụ thuộc).
+  - `docs/phase-2-huong-dan.md`: bỏ "dành cho B và C"; mục 4 trỏ sang thứ tự làm ở phase 2 doc; bỏ bước chọn người review, thay bằng tự xem lại và tự merge PR.
+  - `html/README.md`, comment trong `scss/main.scss`: bỏ nhắc tới B và nhóm.
+- Dự án chuyển sang 2 người: A làm chủ đạo (~60%), B (~40%); có lại review chéo:
+  - Requirements 1.8 → 1.9: mục 1.4 "Nhân sự" thành "Phân công" (bảng việc của A và B; A dựng khung backend/Angular trước, B bắt đầu sau khi khung được merge; mỗi PR do người còn lại review, PR sửa phần nền thì A duyệt); thêm lại bảng người phụ trách ở phase 1, 2 và cột "Phụ trách" ở bảng use case (B: UC08, UC11, UC12, UC14-UC18; còn lại là A); phase 3, 4 ghi rõ ai dựng khung; phase 5 A deploy, B làm lại trên máy ảo mới theo tài liệu.
+  - Phase 2 doc 1.1 → 1.2: mục 3, 4 ghi A phụ trách; mục 7.4 thêm review chéo; mục 8 chia thành bảng việc của A (A1-A6) và B (B1-B5), có cột "Chờ" ghi việc phụ thuộc; mục 9 đổi lại "Mọi PR đã được người còn lại review".
+  - `docs/phase-2-huong-dan.md`: mục 4 trỏ sang bảng việc của từng người và cách xử lý việc phải chờ; mục 8 thêm bước chọn người review và Approve trước khi merge; conflict và sửa component dùng chung thì báo người kia.
+  - `html/README.md`: đổi "việc #1" thành "việc A1", sửa component dùng chung thì báo người kia.
+
+## [1.7] - 2026-10-08
+
+Bắt đầu phase 2: giao diện HTML clone theo phong cách Medium.
+
+### Added
+
+- `docs/phase-2-html.md`: tài liệu phase 2 gồm
+  - Phạm vi "clone Medium" (clone gì, không clone gì) và bảng ánh xạ thành phần Medium sang use case.
+  - Công cụ (Bootstrap 5.3, Dart Sass, Bootstrap Icons, font Inter + Source Serif 4) và cấu trúc thư mục `html/`.
+  - Design tokens: màu sáng/tối (`--bl-*`, theme qua `data-bs-theme`), kiểu chữ, kích thước, breakpoint.
+  - Layout public, auth, admin.
+  - Danh sách 20 màn hình theo người phụ trách, kèm route phase 4, UC, nội dung và trạng thái bắt buộc.
+  - Quy ước HTML (comment ranh giới component, thuộc tính `data-i18n`), trạng thái demo (`demo-state.js`), SCSS (BEM, mobile-first), Git.
+  - Kế hoạch theo ngày, checklist điều kiện hoàn thành, mục ngoài phạm vi.
+
+### Changed
+
+- Requirements:
+  - Phiên bản 1.6 → 1.7.
+  - Phase 2: giao diện clone theo phong cách Medium, link tới `docs/phase-2-html.md`.
+
 ## [1.6] - 2026-10-07
 
 Bài viết có ngôn ngữ gốc và dịch được ra nhiều ngôn ngữ (thay cho mô hình mỗi post thuộc đúng 1 ngôn ngữ). Role chuyển từ enum sang bảng riêng.

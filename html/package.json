@@ -1,0 +1,14 @@
+{
+  "name": "blog-html",
+  "private": true,
+  "scripts": {
+    "build": "sass scss/main.scss css/main.css --load-path=node_modules --style=compressed --no-source-map --quiet-deps --silence-deprecation=import",
+    "watch": "sass scss/main.scss css/main.css --load-path=node_modules --watch --quiet-deps --silence-deprecation=import"
+  },
+  "dependencies": {
+    "bootstrap": "5.3.8"
+  },
+  "devDependencies": {
+    "sass": "^1.105.1"
+  }
+}

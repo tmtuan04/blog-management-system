@@ -1,0 +1,73 @@
+// Thanh chuyển trạng thái demo (docs mục 7.2), JS ở js/demo-state.js.
+// Chỉ dùng ở phase 2: bỏ file này khi chuyển sang Angular.
+
+.demo-bar {
+  position: fixed;
+  right: .75rem;
+  bottom: .75rem;
+  z-index: $zindex-toast + 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .375rem;
+  align-items: center;
+  max-width: calc(100vw - 1.5rem);
+  padding: .375rem;
+  font-size: .75rem;
+  color: var(--bl-text);
+  background-color: var(--bl-bg);
+  border: 1px solid var(--bl-border-strong);
+  border-radius: .5rem;
+  box-shadow: $box-shadow;
+}
+
+.demo-bar__toggle {
+  padding: .125rem .375rem;
+  font-weight: 600;
+  color: var(--bl-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  background: none;
+  border: 0;
+}
+
+.demo-bar__group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem;
+
+  & + & {
+    padding-left: .375rem;
+    border-left: 1px solid var(--bl-border-strong);
+  }
+}
+
+.demo-bar__btn {
+  padding: .125rem .625rem;
+  line-height: 1.5;
+  color: inherit;
+  background: none;
+  border: 1px solid var(--bl-border-strong);
+  border-radius: 999px;
+
+  &:hover {
+    background-color: var(--bl-bg-subtle);
+  }
+
+  &[aria-pressed="true"] {
+    color: var(--bl-btn-primary-text);
+    background-color: var(--bl-btn-primary-bg);
+    border-color: var(--bl-btn-primary-bg);
+  }
+}
+
+.demo-bar__toggle,
+.demo-bar__btn {
+  &:focus-visible {
+    outline: 2px solid var(--bl-accent);
+    outline-offset: 2px;
+  }
+}
+
+.demo-bar--collapsed .demo-bar__group {
+  display: none;
+}

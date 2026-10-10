@@ -1,0 +1,25 @@
+// Khối trạng thái rỗng: icon, tiêu đề, mô tả, nút hành động
+.empty-state {
+  max-width: 420px;
+  padding: 4rem 1rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.empty-state__icon {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  color: var(--bl-muted);
+}
+
+.empty-state__title {
+  margin-bottom: .5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.empty-state__text {
+  margin-bottom: 1.5rem;
+  color: var(--bl-text-secondary);
+}

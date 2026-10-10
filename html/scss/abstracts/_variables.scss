@@ -1,0 +1,49 @@
+// Ghi đè biến Bootstrap. File này import TRƯỚC Bootstrap (xem main.scss).
+// Màu đổi theo theme sáng/tối KHÔNG khai báo ở đây mà ở themes/ bằng CSS custom properties (--bl-*).
+
+// ---------------------------------------------------------------------------
+// Font (docs mục 3.2)
+// ---------------------------------------------------------------------------
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-family-serif: "Source Serif 4", Georgia, Cambria, "Times New Roman", serif;
+$font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+// Giao diện chung (nút, form, bảng): 14px / 20px
+$font-size-base: .875rem;
+$line-height-base: 1.4286;
+$headings-font-weight: 700;
+
+// ---------------------------------------------------------------------------
+// Màu Bootstrap tính sẵn lúc build (focus ring, checkbox, switch, nav-pills).
+// Giữ trùng với giá trị chế độ sáng trong themes/_light.scss.
+// ---------------------------------------------------------------------------
+$primary: #1A8917;
+$secondary: #6B6B6B;
+$success: #1A8917;
+$warning: #B26A00;
+$danger: #C94A4A;
+
+$link-decoration: none;
+$link-hover-decoration: underline;
+
+// ---------------------------------------------------------------------------
+// Bo góc (docs mục 3.3): nút, chip, badge dạng pill; thẻ, modal, ô nhập 4px
+// ---------------------------------------------------------------------------
+$border-radius: 4px;
+$border-radius-sm: 4px;
+$border-radius-lg: 4px;
+$btn-border-radius: 999px;
+$btn-border-radius-sm: 999px;
+$btn-border-radius-lg: 999px;
+$badge-border-radius: 999px;
+
+$btn-font-weight: 500;
+
+// ---------------------------------------------------------------------------
+// Kích thước layout (docs mục 3.3)
+// ---------------------------------------------------------------------------
+$header-height: 57px;
+$feed-max-width: 728px;
+$public-sidebar-width: 368px;
+$reading-max-width: 680px;
+$admin-sidebar-width: 240px;
