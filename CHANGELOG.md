@@ -35,6 +35,10 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Changed
 
+- Nhóm từ 2 lên 3 người, C nhận các việc dễ tách từ phần của A:
+  - Requirements 1.9 → 2.0: A ~45%, B ~40%, C ~15%. C phụ trách UC05, UC07, UC09 (bộ chọn ngôn ngữ, A vẫn dựng cơ chế đa ngôn ngữ), UC10, component toast; phase 1 review ERD và chạy thử migrate/seed/rollback; phase 2 toast, `category.html`, kiểm tra tổng; phase 5 tạo máy ảo và cấu hình hệ điều hành (bước 1-2). PR của C do A hoặc B review.
+  - Phase 2 doc 1.3 → 1.4: mục 8 ghi A1 đã xong; A2 bỏ toast, A4 bỏ `category.html`, A6 chỉ duyệt lỗi phần dùng chung và bật chặn link chết; thêm bảng C (C1 toast, C2 `category.html`, C3 kiểm tra theo mục 9); B5 chờ thêm C1. Mục 7.4, 9 sửa quy tắc review cho 3 người.
+  - `docs/phase-2-huong-dan.md`: cách chọn reviewer, xử lý conflict và báo khi sửa phần dùng chung theo nhóm 3 người.
 - `layouts/_public.scss`: ở 768px chữ trên header (menu, "Viết bài", "Đăng nhập", "Bắt đầu") không còn xuống dòng; ô tìm kiếm co từ 240px xuống khi thiếu chỗ.
 - `layouts/_auth.scss`: nút Google/Github (thẻ `<a>`) căn giữa chữ theo chiều dọc.
 - Phase 2 doc: mục 2.1 thay khối `package.json` mẫu bằng mô tả file thật; Bootstrap JS và Bootstrap Icons nạp từ CDN. Mục 7.2 ghi cách đánh dấu trạng thái demo bằng `data-demo`, `data-demo-auth`.

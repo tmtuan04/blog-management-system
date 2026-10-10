@@ -2,10 +2,10 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.9 (dự án do 2 người thực hiện) |
+| Phiên bản | 2.0 (dự án do 3 người thực hiện) |
 | Ngày tạo | 01/10/2026 |
 | Thời gian thực hiện | Khoảng 8 tuần, chia thành 5 phase (xem mục 1.5) |
-| Nhân sự | 2 người, A làm chủ đạo (~60%), B (~40%) (xem mục 1.4) |
+| Nhân sự | 3 người, A làm chủ đạo (~45%), B (~40%), C (~15%) (xem mục 1.4) |
 
 ---
 
@@ -49,16 +49,18 @@ Xây dựng hệ thống Blog đa ngôn ngữ, gồm trang đọc blog cho ngư�
 
 ### 1.4. Phân công
 
-Nhóm gồm 2 thành viên. A làm chủ đạo, khoảng 60% khối lượng: phần nền tảng và các chức năng nhiều ràng buộc (xác thực, bài viết và bản dịch, tìm kiếm). B khoảng 40%: bình luận, hồ sơ cá nhân và các chức năng quản trị thêm/sửa/xóa. Mỗi người làm cả backend lẫn frontend cho phần của mình (cột "Phụ trách" ở mục 3).
+Nhóm gồm 3 thành viên. A làm chủ đạo, khoảng 45% khối lượng: phần nền tảng và các chức năng nhiều ràng buộc (xác thực, OAuth, chi tiết bài viết, bài viết và bản dịch, tìm kiếm). B khoảng 40%: bình luận, hồ sơ cá nhân và các chức năng quản trị thêm/sửa/xóa. C khoảng 15%: các việc dễ tách ra từ phần của A, chủ yếu là màn đọc danh sách bài, đổi ngôn ngữ, đổi giao diện và các việc kiểm tra. Mỗi người làm cả backend lẫn frontend cho phần của mình (cột "Phụ trách" ở mục 3).
 
 | Thành viên | Khối lượng | Phụ trách |
 | --- | --- | --- |
-| A - Nền tảng + Auth + Bài viết | ~60% | Thiết kế ERD, migrations; khung backend NestJS (cấu trúc module, interceptor format response, exception filter xử lý lỗi, guard xác thực và phân quyền, upload file, lọc HTML, Redis, Swagger); khung Angular (module, routing, interceptors, guards, đa ngôn ngữ, layout, component dùng chung: phân trang, hộp xác nhận, thông báo, rich text editor); xác thực (UC01-UC04); OAuth (UC20); trang chủ, chi tiết bài viết, bài theo danh mục (UC05-UC07); đổi ngôn ngữ (UC09); đổi giao diện sáng/tối (UC10); quản lý bài viết và bản dịch (UC13); tìm kiếm toàn văn (UC19); deploy (phase 5) |
+| A - Nền tảng + Auth + Bài viết | ~45% | Thiết kế ERD, migrations; khung backend NestJS (cấu trúc module, interceptor format response, exception filter xử lý lỗi, guard xác thực và phân quyền, upload file, lọc HTML, Redis, Swagger); khung Angular (module, routing, interceptors, guards, cơ chế đa ngôn ngữ, layout, component dùng chung: phân trang, hộp xác nhận, rich text editor); xác thực (UC01-UC04); OAuth (UC20); chi tiết bài viết (UC06); quản lý bài viết và bản dịch (UC13); tìm kiếm toàn văn (UC19); deploy (phase 5) |
 | B - Quản trị + Bình luận | ~40% | Tài liệu mô tả bảng, seeders; bình luận (UC08); xem trang tĩnh (UC11); hồ sơ cá nhân (UC12); quản lý người dùng (UC14), danh mục (UC15), ngôn ngữ (UC16), bản dịch giao diện (UC17), trang tĩnh (UC18); làm lại deploy trên máy ảo mới để kiểm tra tài liệu |
+| C - Trang đọc + Tiện ích | ~15% | Review ERD, chạy thử migrate/seed/rollback; trang chủ (UC05), bài theo danh mục (UC07); đổi ngôn ngữ (UC09, phần bộ chọn ngôn ngữ, dùng cơ chế đa ngôn ngữ A dựng trong khung); đổi giao diện sáng/tối (UC10); component thông báo (toast); kiểm tra responsive, sáng/tối, trình duyệt ở phase 2 và phase 4; chuẩn bị máy ảo, hệ điều hành ở phase 5 |
 
-- Ở phase 3 và phase 4, A dựng khung trước. B bắt đầu code sau khi khung được merge, làm theo mẫu module có sẵn và dùng lại các component dùng chung (rich text editor, phân trang, hộp xác nhận).
+- Ở phase 3 và phase 4, A dựng khung trước. B và C bắt đầu code sau khi khung được merge, làm theo mẫu module có sẵn và dùng lại các component dùng chung (rich text editor, phân trang, hộp xác nhận).
+- C mới tham gia và nhận việc dễ, nên mỗi việc của C dựa trên một mẫu có sẵn (màn mẫu, module mẫu). Gặp chỗ chưa rõ thì hỏi A trước khi làm.
 - Trong mỗi phase, làm các use case Must trước, Should sau (mục 3).
-- Mỗi việc làm trên nhánh riêng và merge qua PR. Mỗi PR phải được người còn lại review trước khi merge. PR có sửa phần nền (khung backend, khung Angular, SCSS dùng chung) thì A phải duyệt.
+- Mỗi việc làm trên nhánh riêng và merge qua PR. Mỗi PR phải được ít nhất một người khác review trước khi merge: A review PR của B, B review PR của A, PR của C do A hoặc B review. PR có sửa phần nền (khung backend, khung Angular, SCSS dùng chung) thì A phải duyệt.
 
 ### 1.5. Kế hoạch theo phase
 
@@ -85,12 +87,13 @@ Công việc:
 | --- | --- |
 | A | Thiết kế ERD, viết migrations (gồm FULLTEXT index) |
 | B | Review ERD; viết tài liệu mô tả bảng; viết seeders theo mục 6.6 |
+| C | Review ERD; chạy thử migrate, seed, rollback trên database trống và báo lỗi |
 
 Đầu ra: file ERD (link dbdiagram và ảnh export) và tài liệu mô tả bảng trong `docs/`, migrations và seeders trong source backend.
 
 Điều kiện hoàn thành:
 
-- Cả hai thống nhất ERD, tài liệu mô tả bảng khớp với ERD.
+- Cả ba thống nhất ERD, tài liệu mô tả bảng khớp với ERD.
 - Trên một database trống, chạy migrate rồi seed không lỗi, và rollback (`db:migrate:undo:all`) cũng không lỗi.
 
 #### Phase 2 - Xây dựng giao diện HTML
@@ -106,8 +109,9 @@ Màn hình cần làm:
 
 | Người | Màn hình |
 | --- | --- |
-| A | Bộ SCSS dùng chung; layout trang public, auth và trang quản trị; trang chủ, chi tiết bài viết (kèm bình luận), bài theo danh mục; danh sách bài viết, form thêm/sửa bài viết, rich text editor; trang mục lục và kiểm tra tổng |
+| A | Bộ SCSS dùng chung; layout trang public, auth và trang quản trị; thẻ bài viết, trang chủ, chi tiết bài viết (kèm bình luận); danh sách bài viết, form thêm/sửa bài viết, rich text editor; trang mục lục và duyệt kiểm tra tổng |
 | B | Kết quả tìm kiếm, trang tĩnh, trang 404; đăng ký, đăng nhập, quên mật khẩu, đặt lại mật khẩu, hồ sơ cá nhân; quản lý người dùng, danh mục, ngôn ngữ, bản dịch giao diện, danh sách trang tĩnh, sửa trang tĩnh |
+| C | Toast; bài theo danh mục; kiểm tra toàn bộ màn hình theo điều kiện hoàn thành (responsive, sáng/tối, trình duyệt) |
 
 Đầu ra: thư mục `html/` chứa các file HTML và SCSS.
 
@@ -121,7 +125,7 @@ Màn hình cần làm:
 
 Công việc:
 
-- A dựng khung backend NestJS trước (cấu trúc module, interceptor format response, exception filter xử lý lỗi, guard xác thực và phân quyền, upload, lọc HTML, Redis, Swagger). B bắt đầu code API sau khi khung backend được merge.
+- A dựng khung backend NestJS trước (cấu trúc module, interceptor format response, exception filter xử lý lỗi, guard xác thực và phân quyền, upload, lọc HTML, Redis, Swagger). B và C bắt đầu code API sau khi khung backend được merge.
 - Mỗi người code API cho các use case mình phụ trách (mục 3), kèm validate, test, tài liệu Swagger và request trong Postman collection.
 
 Đầu ra: API dưới `/api/v1`, Swagger tại `/api-docs`, Postman collection trong `docs/`.
@@ -136,7 +140,7 @@ Công việc:
 
 Công việc:
 
-- A dựng khung Angular trước (module, routing, interceptors, guards, đa ngôn ngữ, layout, component dùng chung: phân trang, hộp xác nhận, thông báo, rich text editor). B bắt đầu sau khi khung Angular được merge.
+- A dựng khung Angular trước (module, routing, interceptors, guards, cơ chế đa ngôn ngữ, layout, component dùng chung: phân trang, hộp xác nhận, rich text editor). C làm component thông báo (toast) và nút đổi sáng/tối ngay sau khi khung được merge. B và C bắt đầu sau khi khung Angular được merge.
 - Mỗi người chuyển các trang HTML của phase 2 thuộc use case mình phụ trách thành component Angular, nối với API thật.
 
 Đầu ra: ứng dụng Angular chạy với backend ở local.
@@ -171,7 +175,7 @@ Công việc:
    - Đặt `client_max_body_size` đủ cho upload ảnh 2MB; bật gzip.
 8. **Kiểm tra:** đi qua checklist ở mục "Điều kiện hoàn thành".
 
-A deploy, vừa làm vừa ghi lại lệnh vào tài liệu hướng dẫn deploy. Sau khi A deploy xong, **B làm lại toàn bộ các bước trên một máy ảo mới** chỉ theo tài liệu, để chắc tài liệu đủ và đúng. Chỗ nào B làm theo mà không chạy được thì A sửa tài liệu.
+C làm bước 1 và 2 (tạo máy ảo, cập nhật hệ thống, user `deploy`, SSH key, UFW) và ghi lệnh vào tài liệu. A làm từ bước 3 trở đi, vừa làm vừa ghi lại lệnh vào tài liệu hướng dẫn deploy. C đi qua checklist kiểm tra ở bước 8 cùng A. Sau khi A deploy xong, **B làm lại toàn bộ các bước trên một máy ảo mới** chỉ theo tài liệu, để chắc tài liệu đủ và đúng. Chỗ nào B làm theo mà không chạy được thì A sửa tài liệu.
 
 Đầu ra:
 
@@ -215,12 +219,12 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 | UC02 | Đăng nhập (Login) | Guest | Must | A | |
 | UC03 | Khôi phục mật khẩu (Recover password) | Guest | Must | A | |
 | UC04 | Đăng xuất (Logout) | Authenticated User | Must | A | Bổ sung, đề bài không ghi |
-| UC05 | Xem danh sách bài viết (trang chủ) | Guest, Authenticated User | Must | A | Bổ sung, đề bài không ghi |
+| UC05 | Xem danh sách bài viết (trang chủ) | Guest, Authenticated User | Must | C | Bổ sung, đề bài không ghi |
 | UC06 | Xem chi tiết bài viết (View post detail) | Guest, Authenticated User | Must | A | |
-| UC07 | Xem bài viết theo danh mục (View posts by category) | Guest, Authenticated User | Must | A | |
+| UC07 | Xem bài viết theo danh mục (View posts by category) | Guest, Authenticated User | Must | C | |
 | UC08 | Bình luận (Comment) | Authenticated User | Must | B | |
-| UC09 | Đổi ngôn ngữ (Change blog language) | Guest, Authenticated User | Must | A | Dùng API ngôn ngữ (UC16) và API bản dịch giao diện (UC17) |
-| UC10 | Đổi giao diện sáng/tối (Change theme) | Guest, Authenticated User | Should | A | Mở rộng |
+| UC09 | Đổi ngôn ngữ (Change blog language) | Guest, Authenticated User | Must | C | Dùng API ngôn ngữ (UC16) và API bản dịch giao diện (UC17). A dựng cơ chế đa ngôn ngữ trong khung Angular, C làm bộ chọn ngôn ngữ và nối vào |
+| UC10 | Đổi giao diện sáng/tối (Change theme) | Guest, Authenticated User | Should | C | Mở rộng |
 | UC11 | Xem trang tĩnh (Giới thiệu, Liên hệ, Chính sách bảo mật) | Guest, Authenticated User | Must | B | |
 | UC12 | Quản lý hồ sơ cá nhân | Authenticated User | Should | B | Bổ sung, đề bài không ghi |
 | UC13 | Quản lý bài viết (Manage posts) | Blog Owner | Must | A | Thêm, sửa, xóa, xem danh sách, thêm/sửa/xóa bản dịch theo ngôn ngữ |
