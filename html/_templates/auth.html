@@ -1,0 +1,121 @@
+<!doctype html>
+<!--
+  Khung mẫu trang tài khoản: đăng nhập, đăng ký, quên/đặt lại mật khẩu (docs/phase-2-html.md mục 4.2).
+  Cách dùng: copy file này vào public/, đổi <title> và nội dung trong <div class="auth-card">.
+  Phần trong thẻ đang là form đăng nhập làm mẫu:
+  - Trang không có đăng nhập Google/Github (quên, đặt lại mật khẩu) thì xóa .auth-card__oauth và .auth-divider.
+  - .auth-card__legal (điều khoản) chỉ dùng ở trang đăng ký.
+  - Thông báo chung của form (sai mật khẩu, đăng ký thành công...) dùng .alert-inline, đặt ngay trên form.
+  Trạng thái demo: normal, error (lỗi validate + thông báo), loading (nút đang gửi). Trang cần thêm trạng thái
+  (tài khoản bị khóa, 429...) thì khai báo thêm trong data-demo-states, xem comment đầu js/demo-state.js.
+-->
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đăng nhập · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="../js/theme.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body data-demo-states="normal error loading">
+  <div class="auth-layout">
+
+    <!-- component: auth-header -->
+    <header class="auth-layout__header">
+      <a class="brand" href="index.html" data-i18n="common.site_name">Inkwell</a>
+      <div class="d-flex align-items-center gap-1">
+        <!-- component: language-switcher -->
+        <div class="dropdown">
+          <button type="button" class="icon-btn icon-btn--text" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Ngôn ngữ" data-i18n-aria-label="common.language">
+            VI <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item active" href="#" aria-current="true">Tiếng Việt <i class="bi bi-check2 ms-auto" aria-hidden="true"></i></a></li>
+            <li><a class="dropdown-item" href="#">English</a></li>
+          </ul>
+        </div>
+        <!-- /component: language-switcher -->
+
+        <!-- component: theme-toggle -->
+        <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối" data-i18n-aria-label="common.dark_mode">
+          <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+          <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+        </button>
+        <!-- /component: theme-toggle -->
+      </div>
+    </header>
+    <!-- /component: auth-header -->
+
+    <main class="auth-layout__main">
+      <!-- component: auth-card -->
+      <div class="auth-card">
+        <h1 class="auth-card__title" data-i18n="auth.login_title">Chào mừng trở lại</h1>
+
+        <div class="auth-card__oauth">
+          <a class="btn btn-outline-secondary" href="#">
+            <i class="bi bi-google auth-card__oauth-icon" aria-hidden="true"></i>
+            <span data-i18n="auth.login_google">Đăng nhập bằng Google</span>
+          </a>
+          <a class="btn btn-outline-secondary" href="#">
+            <i class="bi bi-github auth-card__oauth-icon" aria-hidden="true"></i>
+            <span data-i18n="auth.login_github">Đăng nhập bằng Github</span>
+          </a>
+        </div>
+
+        <div class="auth-divider" data-i18n="common.or">hoặc</div>
+
+        <div class="alert-inline mb-3" role="alert" data-demo="error">
+          <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+          <div data-i18n="auth.error.invalid_credentials">Email hoặc mật khẩu không đúng.</div>
+        </div>
+
+        <form action="index.html" novalidate>
+          <div class="mb-3">
+            <label class="form-label" for="authEmail" data-i18n="auth.email">Email</label>
+            <input type="email" class="form-control" id="authEmail" name="email" autocomplete="email" value="owner1@blog.local" data-demo-invalid>
+            <div class="invalid-feedback" data-i18n="validation.email">Email không hợp lệ.</div>
+          </div>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-baseline">
+              <label class="form-label" for="authPassword" data-i18n="auth.password">Mật khẩu</label>
+              <a class="small" href="forgot-password.html" data-i18n="auth.forgot_password">Quên mật khẩu?</a>
+            </div>
+            <input type="password" class="form-control" id="authPassword" name="password" autocomplete="current-password" data-demo-invalid>
+            <div class="invalid-feedback" data-i18n="validation.required">Vui lòng nhập trường này.</div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 mt-2" data-demo-loading data-loading-text="Đang đăng nhập..." data-loading-i18n="auth.logging_in">
+            <span data-i18n="auth.login">Đăng nhập</span>
+          </button>
+        </form>
+
+        <p class="auth-card__switch">
+          <span data-i18n="auth.no_account">Chưa có tài khoản?</span>
+          <a href="register.html" data-i18n="auth.register">Đăng ký</a>
+        </p>
+      </div>
+      <!-- /component: auth-card -->
+    </main>
+
+    <!-- component: auth-footer -->
+    <footer class="auth-layout__footer">
+      <a href="page.html?key=about" data-i18n="footer.about">Giới thiệu</a>
+      <a href="page.html?key=contact" data-i18n="footer.contact">Liên hệ</a>
+      <a href="page.html?key=privacy" data-i18n="footer.privacy">Chính sách bảo mật</a>
+    </footer>
+    <!-- /component: auth-footer -->
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/demo-state.js"></script>
+</body>
+</html>
