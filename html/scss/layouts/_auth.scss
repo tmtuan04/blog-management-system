@@ -89,8 +89,12 @@
   display: grid;
   gap: .75rem;
 
+  // Nút là thẻ <a> nên không tự căn giữa chữ theo chiều dọc như <button>: dùng flex
   .btn {
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     height: 2.75rem;
   }
 }

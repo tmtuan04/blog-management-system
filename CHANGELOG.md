@@ -28,11 +28,15 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 - Nút `.btn-outline-secondary`, `.btn-danger` theo token màu.
 - Khung public và auth (A1), phần SCSS: `layouts/_public.scss` (header dính trên cùng, thanh tìm kiếm mobile, nội dung + sidebar từ `lg`, footer, offcanvas menu), `layouts/_auth.scss` (thẻ form 440px, nút OAuth, đường chia "hoặc"), component `alert-inline` (thông báo lỗi/thành công trong form).
 - `_templates/public.html`: khung trang public (header 4 biến thể theo vai trò `guest` / `user` / `blog_owner` / `super_admin`, ô tìm kiếm desktop và thanh tìm kiếm mobile, nội dung + sidebar, footer, offcanvas menu mobile có chọn ngôn ngữ và switch giao diện tối).
+- `_templates/auth.html`: khung trang tài khoản (header logo + ngôn ngữ + theme, thẻ form 440px, footer), mẫu là form đăng nhập: nút Google/Github, đường chia "hoặc", email, mật khẩu, link quên mật khẩu, link đăng ký; trạng thái `normal`, `error` (lỗi dưới trường + `.alert-inline`), `loading`.
+- `html/README.md`: cách dùng `_templates/public.html` và `_templates/auth.html`; bảng class thêm layout public, layout auth, `.alert-inline`.
 - `js/theme.js`: hỗ trợ nút đổi theme dạng switch (`input[type=checkbox][data-theme-toggle]`, dùng trong offcanvas mobile), đồng bộ `checked` theo theme.
 - Phase 2 doc: token `--bl-border-strong`, `--bl-btn-primary-hover` và các token `-rgb`; quy ước `data-i18n-placeholder`, `data-i18n-aria-label`; dữ liệu từ CSDL không gắn `data-i18n`.
 
 ### Changed
 
+- `layouts/_public.scss`: ở 768px chữ trên header (menu, "Viết bài", "Đăng nhập", "Bắt đầu") không còn xuống dòng; ô tìm kiếm co từ 240px xuống khi thiếu chỗ.
+- `layouts/_auth.scss`: nút Google/Github (thẻ `<a>`) căn giữa chữ theo chiều dọc.
 - Phase 2 doc: mục 2.1 thay khối `package.json` mẫu bằng mô tả file thật; Bootstrap JS và Bootstrap Icons nạp từ CDN. Mục 7.2 ghi cách đánh dấu trạng thái demo bằng `data-demo`, `data-demo-auth`.
 - Phase 2 doc: `--bl-border` chỉ dùng cho đường kẻ, viền bảng; viền ô nhập dùng `--bl-border-strong`.
 - Phase 2 doc: mục 8 lập lại kế hoạch theo ngày vì phần nền và màn mẫu đã làm trước; B làm khung public/auth ngày 1, C bắt đầu từ các trang admin.

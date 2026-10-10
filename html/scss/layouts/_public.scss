@@ -1,6 +1,7 @@
 // Layout trang public (docs mục 4.1): header dính trên cùng, nội dung + sidebar, footer.
 // Dưới md: menu ☰ mở offcanvas, nút 🔍 mở thanh tìm kiếm toàn chiều rộng.
 // Ẩn/hiện từng nút theo màn dùng tiện ích Bootstrap trong HTML (d-none d-md-inline-flex, d-md-none).
+// Ở md (768px) header vừa đủ chỗ: chữ trên header không được xuống dòng, chỉ ô tìm kiếm được co lại.
 
 // ---------------------------------------------------------------------------
 // Header
@@ -29,8 +30,10 @@
 
 .site-header__nav {
   display: none;
+  flex-shrink: 0;
   gap: 1.25rem;
   margin-left: .75rem;
+  white-space: nowrap;
 
   @include media-breakpoint-up(md) {
     display: flex;
@@ -47,9 +50,11 @@
   }
 }
 
+// Rộng tối đa 240px, co lại khi thiếu chỗ (khoảng 120px ở 768px)
 .site-header__search {
   display: none;
-  width: 240px;
+  flex: 0 1 240px;
+  min-width: 0;
   margin-left: .75rem;
 
   @include media-breakpoint-up(md) {
@@ -68,9 +73,11 @@
 
 .site-header__actions {
   display: flex;
+  flex-shrink: 0;
   gap: .25rem;
   align-items: center;
   margin-left: auto;
+  white-space: nowrap;
 }
 
 // "Viết bài": chỉ hiện từ sm, màn nhỏ hơn không đủ chỗ
