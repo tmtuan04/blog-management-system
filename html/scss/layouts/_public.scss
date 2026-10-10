@@ -1,0 +1,216 @@
+// Layout trang public (docs mục 4.1): header dính trên cùng, nội dung + sidebar, footer.
+// Dưới md: menu ☰ mở offcanvas, nút 🔍 mở thanh tìm kiếm toàn chiều rộng.
+// Ẩn/hiện từng nút theo màn dùng tiện ích Bootstrap trong HTML (d-none d-md-inline-flex, d-md-none).
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: $zindex-sticky;
+  height: $header-height;
+  background-color: var(--bl-bg);
+  border-bottom: 1px solid var(--bl-border);
+}
+
+.site-header__inner {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  height: 100%;
+  padding: 0 1rem;
+
+  @include media-breakpoint-up(md) {
+    gap: .75rem;
+    padding: 0 1.5rem;
+  }
+}
+
+.site-header__nav {
+  display: none;
+  gap: 1.25rem;
+  margin-left: .75rem;
+
+  @include media-breakpoint-up(md) {
+    display: flex;
+  }
+
+  a {
+    color: var(--bl-text-secondary);
+
+    &:hover,
+    &.is-active {
+      color: var(--bl-text);
+      text-decoration: none;
+    }
+  }
+}
+
+.site-header__search {
+  display: none;
+  width: 240px;
+  margin-left: .75rem;
+
+  @include media-breakpoint-up(md) {
+    display: block;
+  }
+}
+
+// Ô tìm kiếm dạng pill, nền xám, không viền (header desktop và thanh tìm kiếm mobile)
+.site-header__search .form-control,
+.site-search-bar .form-control {
+  height: 2.5rem;
+  background-color: var(--bl-bg-subtle);
+  border: 0;
+  border-radius: 999px;
+}
+
+.site-header__actions {
+  display: flex;
+  gap: .25rem;
+  align-items: center;
+  margin-left: auto;
+}
+
+// "Viết bài": chỉ hiện từ sm, màn nhỏ hơn không đủ chỗ
+.site-header__write {
+  display: none;
+  gap: .5rem;
+  align-items: center;
+  padding: 0 .75rem;
+  margin-right: .5rem;
+  color: var(--bl-text-secondary);
+
+  @include media-breakpoint-up(sm) {
+    display: inline-flex;
+  }
+
+  .bi {
+    font-size: 1.25rem;
+  }
+
+  &:hover {
+    color: var(--bl-text);
+    text-decoration: none;
+  }
+}
+
+// "Đăng nhập": chỉ hiện từ sm, màn nhỏ hơn chỉ còn nút "Bắt đầu".
+// Không dùng d-none d-sm-inline trong HTML: d-sm-inline có !important nên thắng thuộc tính hidden của thanh demo.
+.site-header__login {
+  display: none;
+  padding: 0 .75rem;
+  color: var(--bl-accent);
+
+  @include media-breakpoint-up(sm) {
+    display: inline;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Thanh tìm kiếm mobile: .collapse mở bằng nút 🔍. Trong HTML gắn thêm d-md-none
+// (từ md đã có ô tìm kiếm trên header)
+// ---------------------------------------------------------------------------
+// Không đặt height cố định để hiệu ứng trượt của .collapsing chạy được;
+// padding .5rem + ô nhập 2.5rem + viền 1px = đúng $header-height.
+.site-search-bar {
+  padding: .5rem 1rem;
+  border-bottom: 1px solid var(--bl-border);
+
+  // .collapse.show của Bootstrap đặt display: block, ghi đè thành flex
+  &.show,
+  &.collapsing {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Nội dung: cột chính tối đa $feed-max-width, sidebar từ lg
+// ---------------------------------------------------------------------------
+.site-body {
+  display: flex;
+  gap: 4rem;
+  justify-content: center;
+  max-width: 1336px;
+  padding: 2rem 1rem 3rem;
+  margin: 0 auto;
+}
+
+.site-body__main {
+  flex: 1;
+  min-width: 0;
+  max-width: $feed-max-width;
+}
+
+.site-body__aside {
+  display: none;
+  flex-shrink: 0;
+  width: $public-sidebar-width;
+  padding-left: 2.5rem;
+  border-left: 1px solid var(--bl-border);
+
+  @include media-breakpoint-up(lg) {
+    display: block;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Footer
+// ---------------------------------------------------------------------------
+.site-footer {
+  border-top: 1px solid var(--bl-border);
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.25rem;
+  align-items: center;
+  max-width: 1336px;
+  padding: 1.5rem 1rem;
+  margin: 0 auto;
+  font-size: .8125rem;
+  color: var(--bl-text-secondary);
+
+  a {
+    color: var(--bl-text-secondary);
+
+    &:hover {
+      color: var(--bl-text);
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Offcanvas menu mobile (mở bằng nút ☰)
+// ---------------------------------------------------------------------------
+.public-offcanvas {
+  --bs-offcanvas-width: 300px;
+  --bs-offcanvas-bg: var(--bl-bg);
+  --bs-offcanvas-border-color: var(--bl-border);
+
+  .offcanvas-header {
+    border-bottom: 1px solid var(--bl-border);
+  }
+
+  .nav-link {
+    padding: .5rem 0;
+    color: var(--bl-text);
+  }
+}
+
+.public-offcanvas__group {
+  padding: .75rem 0;
+  border-top: 1px solid var(--bl-border);
+}
+
+.public-offcanvas__label {
+  margin-bottom: .5rem;
+  font-size: .75rem;
+  color: var(--bl-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}

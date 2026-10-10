@@ -26,6 +26,9 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
   - Ảnh giả SVG trong `assets/img/posts/` và `assets/img/avatars/`.
 - `demo-state.js`: trạng thái tự đặt tên (`data-demo-label-<tên>`), vai trò `guest` / `user` / `blog_owner` / `super_admin` (`data-demo-auths`), tự mở modal (`data-demo-modal`), chọn trạng thái cho `data-demo-invalid` / `data-demo-loading`.
 - Nút `.btn-outline-secondary`, `.btn-danger` theo token màu.
+- Khung public và auth (A1), phần SCSS: `layouts/_public.scss` (header dính trên cùng, thanh tìm kiếm mobile, nội dung + sidebar từ `lg`, footer, offcanvas menu), `layouts/_auth.scss` (thẻ form 440px, nút OAuth, đường chia "hoặc"), component `alert-inline` (thông báo lỗi/thành công trong form).
+- `_templates/public.html`: khung trang public (header 4 biến thể theo vai trò `guest` / `user` / `blog_owner` / `super_admin`, ô tìm kiếm desktop và thanh tìm kiếm mobile, nội dung + sidebar, footer, offcanvas menu mobile có chọn ngôn ngữ và switch giao diện tối).
+- `js/theme.js`: hỗ trợ nút đổi theme dạng switch (`input[type=checkbox][data-theme-toggle]`, dùng trong offcanvas mobile), đồng bộ `checked` theo theme.
 - Phase 2 doc: token `--bl-border-strong`, `--bl-btn-primary-hover` và các token `-rgb`; quy ước `data-i18n-placeholder`, `data-i18n-aria-label`; dữ liệu từ CSDL không gắn `data-i18n`.
 
 ### Changed

@@ -15,10 +15,13 @@
 @import "base/base";
 @import "base/typography";
 
-// Layouts (public, auth thêm sau)
+// Layouts
 @import "layouts/admin";
+@import "layouts/public";
+@import "layouts/auth";
 
 // Components: mỗi component một file, xếp theo tên
+@import "components/alert-inline";
 @import "components/avatar";
 @import "components/brand";
 @import "components/demo-state";
