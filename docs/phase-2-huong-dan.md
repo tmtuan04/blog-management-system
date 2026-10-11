@@ -62,11 +62,11 @@ npm install
 
 ## 4. Thứ tự làm
 
-Việc của A và B nằm ở [phase-2-html.md](phase-2-html.md) mục 8. Mỗi người làm bảng của mình, lần lượt từ trên xuống. Mỗi dòng là **một nhánh và một PR riêng**, làm xong dòng nào thì tạo PR dòng đó, đừng gom nhiều màn vào một PR.
+Việc của A, B và C nằm ở [phase-2-html.md](phase-2-html.md) mục 8. Mỗi người làm bảng của mình, lần lượt từ trên xuống. Mỗi dòng là **một nhánh và một PR riêng**, làm xong dòng nào thì tạo PR dòng đó, đừng gom nhiều màn vào một PR.
 
-Việc có ghi ở cột "Chờ" thì đợi việc đó của người kia merge vào `dev` rồi mới bắt đầu (nhớ `git pull origin dev`). Chưa có thì làm trước việc tiếp theo.
+Việc có ghi ở cột "Chờ" thì đợi việc đó của người khác merge vào `dev` rồi mới bắt đầu (nhớ `git pull origin dev`). Chưa có thì làm trước việc tiếp theo.
 
-Các component đã có sẵn từ màn mẫu (phân trang, hộp xác nhận, trạng thái rỗng, badge, bảng...) cứ dùng lại. Cần sửa thì sửa, báo người kia, rồi mở lại các trang đang dùng component đó để kiểm tra.
+Các component đã có sẵn từ màn mẫu (phân trang, hộp xác nhận, trạng thái rỗng, badge, bảng...) cứ dùng lại. Cần sửa thì sửa, báo cả nhóm (và A phải duyệt PR đó), rồi mở lại các trang đang dùng component đó để kiểm tra.
 
 ---
 
@@ -87,7 +87,7 @@ Tên nhánh: `feature/html-<tên màn>`.
 **Bước 2. Tạo file từ khung mẫu**
 
 - Trang admin: copy `html/_templates/admin.html` thành `html/admin/categories.html`.
-- Trang public: copy `html/_templates/public.html`. Trang auth: copy `html/_templates/auth.html` (hai khung này A làm ở việc A1, mục 8 của tài liệu).
+- Trang public: copy `html/_templates/public.html`. Trang auth: copy `html/_templates/auth.html` (hai khung này đã có sẵn).
 
 Sau đó sửa trong file mới:
 
@@ -224,7 +224,7 @@ git push -u origin feature/html-admin-categories
 2. Chọn **base: `dev`** (không phải `master`).
 3. Dán checklist ở mục 7, đánh dấu từng mục, kéo thả ảnh chụp vào.
 4. Tự xem lại tab **Files changed** một lượt, kiểm tra không lọt file thừa hay đoạn code thử.
-5. Ở mục **Reviewers**, chọn người còn lại (PR của B thì chọn A, PR của A thì chọn B).
+5. Ở mục **Reviewers**, chọn người review theo [phase-2-html.md](phase-2-html.md) mục 7.4: PR của A chọn B, PR của B chọn A, PR của C chọn A hoặc B (PR có sửa phần dùng chung thì chọn A).
 6. Người review góp ý thì sửa tiếp trên cùng nhánh, commit, push. PR tự cập nhật, không cần tạo PR mới. Người review bấm **Approve** rồi mới bấm **Merge pull request** và xóa nhánh.
 
 **Trước khi tạo PR, cập nhật code mới nhất từ `dev`:**
@@ -245,8 +245,8 @@ Nếu báo **conflict** (xung đột):
   git commit
   ```
 
-- Ở file `html/scss/main.scss`: thường do 2 người cùng thêm dòng `@import`. Giữ **cả hai** dòng, xóa các dấu `<<<<<<<`, `=======`, `>>>>>>>`, lưu file, rồi `git add` và `git commit`.
-- Conflict ở file khác: nhắn người kia, cùng xem rồi mới sửa, đừng chọn bừa một bên.
+- Ở file `html/scss/main.scss`: thường do nhiều người cùng thêm dòng `@import`. Giữ **tất cả** các dòng, xóa các dấu `<<<<<<<`, `=======`, `>>>>>>>`, lưu file, rồi `git add` và `git commit`.
+- Conflict ở file khác: nhắn người viết đoạn code bị conflict, cùng xem rồi mới sửa, đừng chọn bừa một bên.
 
 ---
 
@@ -269,7 +269,7 @@ Nếu báo **conflict** (xung đột):
 
 ## 10. Những điều không làm
 
-- Không sửa header, sidebar hay component dùng chung mà không báo người kia và kiểm tra lại các trang đang dùng.
+- Không sửa header, sidebar hay component dùng chung mà không báo cả nhóm và kiểm tra lại các trang đang dùng.
 - Không sửa gì trong `node_modules/`.
 - Không dùng `style="..."`, không viết mã màu, không dùng `!important`.
 - Không copy code, ảnh hay logo từ Medium.

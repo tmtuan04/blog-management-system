@@ -29,7 +29,7 @@ Cột "Chờ": việc của người kia phải merge vào `dev` rồi mới b�
 |---|---|---|---|---|---|
 | B1 | **Quản lý danh mục** ✅ | `admin/categories.html` | Bảng danh mục, tên và slug theo từng ngôn ngữ, modal thêm/sửa, xác nhận xóa, lỗi xóa danh mục đang có bài | `feature/html-admin-categories-pages` | |
 | B1 | **Quản lý trang tĩnh** ✅ | `admin/pages.html` | Danh sách trang Giới thiệu, Liên hệ, Chính sách bảo mật: ngôn ngữ đã có nội dung, trạng thái hiển thị, nút "Sửa" | *(chung nhánh trên)* | |
-| B2 | **Quản lý người dùng** | `admin/users.html` | Bảng người dùng, đổi vai trò, khóa/mở khóa, tạo tài khoản | `feature/html-admin-users-languages` | |
+| B2 | **Quản lý người dùng** ✅ | `admin/users.html` | Bảng người dùng, đổi vai trò, khóa/mở khóa, tạo tài khoản | `feature/html-admin-users-languages` | |
 | B2 | **Quản lý ngôn ngữ** | `admin/languages.html` | Bảng ngôn ngữ, đặt ngôn ngữ mặc định, bật/tắt, thêm/sửa | *(chung nhánh trên)* | |
 | B5 | **Quản lý bản dịch giao diện** | `admin/ui-translations.html` | Bảng key và bản dịch theo từng ngôn ngữ, sửa ngay trong ô | `feature/html-admin-translations-page-edit` | A3 |
 | B5 | **Sửa trang tĩnh** | `admin/page-edit.html` | Sửa nội dung trang tĩnh, mỗi ngôn ngữ một tab, có trình soạn thảo | *(chung nhánh trên)* | A3 |
