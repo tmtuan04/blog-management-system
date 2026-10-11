@@ -263,9 +263,9 @@ Component **rich text editor** (giao diện tĩnh), dùng ở form bài viết v
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
 | `public/page.html` | `/pages/:key` | UC11 | Cột đọc 680px: tiêu đề lớn, nội dung rich text (dùng chung style nội dung bài). Làm mẫu đủ 3 trang `about`, `contact`, `privacy` bằng dữ liệu giả | - (route lỗi dùng `public/404.html`) |
-| `admin/categories.html` | `/admin/categories` | UC15 | Bảng: tên theo ngôn ngữ mặc định, các cột tên theo từng ngôn ngữ (ô trống hiện chữ xám "Chưa có, dùng: Đời sống"), slug, số bài, hành động. Modal thêm/sửa có một ô tên cho mỗi ngôn ngữ | Modal lỗi validate (thiếu tên ngôn ngữ mặc định), lỗi xóa danh mục đang có bài, hộp xác nhận xóa, rỗng |
+| `admin/categories.html` (**đã làm**) | `/admin/categories` | UC15 | Bảng: mỗi ngôn ngữ một cột tên, cột đầu là ngôn ngữ mặc định; slug của từng ngôn ngữ nằm dưới tên (ô trống hiện chữ xám "Chưa có, dùng: Đời sống"), số bài, menu ⋯ (Sửa, Xem trên blog, Xóa). Modal thêm/sửa có một ô tên cho mỗi ngôn ngữ | Loading (skeleton), rỗng, modal lỗi validate (thiếu tên ngôn ngữ mặc định), đang lưu, hộp xác nhận xóa (đang xóa), lỗi xóa danh mục đang có bài |
 | `admin/ui-translations.html` | `/admin/ui-translations` | UC17 | Ô tìm theo key/giá trị; bảng: cột key (font monospace), mỗi ngôn ngữ một cột, ô bấm vào thì sửa tại chỗ; ô thiếu giá trị tô nền nhạt + chữ xám. Modal thêm key | Đang sửa một ô, đang lưu, key trùng, rỗng, hộp xác nhận xóa key |
-| `admin/pages.html` | `/admin/pages` | UC18 | Bảng: tên trang, key, badge các ngôn ngữ đã có nội dung, trạng thái hiển thị, ngày cập nhật, nút "Sửa". Không phân trang | - |
+| `admin/pages.html` (**đã làm**) | `/admin/pages` | UC18 | Bảng: tên trang + URL public, key, badge các ngôn ngữ đã có nội dung, trạng thái hiển thị, ngày cập nhật, nút "Sửa". Không phân trang, không tìm kiếm | Bình thường, loading (skeleton) |
 | `admin/page-edit.html` | `/admin/pages/:key/edit` | UC18 | Thông tin key + URL (chỉ đọc), switch "Hiển thị", tab ngôn ngữ (mỗi tab: tiêu đề + rich text editor), nút "Lưu" và "Xem trên trang public" (mở tab mới) | Lỗi validate tab ngôn ngữ mặc định, lỗi "điền đủ cả hai hoặc để trống cả hai" ở tab khác, tab có lỗi được đánh dấu chấm đỏ, đang lưu, toast thành công |
 
 `js/theme.js` (UC10, **đã làm**):
