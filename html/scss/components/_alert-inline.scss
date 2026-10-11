@@ -1,0 +1,29 @@
+// Thông báo ngắn trong form (lỗi đăng nhập, đăng ký thành công...). Mặc định là lỗi, thêm --success cho thành công.
+//   <div class="alert-inline" role="alert">
+//     <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+//     <div>Email hoặc mật khẩu không đúng.</div>
+//   </div>
+.alert-inline {
+  display: flex;
+  gap: .625rem;
+  align-items: flex-start;
+  padding: .75rem 1rem;
+  font-size: .875rem;
+  color: var(--bl-text);
+  background-color: rgba(var(--bl-text-rgb), .04);
+  border-left: 3px solid var(--bl-danger);
+  border-radius: $border-radius;
+
+  > .bi {
+    flex-shrink: 0;
+    color: var(--bl-danger);
+  }
+}
+
+.alert-inline--success {
+  border-left-color: var(--bl-success);
+
+  > .bi {
+    color: var(--bl-success);
+  }
+}
