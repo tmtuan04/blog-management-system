@@ -32,6 +32,10 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 - `html/README.md`: cách dùng `_templates/public.html` và `_templates/auth.html`; bảng class thêm layout public, layout auth, `.alert-inline`.
 - `js/theme.js`: hỗ trợ nút đổi theme dạng switch (`input[type=checkbox][data-theme-toggle]`, dùng trong offcanvas mobile), đồng bộ `checked` theo theme.
 - Phase 2 doc: token `--bl-border-strong`, `--bl-btn-primary-hover` và các token `-rgb`; quy ước `data-i18n-placeholder`, `data-i18n-aria-label`; dữ liệu từ CSDL không gắn `data-i18n`.
+- Màn quản trị danh mục và trang tĩnh (B1), chỉ Super Admin (`data-demo-auths="super_admin"`):
+  - `admin/categories.html` (UC15): mỗi ngôn ngữ một cột tên, slug nằm dưới tên, ô chưa có tên hiện chữ xám "Chưa có, dùng: <tên mặc định>"; cột số bài; menu ⋯ (Sửa, Xem trên blog, Xóa); ô tìm theo tên. Modal thêm và modal sửa (điền sẵn tên, hiện slug hiện tại), hộp xác nhận xóa, hộp "Không thể xóa danh mục" cho danh mục đang có bài. Trạng thái demo: bình thường, loading (skeleton), rỗng, lỗi validate (thiếu tên ngôn ngữ mặc định), đang lưu, đang xóa, lỗi xóa.
+  - `admin/pages.html` (UC18): bảng tên trang + URL public, key, badge ngôn ngữ đã có nội dung, trạng thái hiển thị, ngày cập nhật, nút "Sửa" tới `page-edit.html`; không phân trang, không tìm kiếm. Dưới `sm` cột "Hiển thị" chuyển xuống dưới tên, nút "Sửa" chỉ còn icon. Trạng thái demo: bình thường, loading.
+  - Component `category-table`, `page-table`.
 
 ### Changed
 
@@ -41,6 +45,9 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
   - `docs/phase-2-huong-dan.md`: cách chọn reviewer, xử lý conflict và báo khi sửa phần dùng chung theo nhóm 3 người.
 - `layouts/_public.scss`: ở 768px chữ trên header (menu, "Viết bài", "Đăng nhập", "Bắt đầu") không còn xuống dòng; ô tìm kiếm co từ 240px xuống khi thiếu chỗ.
 - `layouts/_auth.scss`: nút Google/Github (thẻ `<a>`) căn giữa chữ theo chiều dọc.
+- `admin/categories.html`, `admin/pages.html` viết lại theo quy ước phase 2: bỏ icon SVG Lucide (dùng Bootstrap Icons), `style="..."` inline, `onclick` và script mở modal tự viết (dùng modal Bootstrap), class không tồn tại (`role-chip`, `cell-key`, `cell-fallback`, `lang-badge`, `code-chip`, `skeleton`) và thuộc tính `data-state-*` (dùng `data-demo`); thêm `data-i18n`, comment component, `<title>` đúng tên trang.
+- `html/index.html`: "Quản lý danh mục", "Quản lý trang tĩnh" thành link, badge "Đã xong". `html/SCREENS.md`: đánh dấu B1 xong.
+- Phase 2 doc mục 5.3: dòng `admin/categories.html`, `admin/pages.html` ghi "đã làm", bố cục bảng và trạng thái demo thực tế.
 - Phase 2 doc: mục 2.1 thay khối `package.json` mẫu bằng mô tả file thật; Bootstrap JS và Bootstrap Icons nạp từ CDN. Mục 7.2 ghi cách đánh dấu trạng thái demo bằng `data-demo`, `data-demo-auth`.
 - Phase 2 doc: `--bl-border` chỉ dùng cho đường kẻ, viền bảng; viền ô nhập dùng `--bl-border-strong`.
 - Phase 2 doc: mục 8 lập lại kế hoạch theo ngày vì phần nền và màn mẫu đã làm trước; B làm khung public/auth ngày 1, C bắt đầu từ các trang admin.
