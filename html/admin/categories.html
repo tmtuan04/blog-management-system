@@ -1,15 +1,9 @@
 <!doctype html>
-<!--
-  Khung mẫu trang quản trị (docs/phase-2-html.md mục 4.3).
-  Cách dùng: copy file này vào admin/, đổi <title>, đổi mục .is-active + aria-current trong sidebar,
-  rồi viết nội dung trong <main class="admin-content">. Màn mẫu đầy đủ: admin/posts.html.
-  Sửa sidebar hoặc topbar thì sửa ở mọi file trong admin/ trong cùng một PR.
--->
 <html lang="vi" data-bs-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tên trang · Inkwell</title>
+  <title>Danh mục · Inkwell</title>
 
   <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
   <script src="../js/theme.js"></script>
@@ -20,7 +14,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../css/main.css">
 </head>
-<body data-demo-states="normal" data-demo-auths="blog_owner super_admin">
+<body data-demo-states="normal loading empty error saving deleting in-use" data-demo-label-saving="Đang lưu" data-demo-label-deleting="Đang xóa" data-demo-label-in-use="Lỗi xóa" data-demo-auths="super_admin">
   <div class="admin-layout">
 
     <!-- component: admin-sidebar -->
@@ -153,384 +147,443 @@
       <main class="admin-content">
         <div class="admin-page-header">
           <div>
-            <h1 class="text-page-title mb-1">Danh mục</h1>
-            <p class="text-meta mb-0">Tên ở ngôn ngữ mặc định (Tiếng Việt) là bắt buộc. Ngôn ngữ chưa có tên sẽ hiện tên tiếng
-              Việt.</p>
+            <h1 class="text-page-title mb-1" data-i18n="admin.categories.title">Danh mục</h1>
+            <p class="text-meta mb-0" data-i18n="admin.categories.subtitle">Tên ở ngôn ngữ mặc định là bắt buộc. Ngôn ngữ chưa có tên sẽ hiện tên ở ngôn ngữ mặc định.</p>
           </div>
-
-          <button type="button" class="btn btn-primary" onclick="openAddCategory()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
-              stroke-linejoin="round" data-lucide="plus" class="lucide lucide-plus bi bi-plus-lg me-1" aria-hidden="true">
-              <path d="M5 12h14"></path>
-              <path d="M12 5v14"></path>
-            </svg>Thêm danh mục
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal">
+            <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
+            <span data-i18n="admin.categories.add">Thêm danh mục</span>
           </button>
-
-          <div class="modal-dialog" id="categoryModal" style="display: none">
-            <div class="modal-content">
-              <div class="modal-header border-0 pb-0">
-                <div>
-                  <h2 class="modal-title fs-5" id="catAddTitle">Thêm danh mục</h2>
-                </div>
-                <button type="button" class="btn-close close-modal-dialog" aria-label="Đóng"></button>
-              </div>
-              <div class="modal-body">
-                <div class="mb-3">
-                  <label class="form-label fw-medium" for="catVi">Tiếng Việt <span class="role-chip">Mặc định</span></label>
-                  <input type="text" class="form-control" id="catVi" value="" placeholder="Ví dụ: Du lịch">
-                  <div class="invalid-feedback">Nhập tên ở ngôn ngữ mặc định (Tiếng Việt).</div>
-                </div>
-                <div>
-                  <label class="form-label fw-medium" for="catEn">English</label>
-                  <input type="text" class="form-control" id="catEn" value="" placeholder="Để trống thì hiện tên tiếng Việt">
-                  <div class="lang-field-hint mt-1">Không bắt buộc.</div>
-                </div>
-                <p class="text-meta mt-3 mb-0">Slug tạo tự động từ tên của từng ngôn ngữ.</p>
-              </div>
-              <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary close-modal-dialog">Hủy</button>
-                <button type="button" class="btn btn-primary" data-loading-on="" data-loading-text="Đang lưu..."
-                  data-idle="Lưu">Lưu</button>
-              </div>
-            </div>
-          </div>
-
-          <script>
-            function openAddCategory() {
-              const modal = document.getElementById('categoryModal');
-              modal.style.display = 'block';
-            }
-            // Lấy khung hiển thị
-            const categoryModal = document.getElementById("categoryModal");
-
-              // Gắn sự kiện đóng cho tất cả nút có class close-modal-dialog
-            document.querySelectorAll(".close-modal-dialog").forEach(button => {
-              button.addEventListener("click", function () {
-                categoryModal.style.display = "none";
-              });
-            });
-          </script>
         </div>
 
-        <form class="row g-2 mb-3" role="search">
+        <!-- component: category-filter -->
+        <form class="row g-2 mb-3" role="search" aria-label="Tìm danh mục" data-i18n-aria-label="admin.categories.search_label" data-demo="normal loading error saving deleting in-use">
           <div class="col-12 col-md-6">
-            <label class="visually-hidden" for="categorySearch">Tìm theo tên ở mọi ngôn ngữ...</label>
+            <label class="visually-hidden" for="categorySearch" data-i18n="admin.categories.search_label">Tìm danh mục</label>
             <div class="search-input">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="search"
-                class="lucide lucide-search bi bi-search search-input__icon" aria-hidden="true">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.3-4.3"></path>
-              </svg>
-              <input type="search" class="form-control search-input__control" id="categorySearch"
-                placeholder="Tìm theo tên ở mọi ngôn ngữ...">
+              <i class="bi bi-search search-input__icon" aria-hidden="true"></i>
+              <input type="search" class="form-control search-input__control" id="categorySearch" name="q" placeholder="Tìm theo tên ở mọi ngôn ngữ..." data-i18n-placeholder="admin.categories.search_placeholder">
             </div>
           </div>
         </form>
+        <!-- /component: category-filter -->
 
-        <div class="table-responsive" data-state-hide="empty">
-          <table class="table table-hover align-middle">
+        <p class="visually-hidden" role="status" data-demo="loading" data-i18n="common.loading">Đang tải...</p>
+
+        <!-- component: category-table -->
+        <!-- Mỗi ngôn ngữ đang hoạt động là một cột tên; cột đầu là ngôn ngữ mặc định. Slug nằm dưới tên của từng ngôn ngữ -->
+        <div class="table-responsive" data-demo="normal loading error saving deleting in-use">
+          <table class="table table-hover align-middle category-table">
             <thead>
               <tr>
-                <th scope="col">Tiếng Việt <span class="role-chip">Mặc định</span></th>
+                <th scope="col">Tiếng Việt <span data-i18n="admin.categories.default_suffix">(mặc định)</span></th>
                 <th scope="col">English</th>
-                <th scope="col" class="d-none d-md-table-cell">Slug</th>
-                <th scope="col" class="text-end">Số bài</th>
-                <th scope="col"><span class="visually-hidden">Thao tác</span></th>
+                <th scope="col" class="category-table__count" data-i18n="admin.categories.col_posts">Số bài</th>
+                <th scope="col" class="category-table__actions"><span class="visually-hidden" data-i18n="common.actions">Thao tác</span></th>
               </tr>
             </thead>
-            <tbody data-state-hide="loading">
+            <tbody data-demo="normal error saving deleting in-use">
+              <!-- component: category-table-row -->
               <tr>
-                <td class="fw-semibold">Lập trình</td>
-                <td>Programming</td>
-                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">lap-trinh</span></td>
-                <td class="text-end font-monospace">6</td>
-                <td class="text-end">
+                <td>
+                  <span class="category-table__name">Lập trình</span>
+                  <span class="category-table__slug">lap-trinh</span>
+                </td>
+                <td>
+                  <span class="category-table__name">Programming</span>
+                  <span class="category-table__slug">programming</span>
+                </td>
+                <td class="category-table__count">6</td>
+                <td class="category-table__actions">
                   <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
                       <li>
-                        <hr class="dropdown-divider">
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
                       </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
+                      <li>
+                        <a class="dropdown-item" href="../public/category.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <!-- Danh mục đang có bài: backend trả lỗi, hiện hộp "Không thể xóa" -->
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#categoryInUseModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
                     </ul>
                   </div>
                 </td>
               </tr>
+              <!-- /component: category-table-row -->
+              <!-- component: category-table-row -->
               <tr>
-                <td class="fw-semibold">Đời sống</td>
-                <td><span class="cell-fallback">Chưa có, dùng: Đời sống</span></td>
-                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">doi-song</span></td>
-                <td class="text-end font-monospace">3</td>
-                <td class="text-end">
+                <td>
+                  <span class="category-table__name">Đời sống</span>
+                  <span class="category-table__slug">doi-song</span>
+                </td>
+                <td>
+                  <span class="category-table__fallback"><span data-i18n="admin.categories.fallback">Chưa có, dùng:</span> Đời sống</span>
+                </td>
+                <td class="category-table__count">2</td>
+                <td class="category-table__actions">
                   <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
                       <li>
-                        <hr class="dropdown-divider">
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
                       </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
+                      <li>
+                        <a class="dropdown-item" href="../public/category.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#categoryInUseModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
                     </ul>
                   </div>
                 </td>
               </tr>
+              <!-- /component: category-table-row -->
+              <!-- component: category-table-row -->
               <tr>
-                <td class="fw-semibold">Du lịch</td>
-                <td>Travel</td>
-                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">du-lich</span></td>
-                <td class="text-end font-monospace">2</td>
-                <td class="text-end">
+                <td>
+                  <span class="category-table__name">Du lịch</span>
+                  <span class="category-table__slug">du-lich</span>
+                </td>
+                <td>
+                  <span class="category-table__name">Travel</span>
+                  <span class="category-table__slug">travel</span>
+                </td>
+                <td class="category-table__count">1</td>
+                <td class="category-table__actions">
                   <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
                       <li>
-                        <hr class="dropdown-divider">
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
                       </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
+                      <li>
+                        <a class="dropdown-item" href="../public/category.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#categoryInUseModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
                     </ul>
                   </div>
                 </td>
               </tr>
+              <!-- /component: category-table-row -->
+              <!-- component: category-table-row -->
               <tr>
-                <td class="fw-semibold">Thiết kế</td>
-                <td><span class="cell-fallback">Chưa có, dùng: Thiết kế</span></td>
-                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">thiet-ke</span></td>
-                <td class="text-end font-monospace">1</td>
-                <td class="text-end">
+                <td>
+                  <span class="category-table__name">Thiết kế</span>
+                  <span class="category-table__slug">thiet-ke</span>
+                </td>
+                <td>
+                  <span class="category-table__fallback"><span data-i18n="admin.categories.fallback">Chưa có, dùng:</span> Thiết kế</span>
+                </td>
+                <td class="category-table__count">1</td>
+                <td class="category-table__actions">
                   <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
                       <li>
-                        <hr class="dropdown-divider">
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
                       </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
+                      <li>
+                        <a class="dropdown-item" href="../public/category.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#categoryInUseModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
                     </ul>
                   </div>
                 </td>
               </tr>
+              <!-- /component: category-table-row -->
+              <!-- component: category-table-row -->
               <tr>
-                <td class="fw-semibold">Công nghệ</td>
-                <td>Technology</td>
-                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">cong-nghe</span></td>
-                <td class="text-end font-monospace">0</td>
-                <td class="text-end">
+                <td>
+                  <span class="category-table__name">Công nghệ</span>
+                  <span class="category-table__slug">cong-nghe</span>
+                </td>
+                <td>
+                  <span class="category-table__name">Technology</span>
+                  <span class="category-table__slug">technology</span>
+                </td>
+                <td class="category-table__count">0</td>
+                <td class="category-table__actions">
                   <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
                       <li>
-                        <hr class="dropdown-divider">
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
                       </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
+                      <li>
+                        <a class="dropdown-item" href="../public/category.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <!-- Danh mục chưa có bài: hiện hộp xác nhận xóa -->
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
                     </ul>
                   </div>
                 </td>
               </tr>
+              <!-- /component: category-table-row -->
+              <!-- component: category-table-row -->
               <tr>
-                <td class="fw-semibold">Khởi nghiệp và quản trị doanh nghiệp vừa và nhỏ</td>
-                <td>Startups and small business management</td>
-                <td class="d-none d-md-table-cell"><span
-                    class="cell-key text-body-secondary text-break">khoi-nghiep-va-quan-tri-doanh-nghiep-vua-va-nho</span></td>
-                <td class="text-end font-monospace">0</td>
-                <td class="text-end">
+                <td>
+                  <span class="category-table__name">Khởi nghiệp và quản trị doanh nghiệp vừa và nhỏ</span>
+                  <span class="category-table__slug">khoi-nghiep-va-quan-tri-doanh-nghiep-vua-va-nho</span>
+                </td>
+                <td>
+                  <span class="category-table__name">Startups and small business management</span>
+                  <span class="category-table__slug">startups-and-small-business-management</span>
+                </td>
+                <td class="category-table__count">0</td>
+                <td class="category-table__actions">
                   <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
                       <li>
-                        <hr class="dropdown-divider">
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editCategoryModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
                       </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
+                      <li>
+                        <a class="dropdown-item" href="../public/category.html" target="_blank" rel="noopener">
+                          <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                          <span data-i18n="admin.posts.view_on_blog">Xem trên blog</span>
+                        </a>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
                     </ul>
                   </div>
                 </td>
               </tr>
+              <!-- /component: category-table-row -->
             </tbody>
-            <tbody data-state-show="loading" hidden="">
+            <tbody class="placeholder-glow" aria-hidden="true" data-demo="loading">
               <tr>
-                <td><span class="skeleton" style="width:70%"></span></td>
-                <td><span class="skeleton" style="width:55%"></span></td>
-                <td><span class="skeleton" style="width:45%"></span></td>
-                <td><span class="skeleton" style="width:30%"></span></td>
-                <td><span class="skeleton" style="width:20%"></span></td>
+                <td><span class="placeholder col-8 category-table__skeleton-name"></span><span class="placeholder placeholder-sm col-5"></span></td>
+                <td><span class="placeholder col-8 category-table__skeleton-name"></span><span class="placeholder placeholder-sm col-5"></span></td>
+                <td class="category-table__count"><span class="placeholder col-6"></span></td>
+                <td class="category-table__actions"></td>
               </tr>
               <tr>
-                <td><span class="skeleton" style="width:70%"></span></td>
-                <td><span class="skeleton" style="width:55%"></span></td>
-                <td><span class="skeleton" style="width:45%"></span></td>
-                <td><span class="skeleton" style="width:30%"></span></td>
-                <td><span class="skeleton" style="width:20%"></span></td>
+                <td><span class="placeholder col-8 category-table__skeleton-name"></span><span class="placeholder placeholder-sm col-5"></span></td>
+                <td><span class="placeholder col-8 category-table__skeleton-name"></span><span class="placeholder placeholder-sm col-5"></span></td>
+                <td class="category-table__count"><span class="placeholder col-6"></span></td>
+                <td class="category-table__actions"></td>
               </tr>
               <tr>
-                <td><span class="skeleton" style="width:70%"></span></td>
-                <td><span class="skeleton" style="width:55%"></span></td>
-                <td><span class="skeleton" style="width:45%"></span></td>
-                <td><span class="skeleton" style="width:30%"></span></td>
-                <td><span class="skeleton" style="width:20%"></span></td>
+                <td><span class="placeholder col-8 category-table__skeleton-name"></span><span class="placeholder placeholder-sm col-5"></span></td>
+                <td><span class="placeholder col-8 category-table__skeleton-name"></span><span class="placeholder placeholder-sm col-5"></span></td>
+                <td class="category-table__count"><span class="placeholder col-6"></span></td>
+                <td class="category-table__actions"></td>
               </tr>
               <tr>
-                <td><span class="skeleton" style="width:70%"></span></td>
-                <td><span class="skeleton" style="width:55%"></span></td>
-                <td><span class="skeleton" style="width:45%"></span></td>
-                <td><span class="skeleton" style="width:30%"></span></td>
-                <td><span class="skeleton" style="width:20%"></span></td>
+                <td><span class="placeholder col-8 category-table__skeleton-name"></span><span class="placeholder placeholder-sm col-5"></span></td>
+                <td><span class="placeholder col-8 category-table__skeleton-name"></span><span class="placeholder placeholder-sm col-5"></span></td>
+                <td class="category-table__count"><span class="placeholder col-6"></span></td>
+                <td class="category-table__actions"></td>
               </tr>
             </tbody>
           </table>
         </div>
-        
-        <!-- Nội dung trang -->
+        <!-- /component: category-table -->
+
+        <!-- component: empty-state -->
+        <div class="empty-state" data-demo="empty">
+          <i class="bi bi-folder2-open empty-state__icon" aria-hidden="true"></i>
+          <h2 class="empty-state__title" data-i18n="admin.categories.empty_title">Chưa có danh mục nào</h2>
+          <p class="empty-state__text" data-i18n="admin.categories.empty_text">Tạo danh mục để tác giả chọn khi viết bài và người đọc lọc bài theo chủ đề.</p>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal" data-i18n="admin.categories.add_first">Thêm danh mục đầu tiên</button>
+        </div>
+        <!-- /component: empty-state -->
       </main>
     </div>
   </div>
+
+  <!-- component: category-form-dialog -->
+  <!-- Modal thêm danh mục: mỗi ngôn ngữ đang hoạt động một ô tên, ô của ngôn ngữ mặc định bắt buộc -->
+  <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalTitle" aria-hidden="true" data-demo-modal="error saving">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content" novalidate>
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="categoryModalTitle" data-i18n="admin.categories.add_title">Thêm danh mục</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="categoryNameVi">Tiếng Việt <span class="text-meta" data-i18n="admin.categories.default_suffix">(mặc định)</span></label>
+            <input type="text" class="form-control" id="categoryNameVi" name="name_vi" maxlength="100" placeholder="Ví dụ: Du lịch" data-i18n-placeholder="admin.categories.name_placeholder" required data-demo-invalid>
+            <div class="invalid-feedback" data-i18n="validation.category_name_default_required">Nhập tên danh mục ở ngôn ngữ mặc định (Tiếng Việt).</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="categoryNameEn">English</label>
+            <input type="text" class="form-control" id="categoryNameEn" name="name_en" maxlength="100" aria-describedby="categoryNameEnHelp">
+            <div class="form-text" id="categoryNameEnHelp" data-i18n="admin.categories.optional_hint">Không bắt buộc. Để trống thì hiện tên ở ngôn ngữ mặc định.</div>
+          </div>
+          <p class="text-meta mb-0" data-i18n="admin.categories.slug_hint">Slug được tạo tự động từ tên của từng ngôn ngữ.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary" data-demo-loading="saving">
+            <span data-i18n="common.save">Lưu</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- /component: category-form-dialog -->
+
+  <!-- component: category-form-dialog -->
+  <!-- Modal sửa danh mục: cùng form với modal thêm, điền sẵn tên và hiện slug hiện tại -->
+  <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content" novalidate>
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="editCategoryModalTitle" data-i18n="admin.categories.edit_title">Sửa danh mục</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="editCategoryNameVi">Tiếng Việt <span class="text-meta" data-i18n="admin.categories.default_suffix">(mặc định)</span></label>
+            <input type="text" class="form-control" id="editCategoryNameVi" name="name_vi" maxlength="100" value="Lập trình" required aria-describedby="editCategorySlugVi">
+            <div class="invalid-feedback" data-i18n="validation.category_name_default_required">Nhập tên danh mục ở ngôn ngữ mặc định (Tiếng Việt).</div>
+            <div class="form-text" id="editCategorySlugVi"><span data-i18n="admin.categories.slug">Slug</span>: <span class="font-monospace">lap-trinh</span></div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="editCategoryNameEn">English</label>
+            <input type="text" class="form-control" id="editCategoryNameEn" name="name_en" maxlength="100" value="Programming" aria-describedby="editCategorySlugEn">
+            <div class="form-text" id="editCategorySlugEn"><span data-i18n="admin.categories.slug">Slug</span>: <span class="font-monospace">programming</span></div>
+          </div>
+          <p class="text-meta mb-0" data-i18n="admin.categories.slug_hint">Slug được tạo tự động từ tên của từng ngôn ngữ.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary">
+            <span data-i18n="common.save">Lưu</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- /component: category-form-dialog -->
+
+  <!-- component: confirm-dialog -->
+  <div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="deleteCategoryModalTitle" aria-hidden="true" data-demo-modal="deleting">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="deleteCategoryModalTitle" data-i18n="admin.categories.delete_title">Xóa danh mục?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-semibold mb-2">Công nghệ</p>
+          <p class="text-body-secondary mb-0" data-i18n="admin.categories.delete_warning">Tên danh mục ở mọi ngôn ngữ sẽ bị xóa. Không thể hoàn tác.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="button" class="btn btn-danger" data-demo-loading="deleting" data-loading-text="Đang xóa..." data-loading-i18n="common.deleting">
+            <span data-i18n="common.delete">Xóa</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: confirm-dialog -->
+
+  <!-- component: category-in-use-dialog -->
+  <!-- Backend từ chối xóa danh mục đang có bài viết (UC15) -->
+  <div class="modal fade" id="categoryInUseModal" tabindex="-1" aria-labelledby="categoryInUseModalTitle" aria-hidden="true" data-demo-modal="in-use">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="categoryInUseModalTitle" data-i18n="admin.categories.in_use_title">Không thể xóa danh mục</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-semibold mb-2">Lập trình</p>
+          <!-- Phase 4: số bài truyền vào key dịch dạng tham số {count} -->
+          <p class="text-body-secondary mb-0" data-i18n="admin.categories.in_use_text">Danh mục đang có 6 bài viết. Chuyển các bài viết sang danh mục khác rồi thử xóa lại.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <a class="btn btn-outline-secondary" href="posts.html?category=1" data-i18n="admin.categories.view_posts">Xem bài viết</a>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-i18n="common.understood">Đã hiểu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: category-in-use-dialog -->
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../js/demo-state.js"></script>

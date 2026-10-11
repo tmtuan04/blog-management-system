@@ -1,0 +1,39 @@
+// Bảng trang tĩnh (UC18, admin/pages.html): tên trang + URL public, badge ngôn ngữ đã có nội dung,
+// trạng thái hiển thị, nút "Sửa". Danh sách cố định, không phân trang.
+
+.page-table__name {
+  display: block;
+  font-weight: 600;
+}
+
+.page-table__url {
+  display: block;
+  margin-top: .125rem;
+  font-family: $font-family-monospace;
+  font-size: .75rem;
+  color: var(--bl-text-secondary);
+}
+
+// Dưới sm cột "Hiển thị" bị ẩn, badge trạng thái chuyển xuống dưới URL
+.page-table__visibility-xs {
+  margin-top: .5rem;
+}
+
+// Bọc badge trong div riêng: đặt flex lên <td> sẽ làm hỏng cột của bảng
+.page-table__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .375rem;
+}
+
+.page-table__actions {
+  width: 1%;
+  text-align: end;
+  white-space: nowrap;
+}
+
+// Hàng skeleton khi đang tải
+.page-table__skeleton-name {
+  display: block;
+  margin-bottom: .375rem;
+}
