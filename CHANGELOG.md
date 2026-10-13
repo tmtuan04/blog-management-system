@@ -42,6 +42,11 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
   - `admin/posts.html`: trạng thái demo "Đã xóa" (`deleted`) hiện toast "Đã xóa bài viết." góc trên phải; chữ gắn `data-i18n` (`common.success`, `admin.posts.delete_success`, `common.close`).
   - `demo-state.js`: `data-demo-toast="<trạng thái>"` tự hiện toast ở trạng thái đó, không tự ẩn để chụp màn hình.
   - `html/README.md`: thêm dòng Toast vào bảng "Có sẵn để dùng". Phase 2 doc: C1 đánh dấu đã làm, `admin/posts.html` thêm trạng thái đã xóa. `SCREENS.md`: bỏ toast khỏi A2.
+- Trang chủ và thẻ bài viết (A2):
+  - `public/index.html` (UC05): thanh chip danh mục cuộn ngang ("Tất cả" đang chọn), 10 thẻ bài viết, phân trang 1–10 / 24; sidebar từ `lg` gồm "Đọc nhiều nhất" (5 bài theo lượt xem), danh mục kèm số bài, link Giới thiệu / Liên hệ / Chính sách bảo mật. Dữ liệu giả có tiêu đề 3 dòng, tóm tắt dài, bài không ảnh, tên tác giả dài, chuỗi không dấu rất dài. Trạng thái demo: bình thường, loading (skeleton cả feed và sidebar), rỗng ("Chưa có bài viết ở ngôn ngữ này"); 4 vai trò của header.
+  - Component `post-card` (dòng tác giả · danh mục, tiêu đề cắt 3 dòng, tóm tắt cắt 2 dòng, ngày đăng · lượt xem, thumbnail 80×53 / 160×107 từ `md`; biến thể `--compact`, `--skeleton`), `category-chips` (`--wrap`, `.is-active`, `__count`), `aside-section`, `aside-links`.
+  - `html/index.html`: "Trang chủ" thành link, badge "Đã xong". `html/README.md`: thêm thẻ bài viết, chip danh mục, khối sidebar vào bảng "Có sẵn để dùng". Phase 2 doc: `public/index.html` và A2 đánh dấu đã làm.
+  - `SCREENS.md` cập nhật theo phase 2 doc 1.4: `category.html` chuyển từ A4 sang C2 (nhánh A4 đổi thành `feature/html-post-detail`), thêm bảng C (C1, C2, C3), A6 đổi thành sửa lỗi phần dùng chung, chờ C3; số màn A 5, B 14, C 1.
 
 ### Changed
 
