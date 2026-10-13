@@ -1,0 +1,24 @@
+// Toast notification dùng chung cho toàn dự án.
+// Tùy chỉnh Bootstrap 5.3 theo design tokens.
+
+.toast {
+  color: var(--bl-text);
+  background-color: var(--bl-bg);
+  border: 1px solid var(--bl-border-strong);
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+
+  .toast-header {
+    color: var(--bl-text);
+    background-color: var(--bl-bg);
+    border-bottom: 1px solid var(--bl-border);
+  }
+
+  .toast-body {
+    color: var(--bl-text-secondary);
+  }
+}
+
+.toast__icon {
+  color: var(--bl-success);
+}
