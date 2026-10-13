@@ -92,6 +92,7 @@ Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu
 | Layout public | `.site-header` (`__nav`, `__search`, `__actions`, `__write`, `__login`), `.site-search-bar`, `.site-body` (`__main`, `__aside`), `.site-footer`, `.public-offcanvas` |
 | Layout auth | `.auth-layout` (`__header`, `__main`, `__footer`), `.auth-card` (`__title`, `__oauth`, `__oauth-icon`, `__switch`, `__legal`), `.auth-divider` |
 | Thông báo trong form | `.alert-inline` (lỗi), `.alert-inline--success` |
+| Toast | `.toast` của Bootstrap trong `.toast-container`, icon `.toast__icon`; demo: `data-demo-toast="<trạng thái>"`, mẫu ở cuối [admin/posts.html](admin/posts.html) |
 | Nút đổi theme | Xem comment đầu [js/theme.js](js/theme.js) |
 | Trạng thái demo | Xem comment đầu [js/demo-state.js](js/demo-state.js). Mở trang với `?demo=empty&auth=super_admin` để vào thẳng một trạng thái |
 
