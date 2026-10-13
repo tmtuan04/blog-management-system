@@ -1,22 +1,13 @@
-// Toast notification dùng chung cho toàn dự án.
-// Tùy chỉnh Bootstrap 5.3 theo design tokens.
+// Toast thông báo dùng chung (C1). Dùng .toast của Bootstrap, chỉ nối biến --bs-toast-* vào token.
+// Demo: gắn data-demo-toast="<trạng thái>" để tự hiện ở trạng thái đó (xem js/demo-state.js).
 
 .toast {
-  color: var(--bl-text);
-  background-color: var(--bl-bg);
-  border: 1px solid var(--bl-border-strong);
-  border-radius: $border-radius;
-  box-shadow: $box-shadow;
-
-  .toast-header {
-    color: var(--bl-text);
-    background-color: var(--bl-bg);
-    border-bottom: 1px solid var(--bl-border);
-  }
-
-  .toast-body {
-    color: var(--bl-text-secondary);
-  }
+  --bs-toast-color: var(--bl-text-secondary);
+  --bs-toast-bg: var(--bl-bg);
+  --bs-toast-border-color: var(--bl-border-strong);
+  --bs-toast-header-color: var(--bl-text);
+  --bs-toast-header-bg: var(--bl-bg);
+  --bs-toast-header-border-color: var(--bl-border);
 }
 
 .toast__icon {

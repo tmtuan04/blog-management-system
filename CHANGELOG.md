@@ -37,6 +37,11 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
   - `admin/pages.html` (UC18): bảng tên trang + URL public, key, badge ngôn ngữ đã có nội dung, trạng thái hiển thị, ngày cập nhật, nút "Sửa" tới `page-edit.html`; không phân trang, không tìm kiếm. Dưới `sm` cột "Hiển thị" chuyển xuống dưới tên, nút "Sửa" chỉ còn icon. Trạng thái demo: bình thường, loading.
   - Component `category-table`, `page-table`.
 - Component `user-table` (`scss/components/_user-table.scss`): ô người dùng (avatar + họ tên + email), nhãn "(Bạn)", badge vai trò (Super Admin nền đậm), hàng tài khoản bị khóa làm mờ, skeleton.
+- Toast (C1):
+  - `scss/components/_toast.scss`: `.toast` của Bootstrap, nối biến `--bs-toast-*` vào token `--bl-*`; icon `.toast__icon` màu `--bl-success`.
+  - `admin/posts.html`: trạng thái demo "Đã xóa" (`deleted`) hiện toast "Đã xóa bài viết." góc trên phải; chữ gắn `data-i18n` (`common.success`, `admin.posts.delete_success`, `common.close`).
+  - `demo-state.js`: `data-demo-toast="<trạng thái>"` tự hiện toast ở trạng thái đó, không tự ẩn để chụp màn hình.
+  - `html/README.md`: thêm dòng Toast vào bảng "Có sẵn để dùng". Phase 2 doc: C1 đánh dấu đã làm, `admin/posts.html` thêm trạng thái đã xóa. `SCREENS.md`: bỏ toast khỏi A2.
 
 ### Changed
 
