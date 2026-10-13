@@ -22,8 +22,10 @@
 
 // Components: mỗi component một file, xếp theo tên
 @import "components/alert-inline";
+@import "components/aside-section";
 @import "components/avatar";
 @import "components/brand";
+@import "components/category-chips";
 @import "components/category-table";
 @import "components/demo-state";
 @import "components/dropdown";
@@ -32,6 +34,7 @@
 @import "components/page-table";
 @import "components/page-tabs";
 @import "components/pagination";
+@import "components/post-card";
 @import "components/post-table";
 @import "components/search-input";
 @import "components/status-badge";

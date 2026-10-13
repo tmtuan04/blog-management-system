@@ -87,6 +87,9 @@ Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu
 | Bảng | `.table` của Bootstrap đã chỉnh sẵn màu, kẻ ngang nhạt |
 | Phân trang | `.pagination-bar` bọc dòng "Hiển thị..." và `.pagination` của Bootstrap |
 | Trạng thái rỗng | `.empty-state`, `__icon`, `__title`, `__text` |
+| Thẻ bài viết | `.post-card` (`__body`, `__author`, `__author-name`, `__category`, `__title`, `__excerpt`, `__meta`, `__thumb`); `--compact` cho sidebar, `--skeleton` khi loading. Bài không có ảnh thì bỏ `__thumb`. Mẫu ở [public/index.html](public/index.html) |
+| Chip danh mục | `.category-chips` (một hàng cuộn ngang) hoặc `.category-chips--wrap`; `.category-chip`, `.is-active` + `aria-current="page"`, số bài trong `.category-chip__count` |
+| Khối sidebar public | `.aside-section`, `.aside-section__title`; dòng link nhỏ `.aside-links` |
 | Dropdown, modal | Dùng thẳng của Bootstrap, màu đã theo theme |
 | Layout admin | `.admin-layout`, `.admin-sidebar`, `.admin-topbar`, `.admin-content`, `.admin-page-header` |
 | Layout public | `.site-header` (`__nav`, `__search`, `__actions`, `__write`, `__login`), `.site-search-bar`, `.site-body` (`__main`, `__aside`), `.site-footer`, `.public-offcanvas` |

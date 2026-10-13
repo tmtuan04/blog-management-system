@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trang chủ · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="../js/theme.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body data-demo-states="normal loading empty" data-demo-auths="guest user blog_owner super_admin">
+
+  <!-- component: site-header -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <button type="button" class="icon-btn d-md-none" data-bs-toggle="offcanvas" data-bs-target="#publicMenu" aria-controls="publicMenu" aria-label="Mở menu" data-i18n-aria-label="common.open_menu">
+        <i class="bi bi-list" aria-hidden="true"></i>
+      </button>
+      <a class="brand" href="index.html" data-i18n="common.site_name">Inkwell</a>
+
+      <nav class="site-header__nav" aria-label="Menu chính" data-i18n-aria-label="menu.label">
+        <a class="is-active" href="index.html" aria-current="page" data-i18n="menu.home">Trang chủ</a>
+        <a href="page.html?key=about" data-i18n="menu.about">Giới thiệu</a>
+      </nav>
+
+      <form class="site-header__search" action="search.html" role="search">
+        <label class="visually-hidden" for="siteSearch" data-i18n="common.search">Tìm kiếm</label>
+        <div class="search-input">
+          <i class="bi bi-search search-input__icon" aria-hidden="true"></i>
+          <input type="search" class="form-control search-input__control" id="siteSearch" name="q" placeholder="Tìm kiếm" data-i18n-placeholder="common.search">
+        </div>
+      </form>
+
+      <div class="site-header__actions">
+        <button type="button" class="icon-btn d-md-none" data-bs-toggle="collapse" data-bs-target="#siteSearchBar" aria-controls="siteSearchBar" aria-expanded="false" aria-label="Tìm kiếm" data-i18n-aria-label="common.search">
+          <i class="bi bi-search" aria-hidden="true"></i>
+        </button>
+
+        <a class="site-header__write" href="../admin/post-create.html" data-demo-auth="blog_owner super_admin">
+          <i class="bi bi-pencil-square" aria-hidden="true"></i>
+          <span data-i18n="menu.write">Viết bài</span>
+        </a>
+
+        <!-- component: language-switcher -->
+        <div class="dropdown d-none d-md-block">
+          <button type="button" class="icon-btn icon-btn--text" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Ngôn ngữ" data-i18n-aria-label="common.language">
+            VI <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item active" href="#" aria-current="true">Tiếng Việt <i class="bi bi-check2 ms-auto" aria-hidden="true"></i></a></li>
+            <li><a class="dropdown-item" href="#">English</a></li>
+          </ul>
+        </div>
+        <!-- /component: language-switcher -->
+
+        <!-- component: theme-toggle -->
+        <button type="button" class="icon-btn theme-toggle d-none d-md-inline-flex" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối" data-i18n-aria-label="common.dark_mode">
+          <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+          <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+        </button>
+        <!-- /component: theme-toggle -->
+
+        <a class="site-header__login" href="login.html" data-demo-auth="guest" data-i18n="auth.login">Đăng nhập</a>
+        <a class="btn btn-primary btn-sm px-3" href="register.html" data-demo-auth="guest" data-i18n="auth.get_started">Bắt đầu</a>
+
+        <!-- component: user-menu -->
+        <div class="dropdown ms-1" data-demo-auth="user blog_owner super_admin">
+          <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản" data-i18n-aria-label="menu.account">
+            <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="user">LC</span>
+            <img class="avatar" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+            <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end">
+            <div class="px-3 py-2" data-demo-auth="user">
+              <div class="fw-semibold">Lê Minh Cường</div>
+              <div class="text-meta">user@blog.local</div>
+            </div>
+            <div class="px-3 py-2" data-demo-auth="blog_owner">
+              <div class="fw-semibold">Nguyễn Văn An</div>
+              <div class="text-meta">owner1@blog.local</div>
+            </div>
+            <div class="px-3 py-2" data-demo-auth="super_admin">
+              <div class="fw-semibold">Super Admin</div>
+              <div class="text-meta">admin@blog.local</div>
+            </div>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item" href="profile.html">
+              <i class="bi bi-person" aria-hidden="true"></i>
+              <span data-i18n="menu.profile">Hồ sơ</span>
+            </a>
+            <a class="dropdown-item" href="../admin/posts.html" data-demo-auth="blog_owner super_admin">
+              <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+              <span data-i18n="menu.manage_posts">Quản lý bài viết</span>
+            </a>
+            <a class="dropdown-item" href="../admin/users.html" data-demo-auth="super_admin">
+              <i class="bi bi-speedometer2" aria-hidden="true"></i>
+              <span data-i18n="menu.admin">Trang quản trị</span>
+            </a>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item" href="login.html">
+              <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+              <span data-i18n="menu.logout">Đăng xuất</span>
+            </a>
+          </div>
+        </div>
+        <!-- /component: user-menu -->
+      </div>
+    </div>
+  </header>
+  <!-- /component: site-header -->
+
+  <!-- component: site-search-bar (chỉ dưới md, mở bằng nút 🔍 trên header) -->
+  <form class="site-search-bar collapse d-md-none" id="siteSearchBar" action="search.html" role="search">
+    <button type="button" class="icon-btn" data-bs-toggle="collapse" data-bs-target="#siteSearchBar" aria-controls="siteSearchBar" aria-label="Đóng tìm kiếm" data-i18n-aria-label="common.close_search">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <label class="visually-hidden" for="mobileSearch" data-i18n="common.search">Tìm kiếm</label>
+    <input type="search" class="form-control" id="mobileSearch" name="q" placeholder="Tìm bài viết..." data-i18n-placeholder="common.search_posts">
+  </form>
+  <!-- /component: site-search-bar -->
+
+  <div class="site-body">
+    <main class="site-body__main">
+      <h1 class="visually-hidden" data-i18n="post.latest">Bài viết mới nhất</h1>
+
+      <!-- component: category-chips -->
+      <nav class="category-chips" aria-label="Danh mục" data-i18n-aria-label="post.categories">
+        <a class="category-chip is-active" href="index.html" aria-current="page" data-i18n="common.all">Tất cả</a>
+        <a class="category-chip" href="category.html?slug=lap-trinh">Lập trình</a>
+        <a class="category-chip" href="category.html?slug=doi-song">Đời sống</a>
+        <a class="category-chip" href="category.html?slug=du-lich">Du lịch</a>
+        <a class="category-chip" href="category.html?slug=am-thuc">Ẩm thực</a>
+        <a class="category-chip" href="category.html?slug=sach">Sách</a>
+      </nav>
+      <!-- /component: category-chips -->
+
+      <!-- component: post-list -->
+      <div class="post-list" data-demo="normal">
+        <!-- component: post-card -->
+        <article class="post-card">
+          <div class="post-card__body">
+            <div class="post-card__author">
+              <img class="avatar avatar--sm" src="../assets/img/avatars/2.svg" alt="">
+              <span class="post-card__author-name">Nguyễn Văn An</span>
+              <span class="post-card__sep" aria-hidden="true">·</span>
+              <a class="post-card__category" href="category.html?slug=lap-trinh">Lập trình</a>
+            </div>
+            <h2 class="post-card__title text-card-title"><a href="post-detail.html?slug=huong-dan-angular">Hướng dẫn Angular</a></h2>
+            <p class="post-card__excerpt text-excerpt">Tìm hiểu cách dựng một ứng dụng Angular từ đầu: component, service, routing và cách gọi API từ backend.</p>
+            <div class="post-card__meta text-meta">
+              <time datetime="2026-10-12">12/10/2026</time>
+              <span aria-hidden="true">·</span>
+              <span><i class="bi bi-eye" aria-hidden="true"></i>120 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+            </div>
+          </div>
+          <a class="post-card__thumb" href="post-detail.html?slug=huong-dan-angular" tabindex="-1" aria-hidden="true">
+            <img src="../assets/img/posts/1.svg" alt="">
+          </a>
+        </article>
+        <!-- /component: post-card -->
+
+        <!-- component: post-card -->
+        <article class="post-card">
+          <div class="post-card__body">
+            <div class="post-card__author">
+              <span class="avatar avatar--sm avatar--initials" aria-hidden="true">TB</span>
+              <span class="post-card__author-name">Trần Thị Bình</span>
+              <span class="post-card__sep" aria-hidden="true">·</span>
+              <a class="post-card__category" href="category.html?slug=lap-trinh">Lập trình</a>
+            </div>
+            <h2 class="post-card__title text-card-title"><a href="post-detail.html?slug=tu-con-so-khong-den-ung-dung-web-dau-tien">Từ con số không đến ứng dụng web đầu tiên: hành trình sáu tháng vừa đi làm vừa tự học lập trình vào mỗi buổi tối</a></h2>
+            <p class="post-card__excerpt text-excerpt">Không có bằng cấp công nghệ thông tin, không có người hướng dẫn, chỉ có một chiếc laptop cũ và hai tiếng mỗi tối.</p>
+            <div class="post-card__meta text-meta">
+              <time datetime="2026-10-11">11/10/2026</time>
+              <span aria-hidden="true">·</span>
+              <span><i class="bi bi-eye" aria-hidden="true"></i>86 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+            </div>
+          </div>
+          <a class="post-card__thumb" href="post-detail.html?slug=tu-con-so-khong-den-ung-dung-web-dau-tien" tabindex="-1" aria-hidden="true">
+            <img src="../assets/img/posts/2.svg" alt="">
+          </a>
+        </article>
+        <!-- /component: post-card -->
+
+        <!-- component: post-card -->
+        <article class="post-card">
+          <div class="post-card__body">
+            <div class="post-card__author">
+              <span class="avatar avatar--sm avatar--initials" aria-hidden="true">TB</span>
+              <span class="post-card__author-name">Trần Thị Bình</span>
+              <span class="post-card__sep" aria-hidden="true">·</span>
+              <a class="post-card__category" href="category.html?slug=doi-song">Đời sống</a>
+            </div>
+            <h2 class="post-card__title text-card-title"><a href="post-detail.html?slug=mot-tuan-song-cham-o-da-lat">Một tuần sống chậm ở Đà Lạt</a></h2>
+            <p class="post-card__excerpt text-excerpt">Không lịch trình, không check-in, chỉ có sương sớm, cà phê nóng và những buổi chiều đi bộ quanh hồ Xuân Hương.</p>
+            <div class="post-card__meta text-meta">
+              <time datetime="2026-10-10">10/10/2026</time>
+              <span aria-hidden="true">·</span>
+              <span><i class="bi bi-eye" aria-hidden="true"></i>54 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+            </div>
+          </div>
+        </article>
+        <!-- /component: post-card -->
+
+        <!-- component: post-card -->
+        <article class="post-card">
+          <div class="post-card__body">
+            <div class="post-card__author">
+              <span class="avatar avatar--sm avatar--initials" aria-hidden="true">TN</span>
+              <span class="post-card__author-name">Tôn Nữ Hoàng Thị Phương Thảo Nguyên</span>
+              <span class="post-card__sep" aria-hidden="true">·</span>
+              <a class="post-card__category" href="category.html?slug=lap-trinh">Lập trình</a>
+            </div>
+            <h2 class="post-card__title text-card-title"><a href="post-detail.html?slug=viet-code-sach-hon-moi-ngay">Viết code sạch hơn mỗi ngày với năm thói quen nhỏ</a></h2>
+            <p class="post-card__excerpt text-excerpt">Đặt tên rõ nghĩa, giữ hàm ngắn, viết test trước khi sửa lỗi, xóa code không dùng và đọc lại diff trước khi commit. Nghe thì đơn giản, nhưng duy trì đều đặn mỗi ngày mới là phần khó. Bài viết này chia sẻ cách mình biến từng thói quen thành việc tự động, kèm ví dụ cụ thể từ một dự án thật đã chạy được hai năm.</p>
+            <div class="post-card__meta text-meta">
+              <time datetime="2026-10-09">09/10/2026</time>
+              <span aria-hidden="true">·</span>
+              <span><i class="bi bi-eye" aria-hidden="true"></i>97 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+            </div>
+          </div>
+          <a class="post-card__thumb" href="post-detail.html?slug=viet-code-sach-hon-moi-ngay" tabindex="-1" aria-hidden="true">
+            <img src="../assets/img/posts/3.svg" alt="">
+          </a>
+        </article>
+        <!-- /component: post-card -->
+
+        <!-- component: post-card -->
+        <article class="post-card">
+          <div class="post-card__body">
+            <div class="post-card__author">
+              <img class="avatar avatar--sm" src="../assets/img/avatars/2.svg" alt="">
+              <span class="post-card__author-name">Nguyễn Văn An</span>
+              <span class="post-card__sep" aria-hidden="true">·</span>
+              <a class="post-card__category" href="category.html?slug=lap-trinh">Lập trình</a>
+            </div>
+            <h2 class="post-card__title text-card-title"><a href="post-detail.html?slug=dat-ten-bien-the-nao-cho-de-doc">Đặt tên biến thế nào cho dễ đọc: getUserProfileWithPostsAndCommentsByCategoryIdAndLanguageCode</a></h2>
+            <p class="post-card__excerpt text-excerpt">Tên dài chưa chắc đã rõ: Khongdaurattdaidekiemtrachuoikhongcokhoangtrangtrenthebaivietxemcotranhaykhong.</p>
+            <div class="post-card__meta text-meta">
+              <time datetime="2026-10-08">08/10/2026</time>
+              <span aria-hidden="true">·</span>
+              <span><i class="bi bi-eye" aria-hidden="true"></i>41 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+            </div>
+          </div>
+          <a class="post-card__thumb" href="post-detail.html?slug=dat-ten-bien-the-nao-cho-de-doc" tabindex="-1" aria-hidden="true">
+            <img src="../assets/img/posts/4.svg" alt="">
+          </a>
+        </article>
+        <!-- /component: post-card -->
+
+        <!-- component: post-card -->
+        <article class="post-card">
+          <div class="post-card__body">
+            <div class="post-card__author">
+              <span class="avatar avatar--sm avatar--initials" aria-hidden="true">TN</span>
+              <span class="post-card__author-name">Tôn Nữ Hoàng Thị Phương Thảo Nguyên</span>
+              <span class="post-card__sep" aria-hidden="true">·</span>
+              <a class="post-card__category" href="category.html?slug=du-lich">Du lịch</a>
+            </div>
+            <h2 class="post-card__title text-card-title"><a href="post-detail.html?slug=ghi-chep-ha-giang-mua-hoa-tam-giac-mach">Ghi chép từ chuyến đi Hà Giang mùa hoa tam giác mạch</a></h2>
+            <p class="post-card__excerpt text-excerpt">Bốn ngày, ba đêm, hơn bảy trăm cây số đường đèo và những cánh đồng hoa hồng tím trải dài dưới chân núi đá.</p>
+            <div class="post-card__meta text-meta">
+              <time datetime="2026-10-07">07/10/2026</time>
+              <span aria-hidden="true">·</span>
+              <span><i class="bi bi-eye" aria-hidden="true"></i>198 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+            </div>
+          </div>
+          <a class="post-card__thumb" href="post-detail.html?slug=ghi-chep-ha-giang-mua-hoa-tam-giac-mach" tabindex="-1" aria-hidden="true">
+            <img src="../assets/img/posts/5.svg" alt="">
+          </a>
+        </article>
+        <!-- /component: post-card -->
+
+        <!-- component: post-card -->
+        <article class="post-card">
+          <div class="post-card__body">
+            <div class="post-card__author">
+              <img class="avatar avatar--sm" src="../assets/img/avatars/2.svg" alt="">
+              <span class="post-card__author-name">Nguyễn Văn An</span>
+              <span class="post-card__sep" aria-hidden="true">·</span>
+              <a class="post-card__category" href="category.html?slug=lap-trinh">Lập trình</a>
+            </div>
+            <h2 class="post-card__title text-card-title"><a href="post-detail.html?slug=lam-quen-voi-typescript">Làm quen với TypeScript trong một buổi chiều</a></h2>
+            <p class="post-card__excerpt text-excerpt">Kiểu dữ liệu, interface, generic và cách cấu hình tsconfig cho dự án Node.js đầu tiên của bạn.</p>
+            <div class="post-card__meta text-meta">
+              <time datetime="2026-10-06">06/10/2026</time>
+              <span aria-hidden="true">·</span>
+              <span><i class="bi bi-eye" aria-hidden="true"></i>63 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+            </div>
+          </div>
+          <a class="post-card__thumb" href="post-detail.html?slug=lam-quen-voi-typescript" tabindex="-1" aria-hidden="true">
+            <img src="../assets/img/posts/6.svg" alt="">
+          </a>
+        </article>
+        <!-- /component: post-card -->
+
+        <!-- component: post-card -->
+        <article class="post-card">
+          <div class="post-card__body">
+            <div class="post-card__author">
+              <span class="avatar avatar--sm avatar--initials" aria-hidden="true">TB</span>
+              <span class="post-card__author-name">Trần Thị Bình</span>
+              <span class="post-card__sep" aria-hidden="true">·</span>
+              <a class="post-card__category" href="category.html?slug=am-thuc">Ẩm thực</a>
+            </div>
+            <h2 class="post-card__title text-card-title"><a href="post-detail.html?slug=nau-pho-bo-tai-nha">Nấu phở bò tại nhà: những điều mình học được sau mười lần thất bại</a></h2>
+            <p class="post-card__excerpt text-excerpt">Nước dùng trong hay đục, quế hồi nướng bao lâu, bánh phở mua ở đâu. Tất cả đều có câu trả lời sau mười nồi phở.</p>
+            <div class="post-card__meta text-meta">
+              <time datetime="2026-10-05">05/10/2026</time>
+              <span aria-hidden="true">·</span>
+              <span><i class="bi bi-eye" aria-hidden="true"></i>72 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+            </div>
+          </div>
+        </article>
+        <!-- /component: post-card -->
+
+        <!-- component: post-card -->
+        <article class="post-card">
+          <div class="post-card__body">
+            <div class="post-card__author">
+              <span class="avatar avatar--sm avatar--initials" aria-hidden="true">TN</span>
+              <span class="post-card__author-name">Tôn Nữ Hoàng Thị Phương Thảo Nguyên</span>
+              <span class="post-card__sep" aria-hidden="true">·</span>
+              <a class="post-card__category" href="category.html?slug=sach">Sách</a>
+            </div>
+            <h2 class="post-card__title text-card-title"><a href="post-detail.html?slug=doc-gi-trong-mua-thu-nay">Đọc gì trong mùa thu này: năm cuốn sách nên có trên kệ</a></h2>
+            <p class="post-card__excerpt text-excerpt">Từ tiểu thuyết kinh điển đến sách kỹ năng, đây là danh sách mình đọc chậm từng trang trong những ngày trời se lạnh.</p>
+            <div class="post-card__meta text-meta">
+              <time datetime="2026-10-04">04/10/2026</time>
+              <span aria-hidden="true">·</span>
+              <span><i class="bi bi-eye" aria-hidden="true"></i>38 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+            </div>
+          </div>
+          <a class="post-card__thumb" href="post-detail.html?slug=doc-gi-trong-mua-thu-nay" tabindex="-1" aria-hidden="true">
+            <img src="../assets/img/posts/7.svg" alt="">
+          </a>
+        </article>
+        <!-- /component: post-card -->
+
+        <!-- component: post-card -->
+        <article class="post-card">
+          <div class="post-card__body">
+            <div class="post-card__author">
+              <img class="avatar avatar--sm" src="../assets/img/avatars/2.svg" alt="">
+              <span class="post-card__author-name">Nguyễn Văn An</span>
+              <span class="post-card__sep" aria-hidden="true">·</span>
+              <a class="post-card__category" href="category.html?slug=lap-trinh">Lập trình</a>
+            </div>
+            <h2 class="post-card__title text-card-title"><a href="post-detail.html?slug=toi-uu-truy-van-mysql-fulltext-ngram">Tối ưu truy vấn MySQL với FULLTEXT index và parser ngram</a></h2>
+            <p class="post-card__excerpt text-excerpt">Tìm kiếm tiếng Việt có dấu bằng FULLTEXT index: cách tạo index, chọn độ dài ngram và đo tốc độ truy vấn.</p>
+            <div class="post-card__meta text-meta">
+              <time datetime="2026-10-03">03/10/2026</time>
+              <span aria-hidden="true">·</span>
+              <span><i class="bi bi-eye" aria-hidden="true"></i>312 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+            </div>
+          </div>
+          <a class="post-card__thumb" href="post-detail.html?slug=toi-uu-truy-van-mysql-fulltext-ngram" tabindex="-1" aria-hidden="true">
+            <img src="../assets/img/posts/1.svg" alt="">
+          </a>
+        </article>
+        <!-- /component: post-card -->
+      </div>
+      <!-- /component: post-list -->
+
+      <div class="post-list placeholder-glow" aria-hidden="true" data-demo="loading">
+        <div class="post-card post-card--skeleton">
+          <div class="post-card__body">
+            <div class="post-card__author"><span class="placeholder avatar avatar--sm"></span><span class="placeholder col-4"></span></div>
+            <span class="placeholder col-10 post-card__title"></span>
+            <span class="placeholder col-12"></span>
+            <span class="placeholder col-8"></span>
+            <div class="post-card__meta"><span class="placeholder placeholder-sm col-3"></span></div>
+          </div>
+          <span class="post-card__thumb placeholder"></span>
+        </div>
+        <div class="post-card post-card--skeleton">
+          <div class="post-card__body">
+            <div class="post-card__author"><span class="placeholder avatar avatar--sm"></span><span class="placeholder col-4"></span></div>
+            <span class="placeholder col-10 post-card__title"></span>
+            <span class="placeholder col-12"></span>
+            <span class="placeholder col-8"></span>
+            <div class="post-card__meta"><span class="placeholder placeholder-sm col-3"></span></div>
+          </div>
+          <span class="post-card__thumb placeholder"></span>
+        </div>
+        <div class="post-card post-card--skeleton">
+          <div class="post-card__body">
+            <div class="post-card__author"><span class="placeholder avatar avatar--sm"></span><span class="placeholder col-4"></span></div>
+            <span class="placeholder col-10 post-card__title"></span>
+            <span class="placeholder col-12"></span>
+            <span class="placeholder col-8"></span>
+            <div class="post-card__meta"><span class="placeholder placeholder-sm col-3"></span></div>
+          </div>
+          <span class="post-card__thumb placeholder"></span>
+        </div>
+        <div class="post-card post-card--skeleton">
+          <div class="post-card__body">
+            <div class="post-card__author"><span class="placeholder avatar avatar--sm"></span><span class="placeholder col-4"></span></div>
+            <span class="placeholder col-10 post-card__title"></span>
+            <span class="placeholder col-12"></span>
+            <span class="placeholder col-8"></span>
+            <div class="post-card__meta"><span class="placeholder placeholder-sm col-3"></span></div>
+          </div>
+          <span class="post-card__thumb placeholder"></span>
+        </div>
+        <div class="post-card post-card--skeleton">
+          <div class="post-card__body">
+            <div class="post-card__author"><span class="placeholder avatar avatar--sm"></span><span class="placeholder col-4"></span></div>
+            <span class="placeholder col-10 post-card__title"></span>
+            <span class="placeholder col-12"></span>
+            <span class="placeholder col-8"></span>
+            <div class="post-card__meta"><span class="placeholder placeholder-sm col-3"></span></div>
+          </div>
+          <span class="post-card__thumb placeholder"></span>
+        </div>
+      </div>
+
+      <!-- component: empty-state -->
+      <div class="empty-state" data-demo="empty">
+        <i class="bi bi-translate empty-state__icon" aria-hidden="true"></i>
+        <h2 class="empty-state__title" data-i18n="post.empty_language_title">Chưa có bài viết ở ngôn ngữ này</h2>
+        <p class="empty-state__text" data-i18n="post.empty_language_text">Hãy chọn ngôn ngữ khác ở đầu trang hoặc quay lại sau.</p>
+      </div>
+      <!-- /component: empty-state -->
+
+      <!-- component: pagination -->
+      <div class="pagination-bar" data-demo="normal">
+        <p class="text-meta mb-0"><span data-i18n="common.pagination.showing">Hiển thị</span> 1–10 / 24</p>
+        <nav aria-label="Phân trang" data-i18n-aria-label="common.pagination.label">
+          <ul class="pagination">
+            <li class="page-item disabled">
+              <span class="page-link" aria-label="Trang trước" data-i18n-aria-label="common.pagination.previous"><i class="bi bi-chevron-left" aria-hidden="true"></i></span>
+            </li>
+            <li class="page-item active" aria-current="page"><span class="page-link">1</span></li>
+            <li class="page-item"><a class="page-link" href="index.html?page=2">2</a></li>
+            <li class="page-item"><a class="page-link" href="index.html?page=3">3</a></li>
+            <li class="page-item">
+              <a class="page-link" href="index.html?page=2" aria-label="Trang sau" data-i18n-aria-label="common.pagination.next"><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <!-- /component: pagination -->
+    </main>
+    <aside class="site-body__aside">
+      <!-- component: most-read -->
+      <section class="aside-section" aria-labelledby="mostReadHeading" data-demo="normal">
+        <h2 class="aside-section__title" id="mostReadHeading" data-i18n="post.most_read">Đọc nhiều nhất</h2>
+        <ol class="list-unstyled mb-0">
+          <li>
+            <!-- component: post-card (compact) -->
+            <article class="post-card post-card--compact">
+              <div class="post-card__body">
+                <div class="post-card__author">
+                  <img class="avatar avatar--sm" src="../assets/img/avatars/2.svg" alt="">
+                  <span class="post-card__author-name">Nguyễn Văn An</span>
+                </div>
+                <h3 class="post-card__title"><a href="post-detail.html?slug=toi-uu-truy-van-mysql-fulltext-ngram">Tối ưu truy vấn MySQL với FULLTEXT index và parser ngram</a></h3>
+                <div class="post-card__meta text-meta"><span><i class="bi bi-eye" aria-hidden="true"></i>312 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span></div>
+              </div>
+            </article>
+            <!-- /component: post-card -->
+          </li>
+          <li>
+            <!-- component: post-card (compact) -->
+            <article class="post-card post-card--compact">
+              <div class="post-card__body">
+                <div class="post-card__author">
+                  <span class="avatar avatar--sm avatar--initials" aria-hidden="true">TN</span>
+                  <span class="post-card__author-name">Tôn Nữ Hoàng Thị Phương Thảo Nguyên</span>
+                </div>
+                <h3 class="post-card__title"><a href="post-detail.html?slug=ghi-chep-ha-giang-mua-hoa-tam-giac-mach">Ghi chép từ chuyến đi Hà Giang mùa hoa tam giác mạch</a></h3>
+                <div class="post-card__meta text-meta"><span><i class="bi bi-eye" aria-hidden="true"></i>198 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span></div>
+              </div>
+            </article>
+            <!-- /component: post-card -->
+          </li>
+          <li>
+            <!-- component: post-card (compact) -->
+            <article class="post-card post-card--compact">
+              <div class="post-card__body">
+                <div class="post-card__author">
+                  <img class="avatar avatar--sm" src="../assets/img/avatars/2.svg" alt="">
+                  <span class="post-card__author-name">Nguyễn Văn An</span>
+                </div>
+                <h3 class="post-card__title"><a href="post-detail.html?slug=huong-dan-angular">Hướng dẫn Angular</a></h3>
+                <div class="post-card__meta text-meta"><span><i class="bi bi-eye" aria-hidden="true"></i>120 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span></div>
+              </div>
+            </article>
+            <!-- /component: post-card -->
+          </li>
+          <li>
+            <!-- component: post-card (compact) -->
+            <article class="post-card post-card--compact">
+              <div class="post-card__body">
+                <div class="post-card__author">
+                  <span class="avatar avatar--sm avatar--initials" aria-hidden="true">TN</span>
+                  <span class="post-card__author-name">Tôn Nữ Hoàng Thị Phương Thảo Nguyên</span>
+                </div>
+                <h3 class="post-card__title"><a href="post-detail.html?slug=viet-code-sach-hon-moi-ngay">Viết code sạch hơn mỗi ngày với năm thói quen nhỏ</a></h3>
+                <div class="post-card__meta text-meta"><span><i class="bi bi-eye" aria-hidden="true"></i>97 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span></div>
+              </div>
+            </article>
+            <!-- /component: post-card -->
+          </li>
+          <li>
+            <!-- component: post-card (compact) -->
+            <article class="post-card post-card--compact">
+              <div class="post-card__body">
+                <div class="post-card__author">
+                  <span class="avatar avatar--sm avatar--initials" aria-hidden="true">TB</span>
+                  <span class="post-card__author-name">Trần Thị Bình</span>
+                </div>
+                <h3 class="post-card__title"><a href="post-detail.html?slug=tu-con-so-khong-den-ung-dung-web-dau-tien">Từ con số không đến ứng dụng web đầu tiên: hành trình sáu tháng vừa đi làm vừa tự học lập trình vào mỗi buổi tối</a></h3>
+                <div class="post-card__meta text-meta"><span><i class="bi bi-eye" aria-hidden="true"></i>86 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span></div>
+              </div>
+            </article>
+            <!-- /component: post-card -->
+          </li>
+        </ol>
+      </section>
+      <!-- /component: most-read -->
+
+      <section class="aside-section placeholder-glow" aria-hidden="true" data-demo="loading">
+        <span class="placeholder col-6 aside-section__title"></span>
+        <div class="post-card post-card--compact post-card--skeleton">
+          <div class="post-card__body">
+            <div class="post-card__author"><span class="placeholder avatar avatar--sm"></span><span class="placeholder col-5"></span></div>
+            <span class="placeholder col-11 post-card__title"></span>
+          </div>
+        </div>
+        <div class="post-card post-card--compact post-card--skeleton">
+          <div class="post-card__body">
+            <div class="post-card__author"><span class="placeholder avatar avatar--sm"></span><span class="placeholder col-5"></span></div>
+            <span class="placeholder col-11 post-card__title"></span>
+          </div>
+        </div>
+        <div class="post-card post-card--compact post-card--skeleton">
+          <div class="post-card__body">
+            <div class="post-card__author"><span class="placeholder avatar avatar--sm"></span><span class="placeholder col-5"></span></div>
+            <span class="placeholder col-11 post-card__title"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- component: category-list -->
+      <section class="aside-section" aria-labelledby="categoriesHeading">
+        <h2 class="aside-section__title" id="categoriesHeading" data-i18n="post.categories">Danh mục</h2>
+        <div class="category-chips category-chips--wrap">
+          <a class="category-chip" href="category.html?slug=lap-trinh">Lập trình <span class="category-chip__count">12</span></a>
+          <a class="category-chip" href="category.html?slug=doi-song">Đời sống <span class="category-chip__count">5</span></a>
+          <a class="category-chip" href="category.html?slug=du-lich">Du lịch <span class="category-chip__count">3</span></a>
+          <a class="category-chip" href="category.html?slug=am-thuc">Ẩm thực <span class="category-chip__count">2</span></a>
+          <a class="category-chip" href="category.html?slug=sach">Sách <span class="category-chip__count">2</span></a>
+        </div>
+      </section>
+      <!-- /component: category-list -->
+
+      <nav class="aside-links" aria-label="Liên kết" data-i18n-aria-label="footer.label">
+        <a href="page.html?key=about" data-i18n="footer.about">Giới thiệu</a>
+        <a href="page.html?key=contact" data-i18n="footer.contact">Liên hệ</a>
+        <a href="page.html?key=privacy" data-i18n="footer.privacy">Chính sách bảo mật</a>
+      </nav>
+    </aside>
+  </div>
+
+  <!-- component: site-footer -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <span>© 2026 <span data-i18n="common.site_name">Inkwell</span></span>
+      <a href="page.html?key=about" data-i18n="footer.about">Giới thiệu</a>
+      <a href="page.html?key=contact" data-i18n="footer.contact">Liên hệ</a>
+      <a href="page.html?key=privacy" data-i18n="footer.privacy">Chính sách bảo mật</a>
+    </div>
+  </footer>
+  <!-- /component: site-footer -->
+
+  <!-- component: public-offcanvas (menu mobile, mở bằng nút ☰) -->
+  <div class="offcanvas offcanvas-start public-offcanvas" id="publicMenu" tabindex="-1" aria-labelledby="publicMenuLabel">
+    <div class="offcanvas-header">
+      <a class="brand" href="index.html" id="publicMenuLabel" data-i18n="common.site_name">Inkwell</a>
+      <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" aria-label="Đóng menu" data-i18n-aria-label="common.close_menu"></button>
+    </div>
+    <div class="offcanvas-body">
+      <nav class="nav flex-column mb-2" aria-label="Menu chính" data-i18n-aria-label="menu.label">
+        <a class="nav-link fw-semibold" href="index.html" aria-current="page" data-i18n="menu.home">Trang chủ</a>
+        <a class="nav-link" href="page.html?key=about" data-i18n="menu.about">Giới thiệu</a>
+      </nav>
+
+      <div class="public-offcanvas__group">
+        <div class="public-offcanvas__label" id="offcanvasLanguageLabel" data-i18n="common.language">Ngôn ngữ</div>
+        <div class="btn-group w-100" role="group" aria-labelledby="offcanvasLanguageLabel">
+          <button type="button" class="btn btn-primary btn-sm" aria-pressed="true">Tiếng Việt</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" aria-pressed="false">English</button>
+        </div>
+      </div>
+
+      <div class="public-offcanvas__group">
+        <!-- data-theme-toggle chỉ gắn lên <input>, xem comment đầu js/theme.js -->
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="offcanvasDarkMode" data-theme-toggle>
+          <label class="form-check-label" for="offcanvasDarkMode" data-i18n="common.dark_mode">Giao diện tối</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: public-offcanvas -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/demo-state.js"></script>
+</body>
+</html>
