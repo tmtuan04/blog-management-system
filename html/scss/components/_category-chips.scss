@@ -1,0 +1,63 @@
+// Chip danh mục dạng pill (UC05, UC07). Mẫu ở public/index.html.
+//   .category-chips          Một hàng cuộn ngang, ẩn thanh cuộn (đầu feed trang chủ, trang danh mục)
+//   .category-chips--wrap    Xuống dòng thay vì cuộn (sidebar)
+//   .category-chip.is-active Chip đang chọn, thêm aria-current="page"
+//   .category-chip__count    Số bài, đặt sau tên
+.category-chips {
+  display: flex;
+  gap: .5rem;
+  padding-bottom: .25rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @include media-breakpoint-up(md) {
+    margin-bottom: 2rem;
+  }
+}
+
+.category-chips--wrap {
+  flex-wrap: wrap;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  overflow-x: visible;
+
+  @include media-breakpoint-up(md) {
+    margin-bottom: 0;
+  }
+}
+
+// Nền lấy từ màu chữ với độ trong suốt thấp để đúng ở cả sáng lẫn tối
+.category-chip {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: .375rem;
+  align-items: center;
+  padding: .5rem 1rem;
+  color: var(--bl-text);
+  white-space: nowrap;
+  background-color: rgba(var(--bl-text-rgb), .06);
+  border: 1px solid transparent;
+  border-radius: 999px;
+
+  &:hover {
+    color: var(--bl-text);
+    text-decoration: none;
+    background-color: rgba(var(--bl-text-rgb), .1);
+  }
+
+  &.is-active {
+    font-weight: 500;
+    color: var(--bl-accent);
+    background-color: rgba(var(--bl-accent-rgb), .12);
+    border-color: rgba(var(--bl-accent-rgb), .4);
+  }
+}
+
+.category-chip__count {
+  color: var(--bl-text-secondary);
+}

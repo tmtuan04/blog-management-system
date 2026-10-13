@@ -1,0 +1,160 @@
+// Thẻ bài viết kiểu Medium (UC05): dòng tác giả + danh mục, tiêu đề, tóm tắt, dòng meta; thumbnail bên phải.
+// Dùng ở trang chủ, trang danh mục, kết quả tìm kiếm, bài cùng danh mục. Mẫu ở public/index.html.
+//   .post-card--compact   Không tóm tắt, không thumbnail, chữ nhỏ (sidebar "Đọc nhiều nhất")
+//   .post-card--skeleton  Khung chờ khi đang tải, bọc trong .placeholder-glow
+// Bài không có thumbnail thì bỏ hẳn .post-card__thumb, phần chữ tự giãn hết chiều rộng.
+.post-card {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--bl-border);
+
+  @include media-breakpoint-up(md) {
+    gap: 3rem;
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.post-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+// Dòng trên: avatar, tác giả · danh mục
+.post-card__author {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  min-width: 0;
+  margin-bottom: .5rem;
+  font-size: .8125rem;
+  line-height: 1.25rem;
+}
+
+.post-card__author-name {
+  overflow: hidden;
+  color: var(--bl-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-card__category {
+  flex-shrink: 0;
+  color: var(--bl-text-secondary);
+
+  &:hover {
+    color: var(--bl-text);
+  }
+}
+
+.post-card__sep {
+  flex-shrink: 0;
+  color: var(--bl-text-secondary);
+}
+
+.post-card__title {
+  @include line-clamp(3);
+  margin-bottom: .25rem;
+
+  a {
+    color: var(--bl-text);
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+// Tóm tắt tối đa 2 dòng như Medium
+.post-card__excerpt {
+  @include line-clamp(2);
+  margin-bottom: 0;
+}
+
+// Dòng dưới: ngày đăng · lượt xem
+.post-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem .5rem;
+  align-items: center;
+  margin-top: .75rem;
+
+  .bi {
+    margin-right: .25rem;
+  }
+}
+
+// Ảnh 3:2, mobile 80×53, từ md 160×107 như Medium
+.post-card__thumb {
+  display: block;
+  flex-shrink: 0;
+  width: 5rem;
+  height: 3.3125rem;
+  overflow: hidden;
+  background-color: var(--bl-bg-subtle);
+  border-radius: $border-radius;
+
+  @include media-breakpoint-up(md) {
+    width: 10rem;
+    height: 6.6875rem;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Biến thể compact: sidebar "Đọc nhiều nhất"
+// ---------------------------------------------------------------------------
+.post-card--compact {
+  padding-bottom: 0;
+  margin-bottom: 1.25rem;
+  border-bottom: 0;
+
+  @include media-breakpoint-up(md) {
+    padding-bottom: 0;
+    margin-bottom: 1.25rem;
+  }
+
+  .post-card__author {
+    font-size: .75rem;
+  }
+
+  .post-card__title {
+    @include line-clamp(2);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25rem;
+  }
+
+  .post-card__meta {
+    margin-top: .25rem;
+    font-size: .75rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Skeleton khi đang tải
+// ---------------------------------------------------------------------------
+.post-card--skeleton {
+  .post-card__author .placeholder {
+    height: .75rem;
+  }
+
+  .post-card__title {
+    display: block;
+    height: 1.25rem;
+    margin-bottom: .75rem;
+  }
+
+  // .post-card__thumb đặt nền --bl-bg-subtle, trả lại màu của .placeholder
+  .post-card__thumb {
+    background-color: currentcolor;
+  }
+}
