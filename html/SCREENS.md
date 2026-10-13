@@ -14,7 +14,7 @@ Cột "Chờ": việc của người kia phải merge vào `dev` rồi mới b�
 |---|---|---|---|---|---|
 | (xong) | **Quản lý bài viết** ✅ | `admin/posts.html` | Danh sách bài viết trong admin: tab trạng thái, lọc, tìm kiếm, bảng bài viết | `feature/html-admin-posts` | |
 | A1 | *(không phải màn)* Khung public, khung auth | `_templates/public.html`, `_templates/auth.html`, `layouts/_public.scss`, `layouts/_auth.scss` | Header (4 biến thể theo vai trò), footer, khung trang đăng nhập. **Merge sớm** | `feature/html-layout-public-auth` | |
-| A2 | **Trang chủ** | `public/index.html` | Chip danh mục, danh sách thẻ bài viết, phân trang, sidebar "Đọc nhiều nhất". Kèm thẻ bài viết, toast. **Merge sớm** | `feature/html-home` | |
+| A2 | **Trang chủ** | `public/index.html` | Chip danh mục, danh sách thẻ bài viết, phân trang, sidebar "Đọc nhiều nhất". Kèm thẻ bài viết. **Merge sớm** | `feature/html-home` | |
 | A3 | **Viết bài mới** | `admin/post-create.html` | Form tạo bài: ngôn ngữ gốc, danh mục, ảnh bìa, tiêu đề, tóm tắt, trình soạn thảo. Kèm rich text editor. **Merge sớm** | `feature/html-post-create` | |
 | A4 | **Chi tiết bài viết** | `public/post-detail.html` | Nội dung bài đầy đủ, thông tin tác giả, bình luận, bài cùng danh mục | `feature/html-post-detail-category` | |
 | A4 | **Bài viết theo danh mục** | `public/category.html` | Tiêu đề danh mục, số bài và danh sách bài thuộc danh mục đó | *(chung nhánh trên)* | |

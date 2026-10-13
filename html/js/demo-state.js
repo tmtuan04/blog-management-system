@@ -20,6 +20,7 @@
  *     data-loading-text="Đang xóa..."               Đổi chữ khi loading (mặc định "Đang lưu...")
  *     data-loading-i18n="common.deleting"           Key UI translation của chữ đó (mặc định common.saving)
  *   <div class="modal" data-demo-modal="deleting">  Tự mở modal ở trạng thái đó (để chụp màn hình)
+ *   <div class="toast" data-demo-toast="deleted">   Tự hiện toast ở trạng thái đó, không tự ẩn (để chụp màn hình)
  *
  * 2. Vai trò người xem
  *   <body data-demo-auths="blog_owner super_admin"> Các vai trò trang có. Mặc định "guest user" nếu trang
@@ -144,6 +145,12 @@
         const modal = window.bootstrap.Modal.getOrCreateInstance(el);
         if (activeIn(el.dataset.demoModal)) modal.show();
         else if (el.classList.contains('show')) modal.hide();
+      });
+      // Toast tạo với autohide: false để đứng yên khi chụp màn hình; rời trạng thái thì ẩn đi.
+      document.querySelectorAll('[data-demo-toast]').forEach((el) => {
+        const toast = window.bootstrap.Toast.getOrCreateInstance(el, { autohide: false });
+        if (activeIn(el.dataset.demoToast)) toast.show();
+        else toast.hide();
       });
     }
     // Đánh dấu nút đang chọn (aria-pressed) cho cả nhóm trạng thái lẫn nhóm vai trò

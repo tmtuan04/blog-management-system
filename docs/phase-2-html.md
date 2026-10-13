@@ -245,7 +245,7 @@ Các component dùng chung làm cùng các màn này: header, footer, thẻ bài
 
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
-| `admin/posts.html` (**màn mẫu, đã làm**) | `/admin/posts` | UC13 | Tab trạng thái kiểu "Your stories" của Medium (Tất cả, Nháp, Đã đăng, Lưu trữ - theo bản gốc); lọc ngôn ngữ, danh mục; ô tìm tiêu đề. Bảng: thumbnail nhỏ, tiêu đề bản gốc kèm dòng meta "Gốc: Tiếng Việt · Lập trình" (ngôn ngữ gốc và danh mục), badge từng bản dịch (`VI · Đã đăng`, `EN · Nháp`), ngày cập nhật, menu ⋯ (Sửa, Xem trên blog, Xóa) | Bình thường, rỗng, loading (skeleton), đang xóa (hộp xác nhận xóa bài với nút loading) |
+| `admin/posts.html` (**màn mẫu, đã làm**) | `/admin/posts` | UC13 | Tab trạng thái kiểu "Your stories" của Medium (Tất cả, Nháp, Đã đăng, Lưu trữ - theo bản gốc); lọc ngôn ngữ, danh mục; ô tìm tiêu đề. Bảng: thumbnail nhỏ, tiêu đề bản gốc kèm dòng meta "Gốc: Tiếng Việt · Lập trình" (ngôn ngữ gốc và danh mục), badge từng bản dịch (`VI · Đã đăng`, `EN · Nháp`), ngày cập nhật, menu ⋯ (Sửa, Xem trên blog, Xóa) | Bình thường, rỗng, loading (skeleton), đang xóa (hộp xác nhận xóa bài với nút loading), đã xóa (toast thành công) |
 | `admin/post-create.html` | `/admin/posts/new` | UC13 | Thanh trên: "Nháp" + nút pill "Lưu". Phần dùng chung: chọn ngôn ngữ gốc, danh mục, upload thumbnail (xem trước). Bản gốc: tiêu đề kiểu Medium (Inter 42px, không viền), tóm tắt, editor, trạng thái | Lỗi validate từng trường, lỗi ảnh, đang lưu |
 | `admin/post-edit.html` | `/admin/posts/:id/edit` | UC13 | Phần dùng chung ở trên (ngôn ngữ gốc chỉ đọc). Dưới là tab ngôn ngữ: tab gốc có nhãn "Gốc"; tab đã có bản dịch hiện form + slug (chỉ đọc) + lượt xem + nút "Xóa bản dịch"; tab chưa có bản dịch hiện khối rỗng với nút "Thêm bản dịch" | Tab có dữ liệu, tab chưa có bản dịch, form bản dịch mới đã điền sẵn nội dung bản gốc, lỗi validate, đang lưu, hộp xác nhận xóa bản dịch |
 | `admin/users.html` | `/admin/users` | UC14 | Tìm theo tên/email; lọc role, trạng thái. Bảng: avatar, họ tên, email, role (badge), trạng thái, ngày tạo, hành động (đổi role, khóa/mở khóa). Modal tạo tài khoản | Bình thường, rỗng, modal có lỗi validate, hộp xác nhận khóa tài khoản, hàng của chính mình bị vô hiệu nút khóa/đổi role |
@@ -377,7 +377,7 @@ Các việc còn lại chia cho 3 người, mỗi người làm phần của mì
 
 | # | Việc | Chờ | Ghi chú |
 | --- | --- | --- | --- |
-| C1 | Toast (`components/_toast.scss`), gắn vào `admin/posts.html` (trạng thái xóa xong hiện toast thành công) | | Dùng `.toast` của Bootstrap, màu lấy từ token. **Merge sớm** vì B cần cho `page-edit` |
+| C1 (**đã làm**) | Toast (`components/_toast.scss`), gắn vào `admin/posts.html` (trạng thái xóa xong hiện toast thành công) | | Dùng `.toast` của Bootstrap, màu lấy từ token. **Merge sớm** vì B cần cho `page-edit` |
 | C2 | `public/category.html` | A2 | Copy `_templates/public.html`, dùng lại thẻ bài viết của `public/index.html` |
 | C3 | Kiểm tra toàn bộ theo mục 9 (360px, 768px, 1280px; sáng/tối; Chrome, Edge, Firefox; `npm run check-links`), ghi lỗi thành danh sách, tự sửa lỗi nằm trong một trang, lỗi ở phần dùng chung thì chuyển A | A5, B5 | Làm sau cùng. Ghi danh sách lỗi vào mô tả PR |
 
