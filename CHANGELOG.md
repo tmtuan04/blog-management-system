@@ -55,6 +55,7 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Changed
 
+- `html/index.html`: bảng mục lục thêm cột "Người làm" (A - Từ Minh Tuân, B - Ngô Đức, C - Cao Tiến Dũng, theo `SCREENS.md`); đầu trang thêm badge "Đã xong x / y màn", tự đếm từ badge "Đã xong" trong bảng.
 - `admin/users.html` (UC14) viết lại theo quy ước phase 2, sửa lỗi giao diện bảng (avatar nằm trên tên vì class `user-cell`, `role-badge`, `self-tag`, `min-w-0` không có CSS; ảnh avatar sai đường dẫn `../img/avatar-2.svg`): dùng component `user-table`, Bootstrap Icons thay SVG Lucide, modal Bootstrap thay `onclick`/script tự viết, `data-demo` thay `data-state-*`, skeleton bằng `placeholder-glow`; thêm `data-i18n`. Chỉ Super Admin (`data-demo-auths="super_admin"`). Hàng của chính mình có nút ⋯ bị vô hiệu kèm chú thích. Trạng thái demo: bình thường, loading, rỗng (tìm không ra), lỗi validate (email trùng, mật khẩu yếu), đang lưu, hộp xác nhận khóa tài khoản. `index.html`, `SCREENS.md`: đánh dấu màn đã xong.
 - Nhóm từ 2 lên 3 người, C nhận các việc dễ tách từ phần của A:
   - Requirements 1.9 → 2.0: A ~45%, B ~40%, C ~15%. C phụ trách UC05, UC07, UC09 (bộ chọn ngôn ngữ, A vẫn dựng cơ chế đa ngôn ngữ), UC10, component toast; phase 1 review ERD và chạy thử migrate/seed/rollback; phase 2 toast, `category.html`, kiểm tra tổng; phase 5 tạo máy ảo và cấu hình hệ điều hành (bước 1-2). PR của C do A hoặc B review.
