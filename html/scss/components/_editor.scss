@@ -1,0 +1,108 @@
+// Rich text editor dùng chung (docs/phase-2-html.md mục 5.2): form bài viết và form sửa trang tĩnh.
+// Phase 2 chỉ dựng giao diện, nút chưa hoạt động. Phase 4 thay bằng thư viện editor và giữ các class này.
+//   <div class="editor" data-demo-invalid>
+//     <div class="editor__toolbar" role="toolbar">  .editor__tool (nút), .editor__sep (vạch ngăn nhóm)
+//     <div class="editor__content prose" contenteditable="true" role="textbox" aria-placeholder="...">
+//   </div>
+//   <div class="invalid-feedback">...</div>       Hiện khi .editor có .is-invalid
+// Vùng nhập phải rỗng hẳn (không xuống dòng giữa thẻ mở và thẻ đóng) thì mới hiện placeholder.
+// .editor__upload: khối "Đang tải ảnh lên" đặt trong vùng nhập, đúng chỗ ảnh sẽ hiện.
+
+// Thanh công cụ dính ngay dưới thanh trên (editor-topbar hoặc admin-topbar, cùng cao $header-height).
+// Màn hẹp không đủ chỗ cho 10 nút thì cuộn ngang, không xuống dòng.
+.editor__toolbar {
+  position: sticky;
+  top: $header-height;
+  z-index: 2;
+  display: flex;
+  gap: .125rem;
+  align-items: center;
+  padding: .375rem 0;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background-color: var(--bl-bg);
+  border-top: 1px solid var(--bl-border);
+  border-bottom: 1px solid var(--bl-border);
+}
+
+.editor__tool {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  font-size: 1.125rem;
+  line-height: 1;
+  color: var(--bl-text-secondary);
+  background: none;
+  border: 0;
+  border-radius: $border-radius;
+
+  &:hover,
+  &.is-active {
+    color: var(--bl-text);
+    background-color: var(--bl-bg-subtle);
+  }
+
+  &:focus-visible {
+    // Viền vẽ vào trong nút, vì thanh công cụ có overflow nên viền ra ngoài sẽ bị cắt
+    outline: 2px solid var(--bl-accent);
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    color: var(--bl-muted);
+    background: none;
+  }
+}
+
+.editor__sep {
+  flex-shrink: 0;
+  width: 1px;
+  height: 1.25rem;
+  margin: 0 .25rem;
+  background-color: var(--bl-border-strong);
+}
+
+// Vùng nhập dùng .prose nên chữ giống hệt trang chi tiết bài viết; không viền, chỉ có viền dưới khi lỗi
+.editor__content {
+  min-height: 18rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid transparent;
+  outline: 0;
+
+  &:empty::before {
+    color: var(--bl-muted);
+    pointer-events: none;
+    content: attr(aria-placeholder);
+  }
+}
+
+.editor.is-invalid .editor__content {
+  border-bottom-color: var(--bl-danger);
+}
+
+.editor__upload {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  margin: 0 0 1.5em;
+  font-family: $font-family-sans-serif;
+  font-size: .875rem;
+  line-height: 1.25rem;
+  color: var(--bl-text-secondary);
+  background-color: var(--bl-bg-subtle);
+  border-radius: $border-radius;
+
+  .progress {
+    --bs-progress-height: .375rem;
+    --bs-progress-bg: var(--bl-border);
+    --bs-progress-bar-bg: var(--bl-accent);
+    flex: 1 1 8rem;
+  }
+}
