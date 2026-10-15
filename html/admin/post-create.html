@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Viết bài mới · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="../js/theme.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<!--
+  Trạng thái demo chia làm 2 nhóm dữ liệu:
+  - Form trống (bài mới): normal, error, image-error
+  - Form đã điền:         filled, uploading, loading
+  Ô nào khác nhau giữa 2 nhóm thì có 2 bản, mỗi bản gắn data-demo của nhóm mình.
+-->
+<body data-demo-states="normal filled error image-error uploading loading" data-demo-label-normal="Bài mới" data-demo-label-filled="Đã điền" data-demo-label-image-error="Lỗi ảnh" data-demo-label-uploading="Đang tải ảnh" data-demo-label-loading="Đang lưu" data-demo-auths="blog_owner super_admin">
+
+  <!-- component: editor-topbar -->
+  <header class="editor-topbar">
+    <a class="icon-btn" href="posts.html" aria-label="Về danh sách bài viết" data-i18n-aria-label="admin.post_form.back">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </a>
+    <a class="brand d-none d-sm-inline" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+    <span class="editor-topbar__status" data-i18n="post.status.draft">Nháp</span>
+
+    <div class="editor-topbar__actions">
+
+      <!-- component: language-switcher -->
+      <div class="dropdown">
+        <button type="button" class="icon-btn icon-btn--text" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Ngôn ngữ" data-i18n-aria-label="common.language">
+          VI <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item active" href="#" aria-current="true">Tiếng Việt <i class="bi bi-check2 ms-auto" aria-hidden="true"></i></a></li>
+          <li><a class="dropdown-item" href="#">English</a></li>
+        </ul>
+      </div>
+      <!-- /component: language-switcher -->
+
+      <!-- component: theme-toggle -->
+      <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối" data-i18n-aria-label="common.dark_mode">
+        <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+        <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+      </button>
+      <!-- /component: theme-toggle -->
+
+      <button type="submit" form="postForm" class="btn btn-primary btn-sm" data-demo-loading>
+        <span data-i18n="common.save">Lưu</span>
+      </button>
+
+      <!-- component: user-menu -->
+      <div class="dropdown">
+        <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản" data-i18n-aria-label="menu.account">
+          <img class="avatar" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+          <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end">
+          <div class="px-3 py-2" data-demo-auth="blog_owner">
+            <div class="fw-semibold">Nguyễn Văn An</div>
+            <div class="text-meta">owner1@blog.local</div>
+          </div>
+          <div class="px-3 py-2" data-demo-auth="super_admin">
+            <div class="fw-semibold">Super Admin</div>
+            <div class="text-meta">admin@blog.local</div>
+          </div>
+          <hr class="dropdown-divider">
+          <a class="dropdown-item" href="../public/profile.html">
+            <i class="bi bi-person" aria-hidden="true"></i>
+            <span data-i18n="menu.profile">Hồ sơ</span>
+          </a>
+          <a class="dropdown-item" href="posts.html">
+            <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+            <span data-i18n="admin.nav.posts">Bài viết</span>
+          </a>
+          <a class="dropdown-item" href="../public/index.html">
+            <i class="bi bi-house" aria-hidden="true"></i>
+            <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+          </a>
+          <hr class="dropdown-divider">
+          <a class="dropdown-item" href="../public/login.html">
+            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+            <span data-i18n="menu.logout">Đăng xuất</span>
+          </a>
+        </div>
+      </div>
+      <!-- /component: user-menu -->
+
+    </div>
+  </header>
+  <!-- /component: editor-topbar -->
+
+  <main class="editor-page">
+    <h1 class="visually-hidden" data-i18n="admin.post_form.create_title">Viết bài mới</h1>
+
+    <form id="postForm" novalidate>
+
+      <div class="alert-inline mb-4" role="alert" data-demo="error">
+        <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+        <div data-i18n="admin.post_form.save_error">Chưa lưu được bài viết. Kiểm tra các ô báo đỏ bên dưới.</div>
+      </div>
+
+      <!-- component: post-shared-fields -->
+      <!-- Phần dùng chung cho mọi bản dịch (bảng posts) -->
+      <section class="post-form__shared" aria-label="Thông tin chung" data-i18n-aria-label="admin.post_form.shared">
+        <div>
+          <label class="form-label" for="postLanguage" data-i18n="admin.post_form.original_language">Ngôn ngữ gốc</label>
+          <select class="form-select" id="postLanguage" name="language_id" aria-describedby="postLanguageHint">
+            <option value="1" selected>Tiếng Việt</option>
+            <option value="2">English</option>
+          </select>
+          <div class="form-text" id="postLanguageHint" data-i18n="admin.post_form.original_language_hint">Không đổi được sau khi tạo bài.</div>
+        </div>
+
+        <div data-demo="normal error image-error">
+          <label class="form-label" for="postCategory" data-i18n="admin.post_form.category">Danh mục</label>
+          <select class="form-select" id="postCategory" name="category_id" data-demo-invalid>
+            <option value="" selected data-i18n="admin.post_form.category_placeholder">Chọn danh mục</option>
+            <option value="1">Lập trình</option>
+            <option value="2">Đời sống</option>
+            <option value="3">Du lịch</option>
+            <option value="4">Thiết kế</option>
+            <option value="5">Công nghệ</option>
+          </select>
+          <div class="invalid-feedback" data-i18n="validation.category_required">Chọn danh mục cho bài viết.</div>
+        </div>
+        <div data-demo="filled uploading loading">
+          <label class="form-label" for="postCategoryFilled" data-i18n="admin.post_form.category">Danh mục</label>
+          <select class="form-select" id="postCategoryFilled" name="category_id">
+            <option value="" data-i18n="admin.post_form.category_placeholder">Chọn danh mục</option>
+            <option value="1">Lập trình</option>
+            <option value="2">Đời sống</option>
+            <option value="3" selected>Du lịch</option>
+            <option value="4">Thiết kế</option>
+            <option value="5">Công nghệ</option>
+          </select>
+        </div>
+
+        <!-- component: thumb-upload -->
+        <div class="post-form__shared-wide">
+          <span class="form-label d-block" id="postThumbnailLabel">
+            <span data-i18n="admin.post_form.thumbnail">Ảnh thumbnail</span>
+            <span class="text-body-secondary fw-normal" data-i18n="common.optional">(không bắt buộc)</span>
+          </span>
+
+          <div data-demo="normal error image-error">
+            <input type="file" class="thumb-upload__input visually-hidden" id="postThumbnail" name="thumbnail" accept="image/jpeg,image/png,image/webp" aria-labelledby="postThumbnailLabel">
+            <label class="thumb-upload__drop" for="postThumbnail" data-demo-invalid="image-error">
+              <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i>
+              <span class="thumb-upload__title" data-i18n="admin.post_form.thumbnail_drop">Kéo ảnh vào đây hoặc bấm để chọn</span>
+              <span class="thumb-upload__hint" data-i18n="admin.post_form.thumbnail_hint">JPG, PNG hoặc WebP, tối đa 2MB</span>
+            </label>
+            <div class="invalid-feedback" data-i18n="validation.image_too_large">Ảnh "ha-giang-4k.png" nặng 5,8MB. Chọn ảnh JPG, PNG hoặc WebP tối đa 2MB.</div>
+          </div>
+
+          <div class="thumb-upload__preview" data-demo="filled uploading loading">
+            <img src="../assets/img/posts/5.svg" alt="Xem trước ảnh thumbnail" data-i18n-alt="admin.post_form.thumbnail_preview">
+            <div class="thumb-upload__actions">
+              <label class="btn btn-outline-secondary btn-sm" for="postThumbnail" data-i18n="admin.post_form.thumbnail_change">Đổi ảnh</label>
+              <button type="button" class="btn btn-outline-secondary btn-sm" aria-label="Xóa ảnh" data-i18n-aria-label="admin.post_form.thumbnail_remove">
+                <i class="bi bi-trash3" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- /component: thumb-upload -->
+      </section>
+      <!-- /component: post-shared-fields -->
+
+      <!-- component: post-translation-form -->
+      <!-- Bản gốc = bản dịch ở ngôn ngữ gốc (bảng post_translations) -->
+      <section aria-label="Bản gốc" data-i18n-aria-label="admin.post_form.original">
+        <div class="post-form__head">
+          <p class="text-meta mb-0"><span data-i18n="admin.post_form.original">Bản gốc</span> · Tiếng Việt</p>
+          <div class="post-form__status">
+            <label class="text-meta" for="postStatus" data-i18n="admin.post_form.status">Trạng thái</label>
+            <select class="form-select form-select-sm" id="postStatus" name="status">
+              <option value="draft" selected data-i18n="post.status.draft">Nháp</option>
+              <option value="published" data-i18n="post.status.published">Đã đăng</option>
+              <option value="archived" data-i18n="post.status.archived">Lưu trữ</option>
+            </select>
+          </div>
+        </div>
+
+        <div data-demo="normal error image-error">
+          <label class="visually-hidden" for="postTitle" data-i18n="admin.post_form.title">Tiêu đề</label>
+          <textarea class="post-form__title text-post-title" id="postTitle" name="title" rows="1" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title" data-demo-invalid></textarea>
+          <div class="invalid-feedback" data-i18n="validation.post_title_length">Tiêu đề cần từ 5 đến 255 ký tự.</div>
+
+          <label class="visually-hidden" for="postExcerpt" data-i18n="admin.post_form.excerpt">Tóm tắt</label>
+          <textarea class="post-form__excerpt" id="postExcerpt" name="excerpt" rows="2" maxlength="500" placeholder="Tóm tắt ngắn hiện trên thẻ bài viết (không bắt buộc, tối đa 500 ký tự)" data-i18n-placeholder="admin.post_form.excerpt_placeholder"></textarea>
+        </div>
+        <div data-demo="filled uploading loading">
+          <label class="visually-hidden" for="postTitleFilled" data-i18n="admin.post_form.title">Tiêu đề</label>
+          <textarea class="post-form__title text-post-title" id="postTitleFilled" name="title" rows="2" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title">Ghi chép từ chuyến đi Hà Giang mùa hoa tam giác mạch</textarea>
+
+          <label class="visually-hidden" for="postExcerptFilled" data-i18n="admin.post_form.excerpt">Tóm tắt</label>
+          <textarea class="post-form__excerpt" id="postExcerptFilled" name="excerpt" rows="2" maxlength="500" placeholder="Tóm tắt ngắn hiện trên thẻ bài viết (không bắt buộc, tối đa 500 ký tự)" data-i18n-placeholder="admin.post_form.excerpt_placeholder">Bốn ngày, ba đêm, hơn bảy trăm cây số đường đèo và những cánh đồng hoa tím dưới chân núi đá.</textarea>
+        </div>
+
+        <div class="post-form__body">
+          <!-- component: rich-text-editor -->
+          <div class="editor" data-demo-invalid>
+            <div class="editor__toolbar" role="toolbar" aria-label="Định dạng" data-i18n-aria-label="admin.editor.toolbar" aria-controls="postContent">
+              <button type="button" class="editor__tool" aria-label="Tiêu đề lớn" data-i18n-aria-label="admin.editor.heading_2"><i class="bi bi-type-h2" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Tiêu đề nhỏ" data-i18n-aria-label="admin.editor.heading_3"><i class="bi bi-type-h3" aria-hidden="true"></i></button>
+              <span class="editor__sep" aria-hidden="true"></span>
+              <button type="button" class="editor__tool" aria-pressed="false" aria-label="In đậm" data-i18n-aria-label="admin.editor.bold"><i class="bi bi-type-bold" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-pressed="false" aria-label="In nghiêng" data-i18n-aria-label="admin.editor.italic"><i class="bi bi-type-italic" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-pressed="false" aria-label="Gạch chân" data-i18n-aria-label="admin.editor.underline"><i class="bi bi-type-underline" aria-hidden="true"></i></button>
+              <span class="editor__sep" aria-hidden="true"></span>
+              <button type="button" class="editor__tool" aria-label="Danh sách" data-i18n-aria-label="admin.editor.bullet_list"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Danh sách đánh số" data-i18n-aria-label="admin.editor.ordered_list"><i class="bi bi-list-ol" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Trích dẫn" data-i18n-aria-label="admin.editor.quote"><i class="bi bi-quote" aria-hidden="true"></i></button>
+              <span class="editor__sep" aria-hidden="true"></span>
+              <button type="button" class="editor__tool" aria-label="Chèn link" data-i18n-aria-label="admin.editor.link"><i class="bi bi-link-45deg" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Chèn ảnh" data-i18n-aria-label="admin.editor.image"><i class="bi bi-image" aria-hidden="true"></i></button>
+            </div>
+
+            <div class="editor__content prose" id="postContent" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder" data-demo="normal error image-error"></div>
+
+            <div class="editor__content prose" id="postContentFilled" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder" data-demo="filled uploading loading">
+              <p>Tháng mười, Hà Giang bắt đầu vào mùa hoa tam giác mạch. Chúng tôi xuất phát từ Hà Nội lúc 9 giờ tối, ngủ một giấc trên xe khách và tỉnh dậy giữa <strong>những con đèo phủ sương</strong>.</p>
+              <h2>Ngày đầu: Quản Bạ và Yên Minh</h2>
+              <p>Cổng trời Quản Bạ là điểm dừng đầu tiên. Từ đây nhìn xuống, <em>núi Đôi</em> hiện ra giữa thung lũng như hai bầu ngực khổng lồ của đất. Đường từ Quản Bạ đi Yên Minh <u>nhiều khúc cua tay áo</u>, nên đi chậm và bật đèn khi qua mây.</p>
+              <figure>
+                <img src="../assets/img/posts/6.svg" alt="Ruộng hoa tam giác mạch dưới chân núi đá">
+                <figcaption>Ruộng hoa tam giác mạch ở Sủng Là, sáng ngày thứ hai.</figcaption>
+              </figure>
+              <h3>Cần chuẩn bị gì</h3>
+              <ul>
+                <li>Áo khoác gió, buổi sáng trên đèo chỉ khoảng 12 độ.</li>
+                <li>Giấy phép lái xe và giấy tờ xe nếu thuê xe máy.</li>
+                <li>Tiền mặt, nhiều đoạn không có cây ATM.</li>
+              </ul>
+              <h3>Lịch trình gợi ý</h3>
+              <ol>
+                <li>Hà Nội → Hà Giang (xe đêm).</li>
+                <li>Hà Giang → Quản Bạ → Yên Minh → Đồng Văn.</li>
+                <li>Đồng Văn → Mã Pí Lèng → Mèo Vạc.</li>
+              </ol>
+              <blockquote>Đi chậm thôi, con đèo nào cũng đẹp hơn khi mình dừng lại nhìn nó.</blockquote>
+              <p>Xem thêm bản đồ cung đường ở <a href="#">trang hướng dẫn của tỉnh</a>.</p>
+              <!-- Ảnh đang tải lên: hiện đúng chỗ ảnh sẽ chèn, chỉ có ở trạng thái uploading -->
+              <div class="editor__upload" contenteditable="false" data-demo="uploading">
+                <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                <span role="status"><span data-i18n="admin.editor.uploading">Đang tải ảnh lên...</span> 75%</span>
+                <div class="progress" role="progressbar" aria-label="Tiến độ tải ảnh" data-i18n-aria-label="admin.editor.upload_progress" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar w-75"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="invalid-feedback" data-i18n="validation.content_required">Nhập nội dung bài viết.</div>
+          <!-- /component: rich-text-editor -->
+        </div>
+      </section>
+      <!-- /component: post-translation-form -->
+
+    </form>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/demo-state.js"></script>
+</body>
+</html>

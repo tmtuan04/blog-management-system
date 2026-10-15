@@ -1,0 +1,79 @@
+// Chọn ảnh thumbnail có xem trước (UC13: jpg, png, webp, tối đa 2MB).
+// Chưa có ảnh: khung kéo thả là <label> bọc cho <input type="file"> ẩn, bấm vào là mở hộp chọn file.
+//   <input type="file" class="thumb-upload__input visually-hidden" id="x">
+//   <label class="thumb-upload__drop" for="x" data-demo-invalid="image-error">...</label>
+//   <div class="invalid-feedback">...</div>
+// Đã có ảnh: .thumb-upload__preview gồm ảnh và nút Đổi ảnh / Xóa ảnh ở góc dưới phải.
+
+.thumb-upload__drop {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 10rem;
+  padding: 1.5rem 1rem;
+  margin: 0;
+  color: var(--bl-text-secondary);
+  text-align: center;
+  cursor: pointer;
+  background-color: var(--bl-bg-subtle);
+  border: 1px dashed var(--bl-border-strong);
+  border-radius: $border-radius;
+
+  > .bi {
+    margin-bottom: .25rem;
+    font-size: 1.5rem;
+  }
+
+  &:hover {
+    color: var(--bl-text);
+    border-color: var(--bl-text-secondary);
+  }
+
+  &.is-invalid {
+    border-color: var(--bl-danger);
+  }
+}
+
+// Input ẩn nhưng vẫn nhận focus bằng phím Tab: hiện viền focus lên khung kéo thả
+.thumb-upload__input:focus-visible + .thumb-upload__drop {
+  outline: 2px solid var(--bl-accent);
+  outline-offset: 2px;
+}
+
+.thumb-upload__title {
+  font-weight: 500;
+  color: var(--bl-text);
+}
+
+.thumb-upload__hint {
+  font-size: .8125rem;
+}
+
+.thumb-upload__preview {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background-color: var(--bl-bg-subtle);
+  border-radius: $border-radius;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.thumb-upload__actions {
+  position: absolute;
+  right: .75rem;
+  bottom: .75rem;
+  display: flex;
+  gap: .5rem;
+
+  // Nút nằm trên ảnh nên cần nền đặc để đọc được chữ
+  .btn {
+    --bs-btn-bg: var(--bl-bg);
+  }
+}

@@ -90,7 +90,8 @@ html/
 │   ├── layouts/
 │   │   ├── _public.scss        # Header, footer, khung 2 cột
 │   │   ├── _auth.scss          # Khung trang đăng nhập/đăng ký
-│   │   └── _admin.scss         # Sidebar, topbar, khung nội dung
+│   │   ├── _admin.scss         # Sidebar, topbar, khung nội dung
+│   │   └── _editor.scss        # Trang soạn bài: thanh trên tối giản, cột soạn bài (post-create, post-edit)
 │   ├── components/             # Mỗi component một file: _post-card.scss, _comment.scss, _editor.scss...
 │   └── pages/                  # Style riêng của từng trang (chỉ khi thật cần)
 ├── css/main.css                # Kết quả build
@@ -246,7 +247,7 @@ Các component dùng chung làm cùng các màn này: header, footer, thẻ bài
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
 | `admin/posts.html` (**màn mẫu, đã làm**) | `/admin/posts` | UC13 | Tab trạng thái kiểu "Your stories" của Medium (Tất cả, Nháp, Đã đăng, Lưu trữ - theo bản gốc); lọc ngôn ngữ, danh mục; ô tìm tiêu đề. Bảng: thumbnail nhỏ, tiêu đề bản gốc kèm dòng meta "Gốc: Tiếng Việt · Lập trình" (ngôn ngữ gốc và danh mục), badge từng bản dịch (`VI · Đã đăng`, `EN · Nháp`), ngày cập nhật, menu ⋯ (Sửa, Xem trên blog, Xóa) | Bình thường, rỗng, loading (skeleton), đang xóa (hộp xác nhận xóa bài với nút loading), đã xóa (toast thành công) |
-| `admin/post-create.html` | `/admin/posts/new` | UC13 | Thanh trên: "Nháp" + nút pill "Lưu". Phần dùng chung: chọn ngôn ngữ gốc, danh mục, upload thumbnail (xem trước). Bản gốc: tiêu đề kiểu Medium (Inter 42px, không viền), tóm tắt, editor, trạng thái | Lỗi validate từng trường, lỗi ảnh, đang lưu |
+| `admin/post-create.html` (**đã làm**) | `/admin/posts/new` | UC13 | Thanh trên: "Nháp" + nút pill "Lưu". Phần dùng chung: chọn ngôn ngữ gốc, danh mục, upload thumbnail (xem trước). Bản gốc: tiêu đề kiểu Medium (Inter 42px, không viền), tóm tắt, editor, trạng thái | Lỗi validate từng trường, lỗi ảnh, đang lưu |
 | `admin/post-edit.html` | `/admin/posts/:id/edit` | UC13 | Phần dùng chung ở trên (ngôn ngữ gốc chỉ đọc). Dưới là tab ngôn ngữ: tab gốc có nhãn "Gốc"; tab đã có bản dịch hiện form + slug (chỉ đọc) + lượt xem + nút "Xóa bản dịch"; tab chưa có bản dịch hiện khối rỗng với nút "Thêm bản dịch" | Tab có dữ liệu, tab chưa có bản dịch, form bản dịch mới đã điền sẵn nội dung bản gốc, lỗi validate, đang lưu, hộp xác nhận xóa bản dịch |
 | `admin/users.html` | `/admin/users` | UC14 | Tìm theo tên/email; lọc role, trạng thái. Bảng: avatar, họ tên, email, role (badge), trạng thái, ngày tạo, hành động (đổi role, khóa/mở khóa). Modal tạo tài khoản | Bình thường, rỗng, modal có lỗi validate, hộp xác nhận khóa tài khoản, hàng của chính mình bị vô hiệu nút khóa/đổi role |
 | `admin/languages.html` | `/admin/languages` | UC16 | Bảng: mã, tên, mặc định (radio/badge), hoạt động (switch), hành động. Modal thêm/sửa | Ngôn ngữ mặc định không tắt/xóa được (nút disabled + tooltip), lỗi xóa ngôn ngữ đang có bản dịch, modal lỗi validate (mã trùng, sai ISO 639-1) |
@@ -257,6 +258,7 @@ Component **rich text editor** (giao diện tĩnh), dùng ở form bài viết v
 - Vùng nhập dùng `contenteditable`, font Source Serif 4 20px giống trang chi tiết, không khung viền, có placeholder "Kể câu chuyện của bạn...".
 - Có trạng thái lỗi (viền dưới đỏ + dòng lỗi) và trạng thái đang upload ảnh.
 - Phase 2 chỉ dựng giao diện, chưa cần nút bấm hoạt động. Phase 4 sẽ thay bằng thư viện editor và giữ style này.
+- **Đã làm** ở `components/_editor.scss`, mẫu dùng trong `admin/post-create.html`. Trang viết/sửa bài dùng layout `layouts/_editor.scss` (thanh trên tối giản như Medium, không có sidebar admin); `page-edit` vẫn dùng khung admin, chỉ chép khối `<!-- component: rich-text-editor -->`.
 
 ### 5.3. Trang tĩnh, danh mục, bản dịch giao diện
 
@@ -358,7 +360,7 @@ Các việc còn lại chia cho 3 người, mỗi người làm phần của mì
 | # | Việc | Chờ | Ghi chú |
 | --- | --- | --- | --- |
 | A2 (**đã làm**) | Thẻ bài viết (`components/_post-card.scss`), `public/index.html` | | Thẻ bài viết dùng lại ở trang danh mục, tìm kiếm, bài liên quan. **Merge sớm** vì B và C cần |
-| A3 | Rich text editor (component), `admin/post-create.html` | | **Merge sớm** vì B cần cho `page-edit` |
+| A3 (**đã làm**) | Rich text editor (component), `admin/post-create.html` | | **Merge sớm** vì B cần cho `page-edit` |
 | A4 | `public/post-detail.html` (gồm bình luận) | | Nội dung bài dùng class `.prose` |
 | A5 | `admin/post-edit.html` | | Tab ngôn ngữ dùng `.nav-tabs` của Bootstrap |
 | A6 | Duyệt và sửa các lỗi C báo ở C3 mà đụng tới phần dùng chung, bật chặn link chết trong workflow deploy | C3 | Trang mục lục `html/index.html` đã có từ lúc dựng deploy; mỗi PR làm xong màn nào thì tự đổi dòng của màn đó thành link |
