@@ -2,11 +2,11 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.2 (theo requirements 1.9) |
+| Phiên bản | 1.4 (theo requirements 2.0) |
 | Ngày tạo | 08/10/2026 |
 | Thời gian | ~1 tuần (5 ngày làm việc) |
 | Đầu vào | [requirements.md](requirements.md) (mục 1.5 - Phase 2, mục 4, mục 6.3), [sample-data.md](sample-data.md) |
-| Đầu ra | Thư mục `html/` chứa các file HTML, SCSS, CSS đã build, JS demo |
+| Đầu ra | Thư mục `html/` chứa các file HTML, SCSS, CSS đã build, JS demo; bản deploy trên GitHub Pages: <https://tmtuan04.github.io/blog-management-system/> |
 
 ---
 
@@ -72,8 +72,10 @@ Medium không có trang quản trị. Trang quản trị dùng chung bộ màu, 
 
 ```text
 html/
-├── index.html                  # Mục lục: link tới mọi màn hình, dùng để kiểm tra
+├── index.html                  # Mục lục: link tới mọi màn hình, dùng để kiểm tra; trang đầu trên GitHub Pages
 ├── package.json
+├── scripts/
+│   └── check-links.mjs         # npm run check-links: báo link chết trước khi deploy
 ├── scss/
 │   ├── main.scss               # Import theo thứ tự: abstracts → bootstrap → themes → base → layouts → components → pages
 │   ├── abstracts/
@@ -226,7 +228,7 @@ Cột "Route phase 4" là đường dẫn dự kiến trong Angular, ghi lại �
 
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
-| `public/index.html` | `/` | UC05 | Thanh chip danh mục; danh sách thẻ bài viết (10 thẻ); phân trang; sidebar: "Đọc nhiều nhất", danh mục kèm số bài, link footer | Bình thường, loading (skeleton), rỗng ("Chưa có bài viết ở ngôn ngữ này") |
+| `public/index.html` (**đã làm**) | `/` | UC05 | Thanh chip danh mục; danh sách thẻ bài viết (10 thẻ); phân trang; sidebar: "Đọc nhiều nhất", danh mục kèm số bài, link footer | Bình thường, loading (skeleton), rỗng ("Chưa có bài viết ở ngôn ngữ này") |
 | `public/post-detail.html` | `/posts/:slug` | UC06, UC08 | Tiêu đề, tóm tắt (dạng subtitle xám), thanh tác giả (avatar, tên, danh mục, ngày đăng, thời gian đọc), thanh lượt xem + số bình luận có viền trên dưới, dòng "Bài viết này có ở các ngôn ngữ", ảnh thumbnail, nội dung rich text đủ mọi định dạng của editor, chip danh mục, khu bình luận, bài cùng danh mục (lưới 2 cột) | Khách (nút "Đăng nhập để bình luận"), đã đăng nhập (ô nhập bình luận), lỗi validate bình luận, đang gửi, chưa có bình luận, hộp xác nhận xóa bình luận |
 | `public/category.html` | `/categories/:slug` | UC07 | Tiêu đề danh mục lớn + số bài, chip danh mục đang chọn được tô, danh sách bài như trang chủ | Bình thường, rỗng |
 | `public/search.html` | `/search?q=` | UC19 | "Kết quả cho *từ khóa*" + số kết quả, danh sách thẻ bài, phân trang | Có kết quả, không có kết quả, lỗi từ khóa (< 2 hoặc > 100 ký tự) |
@@ -243,7 +245,7 @@ Các component dùng chung làm cùng các màn này: header, footer, thẻ bài
 
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
-| `admin/posts.html` (**màn mẫu, đã làm**) | `/admin/posts` | UC13 | Tab trạng thái kiểu "Your stories" của Medium (Tất cả, Nháp, Đã đăng, Lưu trữ - theo bản gốc); lọc ngôn ngữ, danh mục; ô tìm tiêu đề. Bảng: thumbnail nhỏ, tiêu đề bản gốc kèm dòng meta "Gốc: Tiếng Việt · Lập trình" (ngôn ngữ gốc và danh mục), badge từng bản dịch (`VI · Đã đăng`, `EN · Nháp`), ngày cập nhật, menu ⋯ (Sửa, Xem trên blog, Xóa) | Bình thường, rỗng, loading (skeleton), đang xóa (hộp xác nhận xóa bài với nút loading) |
+| `admin/posts.html` (**màn mẫu, đã làm**) | `/admin/posts` | UC13 | Tab trạng thái kiểu "Your stories" của Medium (Tất cả, Nháp, Đã đăng, Lưu trữ - theo bản gốc); lọc ngôn ngữ, danh mục; ô tìm tiêu đề. Bảng: thumbnail nhỏ, tiêu đề bản gốc kèm dòng meta "Gốc: Tiếng Việt · Lập trình" (ngôn ngữ gốc và danh mục), badge từng bản dịch (`VI · Đã đăng`, `EN · Nháp`), ngày cập nhật, menu ⋯ (Sửa, Xem trên blog, Xóa) | Bình thường, rỗng, loading (skeleton), đang xóa (hộp xác nhận xóa bài với nút loading), đã xóa (toast thành công) |
 | `admin/post-create.html` | `/admin/posts/new` | UC13 | Thanh trên: "Nháp" + nút pill "Lưu". Phần dùng chung: chọn ngôn ngữ gốc, danh mục, upload thumbnail (xem trước). Bản gốc: tiêu đề kiểu Medium (Inter 42px, không viền), tóm tắt, editor, trạng thái | Lỗi validate từng trường, lỗi ảnh, đang lưu |
 | `admin/post-edit.html` | `/admin/posts/:id/edit` | UC13 | Phần dùng chung ở trên (ngôn ngữ gốc chỉ đọc). Dưới là tab ngôn ngữ: tab gốc có nhãn "Gốc"; tab đã có bản dịch hiện form + slug (chỉ đọc) + lượt xem + nút "Xóa bản dịch"; tab chưa có bản dịch hiện khối rỗng với nút "Thêm bản dịch" | Tab có dữ liệu, tab chưa có bản dịch, form bản dịch mới đã điền sẵn nội dung bản gốc, lỗi validate, đang lưu, hộp xác nhận xóa bản dịch |
 | `admin/users.html` | `/admin/users` | UC14 | Tìm theo tên/email; lọc role, trạng thái. Bảng: avatar, họ tên, email, role (badge), trạng thái, ngày tạo, hành động (đổi role, khóa/mở khóa). Modal tạo tài khoản | Bình thường, rỗng, modal có lỗi validate, hộp xác nhận khóa tài khoản, hàng của chính mình bị vô hiệu nút khóa/đổi role |
@@ -261,9 +263,9 @@ Component **rich text editor** (giao diện tĩnh), dùng ở form bài viết v
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
 | `public/page.html` | `/pages/:key` | UC11 | Cột đọc 680px: tiêu đề lớn, nội dung rich text (dùng chung style nội dung bài). Làm mẫu đủ 3 trang `about`, `contact`, `privacy` bằng dữ liệu giả | - (route lỗi dùng `public/404.html`) |
-| `admin/categories.html` | `/admin/categories` | UC15 | Bảng: tên theo ngôn ngữ mặc định, các cột tên theo từng ngôn ngữ (ô trống hiện chữ xám "Chưa có, dùng: Đời sống"), slug, số bài, hành động. Modal thêm/sửa có một ô tên cho mỗi ngôn ngữ | Modal lỗi validate (thiếu tên ngôn ngữ mặc định), lỗi xóa danh mục đang có bài, hộp xác nhận xóa, rỗng |
+| `admin/categories.html` (**đã làm**) | `/admin/categories` | UC15 | Bảng: mỗi ngôn ngữ một cột tên, cột đầu là ngôn ngữ mặc định; slug của từng ngôn ngữ nằm dưới tên (ô trống hiện chữ xám "Chưa có, dùng: Đời sống"), số bài, menu ⋯ (Sửa, Xem trên blog, Xóa). Modal thêm/sửa có một ô tên cho mỗi ngôn ngữ | Loading (skeleton), rỗng, modal lỗi validate (thiếu tên ngôn ngữ mặc định), đang lưu, hộp xác nhận xóa (đang xóa), lỗi xóa danh mục đang có bài |
 | `admin/ui-translations.html` | `/admin/ui-translations` | UC17 | Ô tìm theo key/giá trị; bảng: cột key (font monospace), mỗi ngôn ngữ một cột, ô bấm vào thì sửa tại chỗ; ô thiếu giá trị tô nền nhạt + chữ xám. Modal thêm key | Đang sửa một ô, đang lưu, key trùng, rỗng, hộp xác nhận xóa key |
-| `admin/pages.html` | `/admin/pages` | UC18 | Bảng: tên trang, key, badge các ngôn ngữ đã có nội dung, trạng thái hiển thị, ngày cập nhật, nút "Sửa". Không phân trang | - |
+| `admin/pages.html` (**đã làm**) | `/admin/pages` | UC18 | Bảng: tên trang + URL public, key, badge các ngôn ngữ đã có nội dung, trạng thái hiển thị, ngày cập nhật, nút "Sửa". Không phân trang, không tìm kiếm | Bình thường, loading (skeleton) |
 | `admin/page-edit.html` | `/admin/pages/:key/edit` | UC18 | Thông tin key + URL (chỉ đọc), switch "Hiển thị", tab ngôn ngữ (mỗi tab: tiêu đề + rich text editor), nút "Lưu" và "Xem trên trang public" (mở tab mới) | Lỗi validate tab ngôn ngữ mặc định, lỗi "điền đủ cả hai hoặc để trống cả hai" ở tab khác, tab có lỗi được đánh dấu chấm đỏ, đang lưu, toast thành công |
 
 `js/theme.js` (UC10, **đã làm**):
@@ -339,27 +341,27 @@ Mỗi trang có nhiều trạng thái (mục 5) nhưng chỉ là một file. Dù
 - Mỗi phần làm trên một nhánh `feature/html-<phần>` tạo từ `dev`, ví dụ `feature/html-layout`, `feature/html-admin-posts`.
 - Commit theo Conventional Commits: `feat(html): add post detail page`, `style(html): adjust dark mode colors`.
 - Merge vào `dev` qua PR. Trước khi tạo PR tự đi qua checklist ở [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 7 và đính kèm ảnh chụp ở 360px và desktop, cả sáng lẫn tối.
-- Mỗi PR có người còn lại review rồi mới merge: A review PR của B, B review PR của A.
+- Mỗi PR có ít nhất một người khác review rồi mới merge: A review PR của B, B review PR của A, PR của C do A hoặc B review.
 - PR có sửa `abstracts/`, `themes/`, `layouts/` hay component dùng chung thì mở lại các trang đang dùng để kiểm tra, và A phải duyệt.
+- Merge vào `master` thì GitHub Actions (`.github/workflows/deploy-pages.yml`) tự build và deploy thư mục `html/` lên GitHub Pages. Site nằm dưới `/blog-management-system/` và phân biệt hoa/thường, nên mọi đường dẫn phải là đường dẫn tương đối, viết đúng hoa/thường như tên file (xem lỗi hay gặp ở [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 9).
 
 ---
 
 ## 8. Thứ tự làm
 
-**Đã xong (A):** cài đặt `html/`, design tokens, theme sáng/tối, typography, `theme.js`, `demo-state.js`, khung `_templates/admin.html`, màn mẫu `admin/posts.html` cùng các component nó dùng (phân trang, hộp xác nhận, trạng thái rỗng, badge, bảng...).
+**Đã xong (A):** cài đặt `html/`, design tokens, theme sáng/tối, typography, `theme.js`, `demo-state.js`, khung `_templates/admin.html`, màn mẫu `admin/posts.html` cùng các component nó dùng (phân trang, hộp xác nhận, trạng thái rỗng, badge, bảng...), khung `_templates/public.html`, `_templates/auth.html` cùng `layouts/_public.scss`, `layouts/_auth.scss` (việc A1 cũ).
 
-Các việc còn lại chia cho 2 người, mỗi người làm phần của mình theo thứ tự từ trên xuống. Mỗi dòng là một nhánh và một PR. Cột "Chờ" ghi việc của người kia phải merge xong thì mới bắt đầu được.
+Các việc còn lại chia cho 3 người, mỗi người làm phần của mình theo thứ tự từ trên xuống. Mỗi dòng là một nhánh và một PR. Cột "Chờ" ghi việc của người khác phải merge xong thì mới bắt đầu được.
 
 ### A
 
 | # | Việc | Chờ | Ghi chú |
 | --- | --- | --- | --- |
-| A1 | `_templates/public.html` (header, footer), `_templates/auth.html`, `layouts/_public.scss`, `layouts/_auth.scss` | | **Làm đầu tiên, merge sớm** vì B cần. Header làm 4 biến thể theo vai trò (`data-demo-auths="guest user blog_owner super_admin"`) |
-| A2 | Thẻ bài viết (`components/_post-card.scss`), toast, `public/index.html` | | Thẻ bài viết dùng lại ở trang danh mục, tìm kiếm, bài liên quan. **Merge sớm** vì B cần cho trang tìm kiếm |
+| A2 (**đã làm**) | Thẻ bài viết (`components/_post-card.scss`), `public/index.html` | | Thẻ bài viết dùng lại ở trang danh mục, tìm kiếm, bài liên quan. **Merge sớm** vì B và C cần |
 | A3 | Rich text editor (component), `admin/post-create.html` | | **Merge sớm** vì B cần cho `page-edit` |
-| A4 | `public/post-detail.html` (gồm bình luận), `public/category.html` | | Nội dung bài dùng class `.prose` |
+| A4 | `public/post-detail.html` (gồm bình luận) | | Nội dung bài dùng class `.prose` |
 | A5 | `admin/post-edit.html` | | Tab ngôn ngữ dùng `.nav-tabs` của Bootstrap |
-| A6 | Trang mục lục `html/index.html`; kiểm tra toàn bộ theo mục 9, sửa lỗi | B5 | Làm cùng B |
+| A6 | Duyệt và sửa các lỗi C báo ở C3 mà đụng tới phần dùng chung, bật chặn link chết trong workflow deploy | C3 | Trang mục lục `html/index.html` đã có từ lúc dựng deploy; mỗi PR làm xong màn nào thì tự đổi dòng của màn đó thành link |
 
 ### B
 
@@ -367,11 +369,19 @@ Các việc còn lại chia cho 2 người, mỗi người làm phần của mì
 | --- | --- | --- | --- |
 | B1 | `admin/categories.html`, `admin/pages.html` | | Copy từ khung admin có sẵn. Hộp xác nhận xóa copy từ `posts.html` |
 | B2 | `admin/users.html`, `admin/languages.html` | | |
-| B3 | `public/register.html`, `login.html`, `forgot-password.html`, `reset-password.html`, `profile.html` | A1 | Form: xem [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 6.1 |
-| B4 | `public/search.html`, `public/404.html`, `public/page.html` | A1, A2 | Trang tìm kiếm dùng lại thẻ bài viết |
-| B5 | `admin/ui-translations.html`, `admin/page-edit.html` | A3 | `page-edit` dùng lại rich text editor |
+| B3 | `public/register.html`, `login.html`, `forgot-password.html`, `reset-password.html`, `profile.html` | | Form: xem [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 6.1 |
+| B4 | `public/search.html`, `public/404.html`, `public/page.html` | A2 | Trang tìm kiếm dùng lại thẻ bài viết |
+| B5 | `admin/ui-translations.html`, `admin/page-edit.html` | A3, C1 | `page-edit` dùng lại rich text editor và toast |
 
-Nếu đến lượt mà việc phải chờ chưa merge, B làm trước việc tiếp theo không phải chờ.
+### C
+
+| # | Việc | Chờ | Ghi chú |
+| --- | --- | --- | --- |
+| C1 (**đã làm**) | Toast (`components/_toast.scss`), gắn vào `admin/posts.html` (trạng thái xóa xong hiện toast thành công) | | Dùng `.toast` của Bootstrap, màu lấy từ token. **Merge sớm** vì B cần cho `page-edit` |
+| C2 | `public/category.html` | A2 | Copy `_templates/public.html`, dùng lại thẻ bài viết của `public/index.html` |
+| C3 | Kiểm tra toàn bộ theo mục 9 (360px, 768px, 1280px; sáng/tối; Chrome, Edge, Firefox; `npm run check-links`), ghi lỗi thành danh sách, tự sửa lỗi nằm trong một trang, lỗi ở phần dùng chung thì chuyển A | A5, B5 | Làm sau cùng. Ghi danh sách lỗi vào mô tả PR |
+
+Nếu đến lượt mà việc phải chờ chưa merge, làm trước việc tiếp theo không phải chờ. C làm xong C1 khi chưa có A2 thì hỏi A để nhận thêm việc kiểm tra các màn đã merge.
 
 Hướng dẫn từng bước (cài máy, quy trình làm một màn, trạng thái demo, Git): [phase-2-huong-dan.md](phase-2-huong-dan.md).
 
@@ -384,7 +394,9 @@ Phase 2 kết thúc khi đạt hết các mục sau (mở rộng từ requiremen
 **Đủ màn hình**
 
 - [ ] Có đủ 20 file HTML ở mục 5, mở từ `html/index.html` bấm tới được tất cả.
-- [ ] Các link giữa trang (menu, thẻ bài, nút) dẫn đúng file.
+- [ ] Các link giữa trang (menu, thẻ bài, nút) dẫn đúng file. Danh sách nhiều mục (bảng, thẻ bài) chỉ bắt buộc link của mục đầu tiên dẫn đúng trang; các mục sau trỏ cùng file đó.
+- [ ] `npm run check-links` báo "Không có link chết".
+- [ ] Bản trên GitHub Pages mở được từ trang mục lục, bấm tới được mọi màn, CSS, ảnh, icon tải đủ.
 
 **Giống Medium**
 
@@ -408,7 +420,7 @@ Phase 2 kết thúc khi đạt hết các mục sau (mở rộng từ requiremen
 - [ ] `npm run build` không lỗi, không cảnh báo deprecation của Sass.
 - [ ] Không có mã màu viết trực tiếp ngoài `abstracts/` và `themes/`, không có style inline.
 - [ ] Chữ tĩnh đã gắn `data-i18n`.
-- [ ] Mọi PR đã được người còn lại review và merge vào `dev`.
+- [ ] Mọi PR đã được review theo mục 7.4 và merge vào `dev`.
 
 ---
 

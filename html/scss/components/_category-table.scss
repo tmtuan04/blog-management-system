@@ -1,0 +1,48 @@
+// Bảng danh mục (UC15, admin/categories.html).
+// Mỗi ngôn ngữ một cột: tên ở trên, slug của ngôn ngữ đó ở dưới. Ngôn ngữ chưa có tên hiện chữ xám
+// "Chưa có, dùng: <tên ở ngôn ngữ mặc định>".
+
+// Tiêu đề cột tên dài ("Tiếng Việt (mặc định)") được xuống dòng, để các cột tên chia đều chỗ trên mobile.
+// Ghép .table để thắng white-space: nowrap trong _table.scss (import sau file này)
+.category-table.table > thead th:not(.category-table__count) {
+  white-space: normal;
+}
+
+.category-table__name {
+  display: block;
+  font-weight: 600;
+  overflow-wrap: break-word;
+}
+
+.category-table__slug {
+  display: block;
+  margin-top: .125rem;
+  font-family: $font-family-monospace;
+  font-size: .75rem;
+  color: var(--bl-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.category-table__fallback {
+  font-style: italic;
+  color: var(--bl-text-secondary);
+}
+
+// width: 1% để cột co vừa nội dung, nhường chỗ cho các cột tên
+.category-table__count {
+  width: 1%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.category-table__actions {
+  width: 3rem;
+  text-align: end;
+}
+
+// Hàng skeleton khi đang tải
+.category-table__skeleton-name {
+  display: block;
+  margin-bottom: .375rem;
+}
+

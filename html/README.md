@@ -12,11 +12,27 @@ npm run watch   # build lại css/main.css mỗi khi sửa SCSS
 
 Mở file HTML bằng Live Server của VS Code. Trước khi commit chạy `npm run build` và commit cả `css/main.css`.
 
+```bash
+npm run check-links   # báo link chết, sai hoa/thường, đường dẫn bắt đầu bằng "/"
+```
+
+## Deploy
+
+Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu là [index.html](index.html) (mục lục các màn).
+
+- Mỗi lần merge vào `master` có thay đổi trong `html/`, workflow [deploy-pages.yml](../.github/workflows/deploy-pages.yml) tự build CSS, chạy `check-links` và deploy cả thư mục `html/` (trừ `node_modules`). Chạy tay được ở tab **Actions** → **Deploy GitHub Pages** → **Run workflow**.
+- Hiện link chết chỉ hiện thành cảnh báo ở tab Actions, chưa chặn deploy vì còn màn chưa làm.
+- Làm xong một màn: đổi dòng của màn đó trong `index.html` thành link.
+- Chỉ dùng đường dẫn tương đối, đúng hoa/thường như tên file.
+
 ## Bắt đầu một trang mới
 
 - Trang quản trị: copy [_templates/admin.html](_templates/admin.html) vào `admin/`, đổi `<title>`, chuyển `.is-active` + `aria-current="page"` sang mục sidebar của trang, viết nội dung trong `<main class="admin-content">`.
 - Xem [admin/posts.html](admin/posts.html) làm mẫu: chia component bằng comment, `data-i18n`, trạng thái demo (bình thường, loading, rỗng, đang xóa), vai trò Blog Owner / Super Admin, bảng chuyển thành thẻ trên mobile.
-- Khung public và auth chưa có (việc A1 ở mục 8 của tài liệu). Trong lúc chưa có, phần `<head>` dùng đoạn dưới đây.
+- Trang public: copy [_templates/public.html](_templates/public.html) vào `public/`, đổi `<title>`, chuyển `.is-active` + `aria-current="page"` trong menu header và offcanvas sang mục của trang (trang không có trong menu thì bỏ), viết nội dung trong `<main class="site-body__main">`; trang không cần sidebar thì xóa `<aside>`. Header có 4 biến thể theo vai trò, xem bằng thanh demo.
+- Trang tài khoản (đăng nhập, đăng ký, quên/đặt lại mật khẩu): copy [_templates/auth.html](_templates/auth.html) vào `public/`, sửa nội dung trong `.auth-card`. Mẫu đang là form đăng nhập có sẵn trạng thái lỗi và loading; comment đầu file ghi phần nào xóa cho trang nào.
+- Header, footer, offcanvas chép giống nhau ở mọi trang: sửa ở template thì sửa ở mọi file trong `public/` trong cùng một PR.
+- Trang tự dựng không theo template nào thì phần `<head>` dùng đoạn dưới đây.
 - Tên blog "Inkwell" là tên tạm, gắn `data-i18n="common.site_name"`. Chốt tên thì thay ở mọi file.
 
 ## Khung `<head>` và cuối `<body>`
@@ -71,8 +87,15 @@ Mở file HTML bằng Live Server của VS Code. Trước khi commit chạy `npm
 | Bảng | `.table` của Bootstrap đã chỉnh sẵn màu, kẻ ngang nhạt |
 | Phân trang | `.pagination-bar` bọc dòng "Hiển thị..." và `.pagination` của Bootstrap |
 | Trạng thái rỗng | `.empty-state`, `__icon`, `__title`, `__text` |
+| Thẻ bài viết | `.post-card` (`__body`, `__author`, `__author-name`, `__category`, `__title`, `__excerpt`, `__meta`, `__thumb`); `--compact` cho sidebar, `--skeleton` khi loading. Bài không có ảnh thì bỏ `__thumb`. Mẫu ở [public/index.html](public/index.html) |
+| Chip danh mục | `.category-chips` (một hàng cuộn ngang) hoặc `.category-chips--wrap`; `.category-chip`, `.is-active` + `aria-current="page"`, số bài trong `.category-chip__count` |
+| Khối sidebar public | `.aside-section`, `.aside-section__title`; dòng link nhỏ `.aside-links` |
 | Dropdown, modal | Dùng thẳng của Bootstrap, màu đã theo theme |
 | Layout admin | `.admin-layout`, `.admin-sidebar`, `.admin-topbar`, `.admin-content`, `.admin-page-header` |
+| Layout public | `.site-header` (`__nav`, `__search`, `__actions`, `__write`, `__login`), `.site-search-bar`, `.site-body` (`__main`, `__aside`), `.site-footer`, `.public-offcanvas` |
+| Layout auth | `.auth-layout` (`__header`, `__main`, `__footer`), `.auth-card` (`__title`, `__oauth`, `__oauth-icon`, `__switch`, `__legal`), `.auth-divider` |
+| Thông báo trong form | `.alert-inline` (lỗi), `.alert-inline--success` |
+| Toast | `.toast` của Bootstrap trong `.toast-container`, icon `.toast__icon`; demo: `data-demo-toast="<trạng thái>"`, mẫu ở cuối [admin/posts.html](admin/posts.html) |
 | Nút đổi theme | Xem comment đầu [js/theme.js](js/theme.js) |
 | Trạng thái demo | Xem comment đầu [js/demo-state.js](js/demo-state.js). Mở trang với `?demo=empty&auth=super_admin` để vào thẳng một trạng thái |
 

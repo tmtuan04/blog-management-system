@@ -15,20 +15,30 @@
 @import "base/base";
 @import "base/typography";
 
-// Layouts (public, auth thêm sau)
+// Layouts
 @import "layouts/admin";
+@import "layouts/public";
+@import "layouts/auth";
 
 // Components: mỗi component một file, xếp theo tên
+@import "components/alert-inline";
+@import "components/aside-section";
 @import "components/avatar";
 @import "components/brand";
+@import "components/category-chips";
+@import "components/category-table";
 @import "components/demo-state";
 @import "components/dropdown";
 @import "components/empty-state";
 @import "components/icon-btn";
+@import "components/page-table";
 @import "components/page-tabs";
 @import "components/pagination";
+@import "components/post-card";
 @import "components/post-table";
 @import "components/search-input";
 @import "components/status-badge";
 @import "components/table";
 @import "components/theme-toggle";
+@import "components/toast";
+@import "components/user-table";

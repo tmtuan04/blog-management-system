@@ -48,13 +48,13 @@
               </a>
             </li>
             <li data-demo-auth="super_admin">
-              <a class="admin-sidebar__link is-active" href="../admin/categories.html" aria-current="page">
+              <a class="admin-sidebar__link" href="../admin/categories.html">
                 <i class="bi bi-folder2" aria-hidden="true"></i>
                 <span data-i18n="admin.nav.categories">Danh mục</span>
               </a>
             </li>
             <li data-demo-auth="super_admin">
-              <a class="admin-sidebar__link" href="../admin/languages.html">
+              <a class="admin-sidebar__link is-active" href="../admin/languages.html" aria-current="page">
                 <i class="bi bi-globe2" aria-hidden="true"></i>
                 <span data-i18n="admin.nav.languages">Ngôn ngữ</span>
               </a>
@@ -150,42 +150,57 @@
       </header>
       <!-- /component: admin-topbar -->
 
+
       <main class="admin-content">
+      
         <div class="admin-page-header">
           <div>
-            <h1 class="text-page-title mb-1">Danh mục</h1>
-            <p class="text-meta mb-0">Tên ở ngôn ngữ mặc định (Tiếng Việt) là bắt buộc. Ngôn ngữ chưa có tên sẽ hiện tên tiếng
-              Việt.</p>
+            <h1 class="text-page-title mb-1">Ngôn ngữ</h1>
+            <p class="text-meta mb-0">Luôn có đúng 1 ngôn ngữ mặc định. Ngôn ngữ đã tắt bị ẩn khỏi bộ chọn ngôn ngữ và trang
+              public.</p>
           </div>
-
-          <button type="button" class="btn btn-primary" onclick="openAddCategory()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+          <button type="button" class="btn btn-primary" onclick="openAddLanguage()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w  idth="1.75" stroke-linecap="round"
               stroke-linejoin="round" data-lucide="plus" class="lucide lucide-plus bi bi-plus-lg me-1" aria-hidden="true">
               <path d="M5 12h14"></path>
               <path d="M12 5v14"></path>
-            </svg>Thêm danh mục
+            </svg>Thêm ngôn ngữ
           </button>
-
-          <div class="modal-dialog" id="categoryModal" style="display: none">
+          
+          <div class="modal-dialog modal-dialog-centered" id="languageModal" style="display: none">
             <div class="modal-content">
               <div class="modal-header border-0 pb-0">
                 <div>
-                  <h2 class="modal-title fs-5" id="catAddTitle">Thêm danh mục</h2>
+                  <h2 class="modal-title fs-5" id="lAddTitle">Thêm ngôn ngữ</h2>
                 </div>
                 <button type="button" class="btn-close close-modal-dialog" aria-label="Đóng"></button>
               </div>
               <div class="modal-body">
                 <div class="mb-3">
-                  <label class="form-label fw-medium" for="catVi">Tiếng Việt <span class="role-chip">Mặc định</span></label>
-                  <input type="text" class="form-control" id="catVi" value="" placeholder="Ví dụ: Du lịch">
-                  <div class="invalid-feedback">Nhập tên ở ngôn ngữ mặc định (Tiếng Việt).</div>
+                  <label class="form-label fw-medium" for="lCode">Mã ngôn ngữ</label>
+                  <input type="text" class="form-control font-monospace" id="lCode" value="" placeholder="fr" maxlength="2">
+                  <div class="invalid-feedback">Mã “en” đã có trong danh sách.</div>
+                  <div class="lang-field-hint mt-1">2 chữ cái thường theo ISO 639-1, ví dụ: fr, ja, ko.</div>
                 </div>
-                <div>
-                  <label class="form-label fw-medium" for="catEn">English</label>
-                  <input type="text" class="form-control" id="catEn" value="" placeholder="Để trống thì hiện tên tiếng Việt">
-                  <div class="lang-field-hint mt-1">Không bắt buộc.</div>
+                <div class="mb-3">
+                  <label class="form-label fw-medium" for="lName">Tên hiển thị</label>
+                  <input type="text" class="form-control" id="lName" value="" placeholder="Français">
+                  <div class="invalid-feedback">Nhập tên hiển thị.</div>
+                  <div class="lang-field-hint mt-1">Viết bằng chính ngôn ngữ đó, đây là chữ hiện trong bộ chọn ngôn ngữ.</div>
                 </div>
-                <p class="text-meta mt-3 mb-0">Slug tạo tự động từ tên của từng ngôn ngữ.</p>
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" role="switch" id="lActive" checked="">
+                  <label class="form-check-label" for="lActive">Hoạt động</label>
+                </div>
+                <div class="alert-inline alert-inline--success"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                    stroke-linejoin="round" data-lucide="info" class="lucide lucide-info bi bi-info-circle" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 16v-4"></path>
+                    <path d="M12 8h.01"></path>
+                  </svg>
+                  <div>Toàn bộ bản dịch giao diện của Tiếng Việt sẽ được sao chép sang ngôn ngữ mới để bạn dịch dần.</div>
+                </div>
               </div>
               <div class="modal-footer border-0 pt-0">
                 <button type="button" class="btn btn-outline-secondary close-modal-dialog">Hủy</button>
@@ -194,57 +209,51 @@
               </div>
             </div>
           </div>
-
+            
           <script>
-            function openAddCategory() {
-              const modal = document.getElementById('categoryModal');
+            function openAddLanguage() {
+              const modal = document.getElementById('languageModal');
               modal.style.display = 'block';
             }
             // Lấy khung hiển thị
-            const categoryModal = document.getElementById("categoryModal");
+            const languageModal = document.getElementById("languageModal");
 
-              // Gắn sự kiện đóng cho tất cả nút có class close-modal-dialog
+            // Gắn sự kiện đóng cho tất cả nút có class close-modal-dialog
             document.querySelectorAll(".close-modal-dialog").forEach(button => {
               button.addEventListener("click", function () {
-                categoryModal.style.display = "none";
+                languageModal.style.display = "none";
               });
             });
           </script>
+
         </div>
-
-        <form class="row g-2 mb-3" role="search">
-          <div class="col-12 col-md-6">
-            <label class="visually-hidden" for="categorySearch">Tìm theo tên ở mọi ngôn ngữ...</label>
-            <div class="search-input">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="search"
-                class="lucide lucide-search bi bi-search search-input__icon" aria-hidden="true">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.3-4.3"></path>
-              </svg>
-              <input type="search" class="form-control search-input__control" id="categorySearch"
-                placeholder="Tìm theo tên ở mọi ngôn ngữ...">
-            </div>
-          </div>
-        </form>
-
-        <div class="table-responsive" data-state-hide="empty">
+      
+        <div class="table-responsive">
           <table class="table table-hover align-middle">
             <thead>
               <tr>
-                <th scope="col">Tiếng Việt <span class="role-chip">Mặc định</span></th>
-                <th scope="col">English</th>
-                <th scope="col" class="d-none d-md-table-cell">Slug</th>
-                <th scope="col" class="text-end">Số bài</th>
+                <th scope="col">Mã</th>
+                <th scope="col">Tên hiển thị</th>
+                <th scope="col">Mặc định</th>
+                <th scope="col">Hoạt động</th>
+                <th scope="col" class="text-end d-none d-md-table-cell">Bản dịch bài</th>
                 <th scope="col"><span class="visually-hidden">Thao tác</span></th>
               </tr>
             </thead>
-            <tbody data-state-hide="loading">
+            <tbody>
               <tr>
-                <td class="fw-semibold">Lập trình</td>
-                <td>Programming</td>
-                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">lap-trinh</span></td>
-                <td class="text-end font-monospace">6</td>
+                <td><span class="code-chip">vi</span></td>
+                <td class="fw-semibold">Tiếng Việt</td>
+                <td><span class="status-badge status-badge--success">Mặc định</span></td>
+                <td>
+                  <div class="has-tooltip">
+                    <div class="form-check form-switch mb-0">
+                      <input class="form-check-input" type="checkbox" role="switch" id="active-vi" checked="" disabled="" aria-label="Hoạt động">
+                    </div>
+                    <span class="mock-tooltip" data-state-show="tooltip" role="tooltip">Không thể tắt ngôn ngữ mặc định</span>  
+                  </div>
+                </td>
+                <td class="text-end font-monospace d-none d-md-table-cell">14</td>
                 <td class="text-end">
                   <div class="dropdown">
                     <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
@@ -268,10 +277,10 @@
                       <li>
                         <hr class="dropdown-divider">
                       </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                      <li><button type="button" class="dropdown-item text-danger" disabled=""><svg
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                            data-lucide="trash-2" class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
                             <path d="M3 6h18"></path>
                             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
                             <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
@@ -283,10 +292,19 @@
                 </td>
               </tr>
               <tr>
-                <td class="fw-semibold">Đời sống</td>
-                <td><span class="cell-fallback">Chưa có, dùng: Đời sống</span></td>
-                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">doi-song</span></td>
-                <td class="text-end font-monospace">3</td>
+                <td><span class="code-chip">en</span></td>
+                <td class="fw-semibold">English</td>
+                <td><span class="text-meta">—</span></td>
+                <td>
+                  <div class="has-tooltip">
+                    <div class="form-check form-switch mb-0">
+                      <input class="form-check-input" type="checkbox" role="switch" id="active-en" checked=""
+                        aria-label="Hoạt động">
+                    </div>
+      
+                  </div>
+                </td> 
+                <td class="text-end font-monospace d-none d-md-table-cell">6</td>
                 <td class="text-end">
                   <div class="dropdown">
                     <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
@@ -307,6 +325,14 @@
                             </path>
                             <path d="m15 5 4 4"></path>
                           </svg><span>Sửa</span></button></li>
+                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="star"
+                            class="lucide lucide-star bi bi-star-fill" aria-hidden="true">
+                            <polygon
+                              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
+                          </svg><span>Đặt làm mặc định</span></button></li>
                       <li>
                         <hr class="dropdown-divider">
                       </li>
@@ -325,10 +351,18 @@
                 </td>
               </tr>
               <tr>
-                <td class="fw-semibold">Du lịch</td>
-                <td>Travel</td>
-                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">du-lich</span></td>
-                <td class="text-end font-monospace">2</td>
+                <td><span class="code-chip">ja</span></td>
+                <td class="fw-semibold">日本語</td>
+                <td><span class="text-meta">—</span></td>
+                <td>
+                  <div class="has-tooltip">
+                    <div class="form-check form-switch mb-0">
+                      <input class="form-check-input" type="checkbox" role="switch" id="active-ja" aria-label="Hoạt động">
+                    </div>
+      
+                  </div>
+                </td>
+                <td class="text-end font-monospace d-none d-md-table-cell">0</td>
                 <td class="text-end">
                   <div class="dropdown">
                     <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
@@ -349,6 +383,14 @@
                             </path>
                             <path d="m15 5 4 4"></path>
                           </svg><span>Sửa</span></button></li>
+                      <li><button type="button" class="dropdown-item" disabled=""><svg xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" data-lucide="star"
+                            class="lucide lucide-star bi bi-star-fill" aria-hidden="true">
+                            <polygon
+                              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                            </polygon>
+                          </svg><span>Đặt làm mặc định</span></button></li>
                       <li>
                         <hr class="dropdown-divider">
                       </li>
@@ -365,170 +407,13 @@
                     </ul>
                   </div>
                 </td>
-              </tr>
-              <tr>
-                <td class="fw-semibold">Thiết kế</td>
-                <td><span class="cell-fallback">Chưa có, dùng: Thiết kế</span></td>
-                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">thiet-ke</span></td>
-                <td class="text-end font-monospace">1</td>
-                <td class="text-end">
-                  <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
-                      <li>
-                        <hr class="dropdown-divider">
-                      </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
-                    </ul>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="fw-semibold">Công nghệ</td>
-                <td>Technology</td>
-                <td class="d-none d-md-table-cell"><span class="cell-key text-body-secondary text-break">cong-nghe</span></td>
-                <td class="text-end font-monospace">0</td>
-                <td class="text-end">
-                  <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
-                      <li>
-                        <hr class="dropdown-divider">
-                      </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
-                    </ul>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="fw-semibold">Khởi nghiệp và quản trị doanh nghiệp vừa và nhỏ</td>
-                <td>Startups and small business management</td>
-                <td class="d-none d-md-table-cell"><span
-                    class="cell-key text-body-secondary text-break">khoi-nghiep-va-quan-tri-doanh-nghiep-vua-va-nho</span></td>
-                <td class="text-end font-monospace">0</td>
-                <td class="text-end">
-                  <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
-                      <li>
-                        <hr class="dropdown-divider">
-                      </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
-                    </ul>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-            <tbody data-state-show="loading" hidden="">
-              <tr>
-                <td><span class="skeleton" style="width:70%"></span></td>
-                <td><span class="skeleton" style="width:55%"></span></td>
-                <td><span class="skeleton" style="width:45%"></span></td>
-                <td><span class="skeleton" style="width:30%"></span></td>
-                <td><span class="skeleton" style="width:20%"></span></td>
-              </tr>
-              <tr>
-                <td><span class="skeleton" style="width:70%"></span></td>
-                <td><span class="skeleton" style="width:55%"></span></td>
-                <td><span class="skeleton" style="width:45%"></span></td>
-                <td><span class="skeleton" style="width:30%"></span></td>
-                <td><span class="skeleton" style="width:20%"></span></td>
-              </tr>
-              <tr>
-                <td><span class="skeleton" style="width:70%"></span></td>
-                <td><span class="skeleton" style="width:55%"></span></td>
-                <td><span class="skeleton" style="width:45%"></span></td>
-                <td><span class="skeleton" style="width:30%"></span></td>
-                <td><span class="skeleton" style="width:20%"></span></td>
-              </tr>
-              <tr>
-                <td><span class="skeleton" style="width:70%"></span></td>
-                <td><span class="skeleton" style="width:55%"></span></td>
-                <td><span class="skeleton" style="width:45%"></span></td>
-                <td><span class="skeleton" style="width:30%"></span></td>
-                <td><span class="skeleton" style="width:20%"></span></td>
               </tr>
             </tbody>
           </table>
         </div>
-        
-        <!-- Nội dung trang -->
       </main>
+
+
     </div>
   </div>
 

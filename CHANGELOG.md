@@ -6,6 +6,13 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Deploy giao diện phase 2 lên GitHub Pages (<https://tmtuan04.github.io/blog-management-system/>):
+  - `.github/workflows/deploy-pages.yml`: push vào `master` (có thay đổi trong `html/`) hoặc chạy tay thì build CSS, kiểm tra link, deploy thư mục `html/` (bỏ `node_modules`). Link chết chỉ báo thành annotation, chưa chặn deploy.
+  - `html/index.html`: trang mục lục 20 màn, màn đã xong có link, màn chưa làm ghi "Chưa làm" và không có link.
+  - `html/scripts/check-links.mjs` (`npm run check-links`): báo `href`/`src` trỏ tới file không tồn tại, sai hoa/thường, đường dẫn bắt đầu bằng `/` hoặc ra ngoài `html/`; bỏ qua link ngoài, `#`, comment HTML và `_templates/`.
+  - Phase 2 doc 1.2 → 1.3: đầu ra có link GitHub Pages; mục 2.2 thêm `scripts/`; mục 7.4 ghi deploy khi merge `master`; mục 8 A6 đổi thành kiểm tra cuối (trang mục lục đã có, mỗi PR tự cập nhật); mục 9 thêm quy tắc "danh sách nhiều mục chỉ bắt buộc link mục đầu tiên", `check-links` sạch, kiểm tra bản trên GitHub Pages.
+  - `docs/phase-2-huong-dan.md`: checklist PR thêm chạy `check-links`, cập nhật `index.html`; lỗi hay gặp thêm 404 do sai hoa/thường và mất CSS do đường dẫn bắt đầu bằng `/`.
+  - `html/README.md`: lệnh `check-links`, mục Deploy.
 - Thư mục `html/` (phase 2), phần nền cho màn mẫu:
   - `package.json`: Bootstrap 5.3.8, Dart Sass; script `build`, `watch`.
   - `scss/`: `main.scss`; `abstracts/` (biến Bootstrap ghi đè, font, kích thước layout, mixin `line-clamp`); `themes/` (token `--bl-*` sáng/tối, `_bootstrap-bridge.scss` nối biến `--bs-*` vào token); `base/` (kiểu chữ theo vai trò `.text-*`, `.prose`); `components/` (nút đổi theme, thanh demo).
@@ -19,10 +26,40 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
   - Ảnh giả SVG trong `assets/img/posts/` và `assets/img/avatars/`.
 - `demo-state.js`: trạng thái tự đặt tên (`data-demo-label-<tên>`), vai trò `guest` / `user` / `blog_owner` / `super_admin` (`data-demo-auths`), tự mở modal (`data-demo-modal`), chọn trạng thái cho `data-demo-invalid` / `data-demo-loading`.
 - Nút `.btn-outline-secondary`, `.btn-danger` theo token màu.
+- Khung public và auth (A1), phần SCSS: `layouts/_public.scss` (header dính trên cùng, thanh tìm kiếm mobile, nội dung + sidebar từ `lg`, footer, offcanvas menu), `layouts/_auth.scss` (thẻ form 440px, nút OAuth, đường chia "hoặc"), component `alert-inline` (thông báo lỗi/thành công trong form).
+- `_templates/public.html`: khung trang public (header 4 biến thể theo vai trò `guest` / `user` / `blog_owner` / `super_admin`, ô tìm kiếm desktop và thanh tìm kiếm mobile, nội dung + sidebar, footer, offcanvas menu mobile có chọn ngôn ngữ và switch giao diện tối).
+- `_templates/auth.html`: khung trang tài khoản (header logo + ngôn ngữ + theme, thẻ form 440px, footer), mẫu là form đăng nhập: nút Google/Github, đường chia "hoặc", email, mật khẩu, link quên mật khẩu, link đăng ký; trạng thái `normal`, `error` (lỗi dưới trường + `.alert-inline`), `loading`.
+- `html/README.md`: cách dùng `_templates/public.html` và `_templates/auth.html`; bảng class thêm layout public, layout auth, `.alert-inline`.
+- `js/theme.js`: hỗ trợ nút đổi theme dạng switch (`input[type=checkbox][data-theme-toggle]`, dùng trong offcanvas mobile), đồng bộ `checked` theo theme.
 - Phase 2 doc: token `--bl-border-strong`, `--bl-btn-primary-hover` và các token `-rgb`; quy ước `data-i18n-placeholder`, `data-i18n-aria-label`; dữ liệu từ CSDL không gắn `data-i18n`.
+- Màn quản trị danh mục và trang tĩnh (B1), chỉ Super Admin (`data-demo-auths="super_admin"`):
+  - `admin/categories.html` (UC15): mỗi ngôn ngữ một cột tên, slug nằm dưới tên, ô chưa có tên hiện chữ xám "Chưa có, dùng: <tên mặc định>"; cột số bài; menu ⋯ (Sửa, Xem trên blog, Xóa); ô tìm theo tên. Modal thêm và modal sửa (điền sẵn tên, hiện slug hiện tại), hộp xác nhận xóa, hộp "Không thể xóa danh mục" cho danh mục đang có bài. Trạng thái demo: bình thường, loading (skeleton), rỗng, lỗi validate (thiếu tên ngôn ngữ mặc định), đang lưu, đang xóa, lỗi xóa.
+  - `admin/pages.html` (UC18): bảng tên trang + URL public, key, badge ngôn ngữ đã có nội dung, trạng thái hiển thị, ngày cập nhật, nút "Sửa" tới `page-edit.html`; không phân trang, không tìm kiếm. Dưới `sm` cột "Hiển thị" chuyển xuống dưới tên, nút "Sửa" chỉ còn icon. Trạng thái demo: bình thường, loading.
+  - Component `category-table`, `page-table`.
+- Component `user-table` (`scss/components/_user-table.scss`): ô người dùng (avatar + họ tên + email), nhãn "(Bạn)", badge vai trò (Super Admin nền đậm), hàng tài khoản bị khóa làm mờ, skeleton.
+- Toast (C1):
+  - `scss/components/_toast.scss`: `.toast` của Bootstrap, nối biến `--bs-toast-*` vào token `--bl-*`; icon `.toast__icon` màu `--bl-success`.
+  - `admin/posts.html`: trạng thái demo "Đã xóa" (`deleted`) hiện toast "Đã xóa bài viết." góc trên phải; chữ gắn `data-i18n` (`common.success`, `admin.posts.delete_success`, `common.close`).
+  - `demo-state.js`: `data-demo-toast="<trạng thái>"` tự hiện toast ở trạng thái đó, không tự ẩn để chụp màn hình.
+  - `html/README.md`: thêm dòng Toast vào bảng "Có sẵn để dùng". Phase 2 doc: C1 đánh dấu đã làm, `admin/posts.html` thêm trạng thái đã xóa. `SCREENS.md`: bỏ toast khỏi A2.
+- Trang chủ và thẻ bài viết (A2):
+  - `public/index.html` (UC05): thanh chip danh mục cuộn ngang ("Tất cả" đang chọn), 10 thẻ bài viết, phân trang 1–10 / 24; sidebar từ `lg` gồm "Đọc nhiều nhất" (5 bài theo lượt xem), danh mục kèm số bài, link Giới thiệu / Liên hệ / Chính sách bảo mật. Dữ liệu giả có tiêu đề 3 dòng, tóm tắt dài, bài không ảnh, tên tác giả dài, chuỗi không dấu rất dài. Trạng thái demo: bình thường, loading (skeleton cả feed và sidebar), rỗng ("Chưa có bài viết ở ngôn ngữ này"); 4 vai trò của header.
+  - Component `post-card` (dòng tác giả · danh mục, tiêu đề cắt 3 dòng, tóm tắt cắt 2 dòng, ngày đăng · lượt xem, thumbnail 80×53 / 160×107 từ `md`; biến thể `--compact`, `--skeleton`), `category-chips` (`--wrap`, `.is-active`, `__count`), `aside-section`, `aside-links`.
+  - `html/index.html`: "Trang chủ" thành link, badge "Đã xong". `html/README.md`: thêm thẻ bài viết, chip danh mục, khối sidebar vào bảng "Có sẵn để dùng". Phase 2 doc: `public/index.html` và A2 đánh dấu đã làm.
+  - `SCREENS.md` cập nhật theo phase 2 doc 1.4: `category.html` chuyển từ A4 sang C2 (nhánh A4 đổi thành `feature/html-post-detail`), thêm bảng C (C1, C2, C3), A6 đổi thành sửa lỗi phần dùng chung, chờ C3; số màn A 5, B 14, C 1.
 
 ### Changed
 
+- `admin/users.html` (UC14) viết lại theo quy ước phase 2, sửa lỗi giao diện bảng (avatar nằm trên tên vì class `user-cell`, `role-badge`, `self-tag`, `min-w-0` không có CSS; ảnh avatar sai đường dẫn `../img/avatar-2.svg`): dùng component `user-table`, Bootstrap Icons thay SVG Lucide, modal Bootstrap thay `onclick`/script tự viết, `data-demo` thay `data-state-*`, skeleton bằng `placeholder-glow`; thêm `data-i18n`. Chỉ Super Admin (`data-demo-auths="super_admin"`). Hàng của chính mình có nút ⋯ bị vô hiệu kèm chú thích. Trạng thái demo: bình thường, loading, rỗng (tìm không ra), lỗi validate (email trùng, mật khẩu yếu), đang lưu, hộp xác nhận khóa tài khoản. `index.html`, `SCREENS.md`: đánh dấu màn đã xong.
+- Nhóm từ 2 lên 3 người, C nhận các việc dễ tách từ phần của A:
+  - Requirements 1.9 → 2.0: A ~45%, B ~40%, C ~15%. C phụ trách UC05, UC07, UC09 (bộ chọn ngôn ngữ, A vẫn dựng cơ chế đa ngôn ngữ), UC10, component toast; phase 1 review ERD và chạy thử migrate/seed/rollback; phase 2 toast, `category.html`, kiểm tra tổng; phase 5 tạo máy ảo và cấu hình hệ điều hành (bước 1-2). PR của C do A hoặc B review.
+  - Phase 2 doc 1.3 → 1.4: mục 8 ghi A1 đã xong; A2 bỏ toast, A4 bỏ `category.html`, A6 chỉ duyệt lỗi phần dùng chung và bật chặn link chết; thêm bảng C (C1 toast, C2 `category.html`, C3 kiểm tra theo mục 9); B5 chờ thêm C1. Mục 7.4, 9 sửa quy tắc review cho 3 người.
+  - `docs/phase-2-huong-dan.md`: cách chọn reviewer, xử lý conflict và báo khi sửa phần dùng chung theo nhóm 3 người.
+- `layouts/_public.scss`: ở 768px chữ trên header (menu, "Viết bài", "Đăng nhập", "Bắt đầu") không còn xuống dòng; ô tìm kiếm co từ 240px xuống khi thiếu chỗ.
+- `layouts/_auth.scss`: nút Google/Github (thẻ `<a>`) căn giữa chữ theo chiều dọc.
+- `admin/categories.html`, `admin/pages.html` viết lại theo quy ước phase 2: bỏ icon SVG Lucide (dùng Bootstrap Icons), `style="..."` inline, `onclick` và script mở modal tự viết (dùng modal Bootstrap), class không tồn tại (`role-chip`, `cell-key`, `cell-fallback`, `lang-badge`, `code-chip`, `skeleton`) và thuộc tính `data-state-*` (dùng `data-demo`); thêm `data-i18n`, comment component, `<title>` đúng tên trang.
+- `html/index.html`: "Quản lý danh mục", "Quản lý trang tĩnh" thành link, badge "Đã xong". `html/SCREENS.md`: đánh dấu B1 xong.
+- Phase 2 doc mục 5.3: dòng `admin/categories.html`, `admin/pages.html` ghi "đã làm", bố cục bảng và trạng thái demo thực tế.
 - Phase 2 doc: mục 2.1 thay khối `package.json` mẫu bằng mô tả file thật; Bootstrap JS và Bootstrap Icons nạp từ CDN. Mục 7.2 ghi cách đánh dấu trạng thái demo bằng `data-demo`, `data-demo-auth`.
 - Phase 2 doc: `--bl-border` chỉ dùng cho đường kẻ, viền bảng; viền ô nhập dùng `--bl-border-strong`.
 - Phase 2 doc: mục 8 lập lại kế hoạch theo ngày vì phần nền và màn mẫu đã làm trước; B làm khung public/auth ngày 1, C bắt đầu từ các trang admin.

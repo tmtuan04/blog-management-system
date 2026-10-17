@@ -14,6 +14,15 @@
  *     <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
  *   </button>
  *
+ * Dạng switch (offcanvas mobile): trạng thái hiện bằng `checked` thay cho aria-pressed.
+ * Chỉ gắn data-theme-toggle lên <input>, không gắn lên <label> hay thẻ bọc ngoài
+ * (bấm label sinh thêm một click vào input, theme sẽ bị đổi hai lần):
+ *
+ *   <div class="form-check form-switch">
+ *     <input class="form-check-input" type="checkbox" role="switch" id="themeSwitch" data-theme-toggle>
+ *     <label class="form-check-label" for="themeSwitch">Giao diện tối</label>
+ *   </div>
+ *
  * Lựa chọn lưu ở localStorage key "theme". Chưa chọn lần nào thì theo hệ điều hành (prefers-color-scheme).
  */
 (function () {
@@ -44,9 +53,14 @@
   }
 
   function applyTheme(theme) {
+    const isDark = theme === 'dark';
     document.documentElement.setAttribute('data-bs-theme', theme);
-    document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
-      button.setAttribute('aria-pressed', String(theme === 'dark'));
+    document.querySelectorAll('[data-theme-toggle]').forEach((toggle) => {
+      if (toggle.matches('input[type="checkbox"]')) {
+        toggle.checked = isDark;
+      } else {
+        toggle.setAttribute('aria-pressed', String(isDark));
+      }
     });
   }
 
@@ -60,7 +74,7 @@
     applyTheme(next);
   });
 
-  // Cập nhật aria-pressed cho các nút khi DOM đã có
+  // Cập nhật aria-pressed / checked cho các nút khi DOM đã có
   document.addEventListener('DOMContentLoaded', () => applyTheme(preferredTheme()));
 
   // Người dùng chưa tự chọn thì đổi theo khi hệ điều hành đổi sáng/tối
