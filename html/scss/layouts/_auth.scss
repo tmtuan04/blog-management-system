@@ -84,6 +84,22 @@
   letter-spacing: -.01em;
 }
 
+// Đoạn giới thiệu ngay dưới tiêu đề (quên mật khẩu, đã gửi email)
+.auth-card__lead {
+  margin-bottom: 1.5rem;
+  color: var(--bl-text-secondary);
+  text-align: center;
+}
+
+// Icon lớn phía trên tiêu đề ở màn kết quả (đã gửi email đặt lại mật khẩu)
+.auth-card__icon {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--bl-success);
+}
+
 // Nút đăng nhập bằng Google/GitHub: chữ căn giữa, icon cố định bên trái
 .auth-card__oauth {
   display: grid;

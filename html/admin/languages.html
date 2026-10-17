@@ -1,15 +1,9 @@
 <!doctype html>
-<!--
-  Khung mẫu trang quản trị (docs/phase-2-html.md mục 4.3).
-  Cách dùng: copy file này vào admin/, đổi <title>, đổi mục .is-active + aria-current trong sidebar,
-  rồi viết nội dung trong <main class="admin-content">. Màn mẫu đầy đủ: admin/posts.html.
-  Sửa sidebar hoặc topbar thì sửa ở mọi file trong admin/ trong cùng một PR.
--->
 <html lang="vi" data-bs-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tên trang · Inkwell</title>
+  <title>Ngôn ngữ · Inkwell</title>
 
   <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
   <script src="../js/theme.js"></script>
@@ -20,7 +14,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../css/main.css">
 </head>
-<body data-demo-states="normal" data-demo-auths="blog_owner super_admin">
+<body data-demo-states="normal error saving deleting in-use" data-demo-label-saving="Đang lưu" data-demo-label-deleting="Đang xóa" data-demo-label-in-use="Lỗi xóa" data-demo-auths="super_admin">
   <div class="admin-layout">
 
     <!-- component: admin-sidebar -->
@@ -150,260 +144,146 @@
       </header>
       <!-- /component: admin-topbar -->
 
-
       <main class="admin-content">
-      
         <div class="admin-page-header">
           <div>
-            <h1 class="text-page-title mb-1">Ngôn ngữ</h1>
-            <p class="text-meta mb-0">Luôn có đúng 1 ngôn ngữ mặc định. Ngôn ngữ đã tắt bị ẩn khỏi bộ chọn ngôn ngữ và trang
-              public.</p>
+            <h1 class="text-page-title mb-1" data-i18n="admin.languages.title">Ngôn ngữ</h1>
+            <p class="text-meta mb-0" data-i18n="admin.languages.subtitle">Luôn có đúng 1 ngôn ngữ mặc định. Ngôn ngữ đã tắt bị ẩn khỏi bộ chọn ngôn ngữ và trang public.</p>
           </div>
-          <button type="button" class="btn btn-primary" onclick="openAddLanguage()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w  idth="1.75" stroke-linecap="round"
-              stroke-linejoin="round" data-lucide="plus" class="lucide lucide-plus bi bi-plus-lg me-1" aria-hidden="true">
-              <path d="M5 12h14"></path>
-              <path d="M12 5v14"></path>
-            </svg>Thêm ngôn ngữ
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#languageModal">
+            <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
+            <span data-i18n="admin.languages.add">Thêm ngôn ngữ</span>
           </button>
-          
-          <div class="modal-dialog modal-dialog-centered" id="languageModal" style="display: none">
-            <div class="modal-content">
-              <div class="modal-header border-0 pb-0">
-                <div>
-                  <h2 class="modal-title fs-5" id="lAddTitle">Thêm ngôn ngữ</h2>
-                </div>
-                <button type="button" class="btn-close close-modal-dialog" aria-label="Đóng"></button>
-              </div>
-              <div class="modal-body">
-                <div class="mb-3">
-                  <label class="form-label fw-medium" for="lCode">Mã ngôn ngữ</label>
-                  <input type="text" class="form-control font-monospace" id="lCode" value="" placeholder="fr" maxlength="2">
-                  <div class="invalid-feedback">Mã “en” đã có trong danh sách.</div>
-                  <div class="lang-field-hint mt-1">2 chữ cái thường theo ISO 639-1, ví dụ: fr, ja, ko.</div>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label fw-medium" for="lName">Tên hiển thị</label>
-                  <input type="text" class="form-control" id="lName" value="" placeholder="Français">
-                  <div class="invalid-feedback">Nhập tên hiển thị.</div>
-                  <div class="lang-field-hint mt-1">Viết bằng chính ngôn ngữ đó, đây là chữ hiện trong bộ chọn ngôn ngữ.</div>
-                </div>
-                <div class="form-check form-switch mb-3">
-                  <input class="form-check-input" type="checkbox" role="switch" id="lActive" checked="">
-                  <label class="form-check-label" for="lActive">Hoạt động</label>
-                </div>
-                <div class="alert-inline alert-inline--success"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
-                    stroke-linejoin="round" data-lucide="info" class="lucide lucide-info bi bi-info-circle" aria-hidden="true">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 16v-4"></path>
-                    <path d="M12 8h.01"></path>
-                  </svg>
-                  <div>Toàn bộ bản dịch giao diện của Tiếng Việt sẽ được sao chép sang ngôn ngữ mới để bạn dịch dần.</div>
-                </div>
-              </div>
-              <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-outline-secondary close-modal-dialog">Hủy</button>
-                <button type="button" class="btn btn-primary" data-loading-on="" data-loading-text="Đang lưu..."
-                  data-idle="Lưu">Lưu</button>
-              </div>
-            </div>
-          </div>
-            
-          <script>
-            function openAddLanguage() {
-              const modal = document.getElementById('languageModal');
-              modal.style.display = 'block';
-            }
-            // Lấy khung hiển thị
-            const languageModal = document.getElementById("languageModal");
-
-            // Gắn sự kiện đóng cho tất cả nút có class close-modal-dialog
-            document.querySelectorAll(".close-modal-dialog").forEach(button => {
-              button.addEventListener("click", function () {
-                languageModal.style.display = "none";
-              });
-            });
-          </script>
-
         </div>
-      
+
+        <!-- component: language-table -->
         <div class="table-responsive">
-          <table class="table table-hover align-middle">
+          <table class="table table-hover align-middle language-table">
             <thead>
               <tr>
-                <th scope="col">Mã</th>
-                <th scope="col">Tên hiển thị</th>
-                <th scope="col">Mặc định</th>
-                <th scope="col">Hoạt động</th>
-                <th scope="col" class="text-end d-none d-md-table-cell">Bản dịch bài</th>
-                <th scope="col"><span class="visually-hidden">Thao tác</span></th>
+                <th scope="col" data-i18n="admin.languages.col_code">Mã</th>
+                <th scope="col" data-i18n="admin.languages.col_name">Tên hiển thị</th>
+                <th scope="col" data-i18n="admin.languages.col_default">Mặc định</th>
+                <th scope="col" data-i18n="admin.languages.col_active">Hoạt động</th>
+                <th scope="col" class="language-table__count d-none d-md-table-cell" data-i18n="admin.languages.col_translations">Bản dịch bài</th>
+                <th scope="col" class="language-table__actions"><span class="visually-hidden" data-i18n="common.actions">Thao tác</span></th>
               </tr>
             </thead>
             <tbody>
+              <!-- Ngôn ngữ mặc định: không tắt, không xóa được (switch và nút xóa bị khóa, có tooltip) -->
               <tr>
-                <td><span class="code-chip">vi</span></td>
+                <td><span class="language-table__code">vi</span></td>
                 <td class="fw-semibold">Tiếng Việt</td>
-                <td><span class="status-badge status-badge--success">Mặc định</span></td>
+                <td><span class="status-badge status-badge--success" data-i18n="admin.languages.default">Mặc định</span></td>
                 <td>
-                  <div class="has-tooltip">
-                    <div class="form-check form-switch mb-0">
-                      <input class="form-check-input" type="checkbox" role="switch" id="active-vi" checked="" disabled="" aria-label="Hoạt động">
-                    </div>
-                    <span class="mock-tooltip" data-state-show="tooltip" role="tooltip">Không thể tắt ngôn ngữ mặc định</span>  
-                  </div>
+                  <span class="d-inline-block" title="Không thể tắt ngôn ngữ mặc định" data-i18n-title="admin.languages.cannot_disable_default">
+                    <span class="form-check form-switch mb-0">
+                      <input class="form-check-input" type="checkbox" role="switch" id="activeVi" checked disabled aria-label="Hoạt động" data-i18n-aria-label="admin.languages.col_active">
+                    </span>
+                  </span>
                 </td>
-                <td class="text-end font-monospace d-none d-md-table-cell">14</td>
-                <td class="text-end">
+                <td class="language-table__count d-none d-md-table-cell">14</td>
+                <td class="language-table__actions">
                   <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
                       <li>
-                        <hr class="dropdown-divider">
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editLanguageModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
                       </li>
-                      <li><button type="button" class="dropdown-item text-danger" disabled=""><svg
-                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                            data-lucide="trash-2" class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li title="Không thể xóa ngôn ngữ mặc định" data-i18n-title="admin.languages.cannot_delete_default">
+                        <button type="button" class="dropdown-item text-danger" disabled>
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
                     </ul>
                   </div>
                 </td>
               </tr>
+
+              <!-- Đang có bản dịch bài viết: bấm xóa thì báo lỗi -->
               <tr>
-                <td><span class="code-chip">en</span></td>
+                <td><span class="language-table__code">en</span></td>
                 <td class="fw-semibold">English</td>
                 <td><span class="text-meta">—</span></td>
                 <td>
-                  <div class="has-tooltip">
-                    <div class="form-check form-switch mb-0">
-                      <input class="form-check-input" type="checkbox" role="switch" id="active-en" checked=""
-                        aria-label="Hoạt động">
-                    </div>
-      
-                  </div>
-                </td> 
-                <td class="text-end font-monospace d-none d-md-table-cell">6</td>
-                <td class="text-end">
+                  <span class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" role="switch" id="activeEn" checked aria-label="Hoạt động" data-i18n-aria-label="admin.languages.col_active">
+                  </span>
+                </td>
+                <td class="language-table__count d-none d-md-table-cell">6</td>
+                <td class="language-table__actions">
                   <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="star"
-                            class="lucide lucide-star bi bi-star-fill" aria-hidden="true">
-                            <polygon
-                              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                            </polygon>
-                          </svg><span>Đặt làm mặc định</span></button></li>
                       <li>
-                        <hr class="dropdown-divider">
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editLanguageModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
                       </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
+                      <li>
+                        <button type="button" class="dropdown-item">
+                          <i class="bi bi-star" aria-hidden="true"></i>
+                          <span data-i18n="admin.languages.set_default">Đặt làm mặc định</span>
+                        </button>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#languageInUseModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
                     </ul>
                   </div>
                 </td>
               </tr>
+
+              <!-- Đã tắt: không đặt làm mặc định được, phải bật trước -->
               <tr>
-                <td><span class="code-chip">ja</span></td>
+                <td><span class="language-table__code">ja</span></td>
                 <td class="fw-semibold">日本語</td>
                 <td><span class="text-meta">—</span></td>
                 <td>
-                  <div class="has-tooltip">
-                    <div class="form-check form-switch mb-0">
-                      <input class="form-check-input" type="checkbox" role="switch" id="active-ja" aria-label="Hoạt động">
-                    </div>
-      
-                  </div>
+                  <span class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" role="switch" id="activeJa" aria-label="Hoạt động" data-i18n-aria-label="admin.languages.col_active">
+                  </span>
                 </td>
-                <td class="text-end font-monospace d-none d-md-table-cell">0</td>
-                <td class="text-end">
+                <td class="language-table__count d-none d-md-table-cell">0</td>
+                <td class="language-table__actions">
                   <div class="dropdown">
-                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false"
-                      aria-label="Thao tác"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
-                        data-lucide="ellipsis" class="lucide lucide-ellipsis bi bi-three-dots" aria-hidden="true">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="19" cy="12" r="1"></circle>
-                        <circle cx="5" cy="12" r="1"></circle>
-                      </svg></button>
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item"><svg xmlns="http://www.w3.org/2000/svg" width="24"
-                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="pencil"
-                            class="lucide lucide-pencil bi bi-pencil" aria-hidden="true">
-                            <path
-                              d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z">
-                            </path>
-                            <path d="m15 5 4 4"></path>
-                          </svg><span>Sửa</span></button></li>
-                      <li><button type="button" class="dropdown-item" disabled=""><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="star"
-                            class="lucide lucide-star bi bi-star-fill" aria-hidden="true">
-                            <polygon
-                              points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                            </polygon>
-                          </svg><span>Đặt làm mặc định</span></button></li>
                       <li>
-                        <hr class="dropdown-divider">
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editLanguageModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
                       </li>
-                      <li><button type="button" class="dropdown-item text-danger"><svg xmlns="http://www.w3.org/2000/svg"
-                            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-                            stroke-linecap="round" stroke-linejoin="round" data-lucide="trash-2"
-                            class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                            <line x1="10" x2="10" y1="11" y2="17"></line>
-                            <line x1="14" x2="14" y1="11" y2="17"></line>
-                          </svg><span>Xóa</span></button></li>
+                      <li title="Bật ngôn ngữ trước khi đặt làm mặc định" data-i18n-title="admin.languages.enable_first">
+                        <button type="button" class="dropdown-item" disabled>
+                          <i class="bi bi-star" aria-hidden="true"></i>
+                          <span data-i18n="admin.languages.set_default">Đặt làm mặc định</span>
+                        </button>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteLanguageModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
                     </ul>
                   </div>
                 </td>
@@ -411,11 +291,126 @@
             </tbody>
           </table>
         </div>
+        <!-- /component: language-table -->
       </main>
-
 
     </div>
   </div>
+
+  <!-- component: language-form-dialog -->
+  <!-- Modal thêm ngôn ngữ. Lỗi validate: mã trùng hoặc sai ISO 639-1 (UC16) -->
+  <div class="modal fade" id="languageModal" tabindex="-1" aria-labelledby="languageModalTitle" aria-hidden="true" data-demo-modal="error saving">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content" novalidate>
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="languageModalTitle" data-i18n="admin.languages.add_title">Thêm ngôn ngữ</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="languageCode" data-i18n="admin.languages.code">Mã ngôn ngữ</label>
+            <input type="text" class="form-control font-monospace" id="languageCode" name="code" maxlength="2" value="en" placeholder="fr" required data-demo-invalid>
+            <div class="invalid-feedback" data-i18n="validation.language_code_taken">Mã “en” đã có trong danh sách.</div>
+            <div class="form-text" data-i18n="admin.languages.code_hint">2 chữ cái thường theo ISO 639-1, ví dụ: fr, ja, ko.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="languageName" data-i18n="admin.languages.name">Tên hiển thị</label>
+            <input type="text" class="form-control" id="languageName" name="name" maxlength="50" placeholder="Français" required data-demo-invalid>
+            <div class="invalid-feedback" data-i18n="validation.required">Vui lòng nhập trường này.</div>
+            <div class="form-text" data-i18n="admin.languages.name_hint">Viết bằng chính ngôn ngữ đó, đây là chữ hiện trong bộ chọn ngôn ngữ.</div>
+          </div>
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" role="switch" id="languageActive" name="is_active" checked>
+            <label class="form-check-label" for="languageActive" data-i18n="admin.languages.col_active">Hoạt động</label>
+          </div>
+          <div class="alert-inline alert-inline--success">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            <div data-i18n="admin.languages.copy_note">Toàn bộ bản dịch giao diện của Tiếng Việt sẽ được sao chép sang ngôn ngữ mới để bạn dịch dần.</div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary" data-demo-loading="saving">
+            <span data-i18n="common.save">Lưu</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- /component: language-form-dialog -->
+
+  <!-- Modal sửa ngôn ngữ: mã không sửa được (đã dùng trong URL và bản dịch) -->
+  <div class="modal fade" id="editLanguageModal" tabindex="-1" aria-labelledby="editLanguageModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content" novalidate>
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="editLanguageModalTitle" data-i18n="admin.languages.edit_title">Sửa ngôn ngữ</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="editLanguageCode" data-i18n="admin.languages.code">Mã ngôn ngữ</label>
+            <input type="text" class="form-control font-monospace" id="editLanguageCode" value="en" readonly>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="editLanguageName" data-i18n="admin.languages.name">Tên hiển thị</label>
+            <input type="text" class="form-control" id="editLanguageName" name="name" maxlength="50" value="English" required>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary">
+            <span data-i18n="common.save">Lưu</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- component: confirm-dialog -->
+  <div class="modal fade" id="deleteLanguageModal" tabindex="-1" aria-labelledby="deleteLanguageModalTitle" aria-hidden="true" data-demo-modal="deleting">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="deleteLanguageModalTitle" data-i18n="admin.languages.delete_title">Xóa ngôn ngữ?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-semibold mb-2">日本語 (ja)</p>
+          <p class="text-body-secondary mb-0" data-i18n="admin.languages.delete_warning">Bản dịch giao diện của ngôn ngữ này cũng bị xóa. Không thể hoàn tác.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="button" class="btn btn-danger" data-demo-loading="deleting" data-loading-text="Đang xóa..." data-loading-i18n="common.deleting">
+            <span data-i18n="common.delete">Xóa</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: confirm-dialog -->
+
+  <!-- component: language-in-use-dialog -->
+  <!-- Backend từ chối xóa ngôn ngữ đang có bản dịch bài viết (UC16) -->
+  <div class="modal fade" id="languageInUseModal" tabindex="-1" aria-labelledby="languageInUseModalTitle" aria-hidden="true" data-demo-modal="in-use">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="languageInUseModalTitle" data-i18n="admin.languages.in_use_title">Không thể xóa ngôn ngữ</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-semibold mb-2">English (en)</p>
+          <!-- Phase 4: số bản dịch truyền vào key dịch dạng tham số {count} -->
+          <p class="text-body-secondary mb-0" data-i18n="admin.languages.in_use_text">Ngôn ngữ đang có 6 bản dịch bài viết. Bạn có thể tắt ngôn ngữ để ẩn khỏi trang public.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-i18n="common.understood">Đã hiểu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: language-in-use-dialog -->
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../js/demo-state.js"></script>

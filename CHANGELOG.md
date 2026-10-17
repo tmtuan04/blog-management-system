@@ -59,6 +59,15 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
   - `demo-state.js`: thuộc tính `data-demo-auths-<trạng thái>` trên `<body>` giới hạn trạng thái theo vai trò. Thanh demo ẩn nút trạng thái không hợp với vai trò đang chọn; đổi vai trò thì về trạng thái hợp lệ đầu tiên, chọn trạng thái hoặc mở link có `?demo=` thì đổi sang vai trò hợp lệ đầu tiên. Trang không khai báo thì không đổi gì. Phase 2 doc mục 7.2 ghi cách dùng.
   - Component `post-detail`, `comment` (`comment-form`, `comment-login`, `comment-list`); `post-card--grid` (thumbnail lên trên) trong `_post-card.scss`.
   - `html/index.html`: "Chi tiết bài viết" thành link, badge "Đã xong". `html/README.md`: thêm thẻ bài dạng lưới, trang chi tiết bài, bình luận vào bảng "Có sẵn để dùng". Phase 2 doc: `public/post-detail.html` và A4 đánh dấu đã làm. `SCREENS.md`: A4 đã xong (A 4/5).
+- Trang tài khoản (B3), dựng từ `_templates/auth.html`:
+  - `public/login.html` (UC02, UC20): trạng thái demo bình thường, vừa đăng ký (`.alert-inline--success`), sai email/mật khẩu, tài khoản bị khóa, quá số lần thử (429), lỗi OAuth không có email, loading.
+  - `public/register.html` (UC01): họ tên, email, mật khẩu, xác nhận mật khẩu, nút Google/Github, dòng chính sách bảo mật; lỗi email trùng (kèm link đăng nhập), mật khẩu yếu, không khớp; loading.
+  - `public/forgot-password.html` (UC03): ô email; lỗi validate, loading, đã gửi ("Kiểm tra hộp thư", link gửi lại).
+  - `public/reset-password.html` (UC03): mật khẩu mới, xác nhận; lỗi validate, loading, link hết hạn/không hợp lệ.
+  - `layouts/_auth.scss`: thêm `.auth-card__lead` (đoạn giới thiệu dưới tiêu đề), `.auth-card__icon` (icon lớn ở màn kết quả).
+- `public/profile.html` (UC12), dựng từ `_templates/public.html`, không sidebar: avatar lớn + nút "Đổi ảnh", họ tên, email và vai trò chỉ đọc; khối đổi mật khẩu riêng. Trạng thái demo: bình thường, lỗi validate (họ tên rỗng, sai mật khẩu hiện tại), lỗi ảnh (sai định dạng), loading, đã lưu, tài khoản OAuth chưa có mật khẩu (ẩn ô mật khẩu hiện tại, nút "Đặt mật khẩu", chỉ với vai trò `user`); vai trò `user` / `blog_owner` / `super_admin`. Component `profile`, thêm `.avatar--xl`.
+- `admin/languages.html` (UC16), chỉ Super Admin: bảng mã (chip), tên hiển thị, mặc định (badge), hoạt động (switch), số bản dịch bài, menu ⋯ (Sửa, Đặt làm mặc định, Xóa). Ngôn ngữ mặc định khóa switch và nút xóa kèm tooltip; ngôn ngữ đã tắt không đặt làm mặc định được. Modal thêm (mã ISO 639-1, tên hiển thị, hoạt động, ghi chú sao chép bản dịch giao diện), modal sửa (mã chỉ đọc), hộp xác nhận xóa, hộp "Không thể xóa ngôn ngữ" khi đang có bản dịch. Trạng thái demo: bình thường, lỗi validate (mã trùng), đang lưu, đang xóa, lỗi xóa. Component `language-table`.
+- `html/index.html`: 6 màn trên thành link, badge "Đã xong". `html/README.md`: thêm trang hồ sơ, bảng ngôn ngữ, `.avatar--xl`, `.auth-card__lead` / `__icon`. Phase 2 doc: 6 màn trên, `admin/users.html`, B2, B3 đánh dấu đã làm. `SCREENS.md`: B2, B3 đã xong (B 9/14).
 
 ### Changed
 

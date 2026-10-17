@@ -1,16 +1,9 @@
 <!doctype html>
-<!--
-  Khung mẫu trang public (docs/phase-2-html.md mục 4.1).
-  Cách dùng: copy file này vào public/, đổi <title>, đổi mục .is-active + aria-current trong menu,
-  rồi viết nội dung trong <main class="site-body__main">. Trang không cần sidebar thì xóa <aside>.
-  Header có 4 biến thể theo vai trò, chuyển bằng thanh demo (hoặc ?auth=super_admin trên URL).
-  Sửa header, footer hoặc offcanvas thì sửa ở mọi file trong public/ trong cùng một PR.
--->
 <html lang="vi" data-bs-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Profile · Inkwell</title>
+  <title>Hồ sơ · Inkwell</title>
 
   <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
   <script src="../js/theme.js"></script>
@@ -21,7 +14,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="../css/main.css">
 </head>
-<body data-demo-states="normal error loading empty" data-demo-auths="guest user blog_owner super_admin">
+<body data-demo-states="normal error image-error loading saved oauth" data-demo-label-image-error="Lỗi ảnh" data-demo-label-saved="Đã lưu" data-demo-label-oauth="Tài khoản OAuth" data-demo-auths="blog_owner user super_admin" data-demo-auths-oauth="user">
 
   <!-- component: site-header -->
   <header class="site-header">
@@ -32,7 +25,7 @@
       <a class="brand" href="index.html" data-i18n="common.site_name">Inkwell</a>
 
       <nav class="site-header__nav" aria-label="Menu chính" data-i18n-aria-label="menu.label">
-        <a class="is-active" href="index.html" aria-current="page" data-i18n="menu.home">Trang chủ</a>
+        <a href="index.html" data-i18n="menu.home">Trang chủ</a>
         <a href="page.html?key=about" data-i18n="menu.about">Giới thiệu</a>
       </nav>
 
@@ -132,117 +125,106 @@
   </form>
   <!-- /component: site-search-bar -->
 
-  <main class="profile-page">
-    <h1 class="text-page-title mb-4">Hồ sơ</h1>
-  
-    <section class="profile-section profile-section--first" aria-labelledby="pInfo">
-      <h2 class="profile-section__title" id="pInfo">Thông tin cá nhân</h2>
-      <p class="profile-section__desc">Tên   và ảnh hiện trên bài viết và bình luận của bạn.</p>
-      <div class="profile-avatar mb-4" data-state-hide="image-error">
-        <span data-auth-show="blog_owner"><img class="avatar avatar--xl" src="../assets/img/avatars/2.svg"
-            alt="Ảnh đại diện"></span>
-        <span data-auth-show="user" hidden=""><span class="avatar avatar--initials avatar--xl"
-            aria-hidden="true">LC</span></span>
-        <div>
-          <button type="button" class="btn btn-outline-secondary btn-sm"><svg xmlns="http://www.w3.org/2000/svg"
-              width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-              stroke-linecap="round" stroke-linejoin="round" data-lucide="camera"
-              class="lucide lucide-camera bi bi-camera me-1" aria-hidden="true">
-              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
-              <circle cx="12" cy="13" r="3"></circle>
-            </svg>Đổi ảnh</button>
-          <div class="profile-avatar__hint mt-2">JPG, PNG hoặc WebP, tối đa 2MB.</div>
+  <div class="site-body">
+    <main class="site-body__main">
+      <div class="profile">
+        <h1 class="text-page-title mb-4" data-i18n="profile.title">Hồ sơ</h1>
+
+        <div class="alert-inline alert-inline--success mb-4" role="status" data-demo="saved">
+          <i class="bi bi-check-circle" aria-hidden="true"></i>
+          <div data-i18n="profile.saved">Đã lưu thay đổi.</div>
         </div>
+
+        <!-- Thông tin cá nhân -->
+        <section class="profile__section" aria-labelledby="profileInfoTitle">
+          <h2 class="profile__section-title" id="profileInfoTitle" data-i18n="profile.info_title">Thông tin cá nhân</h2>
+          <p class="profile__section-desc" data-i18n="profile.info_desc">Tên và ảnh hiện trên bài viết và bình luận của bạn.</p>
+
+          <div class="profile__avatar">
+            <span class="avatar avatar--xl avatar--initials" aria-hidden="true" data-demo-auth="user">LC</span>
+            <img class="avatar avatar--xl" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+            <span class="avatar avatar--xl avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+            <div>
+              <label class="btn btn-outline-secondary btn-sm" for="profileAvatarInput">
+                <i class="bi bi-camera me-1" aria-hidden="true"></i><span data-i18n="profile.change_avatar">Đổi ảnh</span>
+              </label>
+              <input type="file" class="visually-hidden" id="profileAvatarInput" name="avatar" accept="image/jpeg,image/png,image/webp">
+              <div class="profile__avatar-hint" data-demo="normal error loading saved oauth" data-i18n="profile.avatar_hint">JPG, PNG hoặc WebP, tối đa 2MB.</div>
+              <div class="profile__avatar-error" role="alert" data-demo="image-error" data-i18n="validation.avatar_invalid">Ảnh “avatar.gif” không đúng định dạng. Chọn ảnh JPG, PNG hoặc WebP, tối đa 2MB.</div>
+            </div>
+          </div>
+
+          <form novalidate>
+            <div class="mb-3">
+              <label class="form-label fw-medium" for="profileName" data-i18n="auth.full_name">Họ tên</label>
+              <input type="text" class="form-control" id="profileName" name="full_name" autocomplete="name" value="Lê Minh Cường" data-demo-auth="user" data-demo-invalid>
+              <input type="text" class="form-control" id="profileNameOwner" name="full_name" autocomplete="name" value="Nguyễn Văn An" aria-label="Họ tên" data-i18n-aria-label="auth.full_name" data-demo-auth="blog_owner" data-demo-invalid>
+              <input type="text" class="form-control" id="profileNameAdmin" name="full_name" autocomplete="name" value="Super Admin" aria-label="Họ tên" data-i18n-aria-label="auth.full_name" data-demo-auth="super_admin" data-demo-invalid>
+              <div class="invalid-feedback" data-i18n="validation.full_name">Nhập họ tên, tối đa 100 ký tự.</div>
+            </div>
+
+            <div class="row g-3 mb-1">
+              <div class="col-md-7">
+                <label class="form-label fw-medium" for="profileEmail" data-i18n="auth.email">Email</label>
+                <input type="email" class="form-control" id="profileEmail" value="user@blog.local" readonly data-demo-auth="user">
+                <input type="email" class="form-control" value="owner1@blog.local" readonly aria-label="Email" data-demo-auth="blog_owner">
+                <input type="email" class="form-control" value="admin@blog.local" readonly aria-label="Email" data-demo-auth="super_admin">
+              </div>
+              <div class="col-md-5">
+                <label class="form-label fw-medium" for="profileRole" data-i18n="profile.role">Vai trò</label>
+                <input type="text" class="form-control" id="profileRole" value="Người dùng" readonly data-demo-auth="user">
+                <input type="text" class="form-control" value="Blog Owner" readonly aria-label="Vai trò" data-i18n-aria-label="profile.role" data-demo-auth="blog_owner">
+                <input type="text" class="form-control" value="Super Admin" readonly aria-label="Vai trò" data-i18n-aria-label="profile.role" data-demo-auth="super_admin">
+              </div>
+            </div>
+            <div class="form-text mb-4" data-i18n="profile.readonly_hint">Email và vai trò không tự đổi được. Liên hệ quản trị viên nếu cần.</div>
+
+            <button type="submit" class="btn btn-primary px-4" data-demo-loading data-loading-text="Đang lưu..." data-loading-i18n="common.saving">
+              <span data-i18n="common.save_changes">Lưu thay đổi</span>
+            </button>
+          </form>
+        </section>
+
+        <!-- Mật khẩu -->
+        <section class="profile__section" aria-labelledby="profilePasswordTitle">
+          <h2 class="profile__section-title" id="profilePasswordTitle" data-i18n="auth.password">Mật khẩu</h2>
+          <p class="profile__section-desc" data-demo="normal error loading saved image-error" data-i18n="profile.password_desc">Đổi mật khẩu dùng để đăng nhập bằng email.</p>
+
+          <!-- Tài khoản tạo bằng OAuth chưa có mật khẩu: ẩn ô mật khẩu hiện tại -->
+          <div class="alert-inline alert-inline--success mb-4" role="note" data-demo="oauth">
+            <i class="bi bi-github" aria-hidden="true"></i>
+            <div>
+              <span data-i18n="profile.oauth_no_password">Bạn đang đăng nhập bằng Github và chưa có mật khẩu. Đặt mật khẩu để đăng nhập được cả bằng email</span>
+              <strong>user@blog.local</strong>.
+            </div>
+          </div>
+
+          <form novalidate>
+            <div class="mb-3" data-demo="normal error loading saved image-error">
+              <label class="form-label fw-medium" for="profileOldPassword" data-i18n="profile.current_password">Mật khẩu hiện tại</label>
+              <input type="password" class="form-control" id="profileOldPassword" name="current_password" autocomplete="current-password" value="sai-mat-khau" data-demo-invalid>
+              <div class="invalid-feedback" data-i18n="validation.current_password_wrong">Mật khẩu hiện tại không đúng.</div>
+            </div>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label fw-medium" for="profileNewPassword" data-i18n="auth.new_password">Mật khẩu mới</label>
+                <input type="password" class="form-control" id="profileNewPassword" name="password" autocomplete="new-password" value="matkhaumoi1">
+                <div class="form-text" data-i18n="auth.password_hint">Ít nhất 8 ký tự, có cả chữ và số.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-medium" for="profileNewPasswordConfirm" data-i18n="auth.new_password_confirm">Xác nhận mật khẩu mới</label>
+                <input type="password" class="form-control" id="profileNewPasswordConfirm" name="password_confirm" autocomplete="new-password" value="matkhaumoi1">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-outline-secondary px-4">
+              <span data-demo="normal error loading saved image-error" data-i18n="profile.change_password">Đổi mật khẩu</span>
+              <span data-demo="oauth" data-i18n="profile.set_password">Đặt mật khẩu</span>
+            </button>
+          </form>
+        </section>
       </div>
-      <div class="profile-avatar has-error mb-4" data-state-show="image-error" hidden="">
-        <span data-auth-show="blog_owner"><img class="avatar avatar--xl" src="../img/avatar-2.svg"
-            alt="Ảnh đại diện"></span>
-        <span data-auth-show="user" hidden=""><span class="avatar avatar--initials avatar--xl"
-            aria-hidden="true">LC</span></span>
-        <div>
-          <button type="button" class="btn btn-outline-secondary btn-sm"><svg xmlns="http://www.w3.org/2000/svg"
-              width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-              stroke-linecap="round" stroke-linejoin="round" data-lucide="camera"
-              class="lucide lucide-camera bi bi-camera me-1" aria-hidden="true">
-              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
-              <circle cx="12" cy="13" r="3"></circle>
-            </svg>Đổi ảnh</button>
-          <div class="field-error mt-2">“avatar.gif” không đúng định dạng. Chọn ảnh JPG, PNG hoặc WebP, tối đa 2MB.</div>
-        </div>
-      </div>
-      <form novalidate="">
-        <div class="mb-3">
-          <label class="form-label fw-medium" for="pName">Họ tên</label>
-          <div data-state-hide="error" hidden>
-            <input type="text" class="form-control" id="pName" value="Nguyễn Văn An" data-auth-show="blog_owner">
-            <input type="text" class="form-control" id="pNameUser" value="Lê Minh Cường" data-auth-show="user" hidden="">
-          </div>
-          <div data-state-show="error">
-            <input type="text" class="form-control is-invalid" id="pNameErr" value="" aria-label="Họ tên" data-demo-invalid="error">
-            <div class="invalid-feedback" data-demo="error">Nhập họ tên, tối đa 100 ký tự.</div>
-          </div>
-        </div>
-        <div class="row g-3 mb-4">
-          <div class="col-md-7">
-            <label class="form-label fw-medium" for="pEmail">Email</label>
-            <input type="email" class="form-control" id="pEmail" value="owner1@blog.local" readonly
-              data-auth-show="blog_owner">
-            <input type="email" class="form-control" id="pEmailUser" value="user@blog.local" readonly
-              data-auth-show="user" hidden="">
-          </div>
-          <div class="col-md-5">
-            <label class="form-label fw-medium" for="pRole">Vai trò</label>
-            <input type="text" class="form-control" id="pRole" value="Blog Owner" readonly data-auth-show="blog_owner">
-            <input type="text" class="form-control" id="pRoleUser" value="Người dùng" readonly data-auth-show="user"
-              hidden="">
-          </div>
-          <div class="col-12 form-text mt-1">Email và vai trò không tự đổi được. Liên hệ quản trị viên nếu cần.</div>
-        </div>
-        <button type="submit" class="btn btn-primary px-4" data-demo-loading data-loading-text="Đang lưu...">
-          Lưu thay đổi
-        </button>
-      </form>
-    </section>
-  
-    <section class="profile-section" aria-labelledby="pPass">
-      <h2 class="profile-section__title" id="pPass">Mật khẩu</h2>
-      <p class="profile-section__desc" data-state-hide="oauth">Đổi mật khẩu dùng để đăng nhập bằng email.</p>
-      <div data-state-show="oauth" hidden="">
-        <div class="alert-inline alert-inline--success mb-4" role="note"><svg xmlns="http://www.w3.org/2000/svg"
-            width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-            stroke-linecap="round" stroke-linejoin="round" data-lucide="github" class="lucide lucide-github bi bi-github"
-            aria-hidden="true">
-            <path
-              d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4">
-            </path>
-            <path d="M9 18c-4.51 2-5-2-7-2"></path>
-          </svg>
-          <div>Bạn đang đăng nhập bằng GitHub và chưa có mật khẩu. Đặt mật khẩu để đăng nhập được cả bằng email
-            <strong>user@blog.local</strong>.</div>
-        </div>
-      </div>
-      <form novalidate="">
-        <div class="mb-3" data-state-hide="oauth">
-          <label class="form-label fw-medium" for="pOld">Mật khẩu hiện tại</label>
-          <input type="password" class="form-control" id="pOld" value="sai-mat-khau" data-invalid-on="error" data-demo-invalid="error">
-          <div class="invalid-feedback" data-demo="error">Mật khẩu hiện tại không đúng.</div>
-        </div>
-        <div class="row g-3 mb-4">
-          <div class="col-md-6">
-            <label class="form-label fw-medium" for="pNew">Mật khẩu mới</label>
-            <input type="password" class="form-control" id="pNew" value="matkhaumoi1">
-            <div class="form-text">Ít nhất 8 ký tự, có cả chữ và số.</div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label fw-medium" for="pNew2">Xác nhận mật khẩu mới</label>
-            <input type="password" class="form-control" id="pNew2" value="matkhaumoi1">
-          </div>
-        </div>
-        <button type="submit" class="btn btn-outline-secondary px-4"><span data-state-hide="oauth">Đổi mật
-            khẩu</span><span data-state-show="oauth" hidden="">Đặt mật khẩu</span></button>
-      </form>
-    </section>
-  </main>
+    </main>
+  </div>
 
   <!-- component: site-footer -->
   <footer class="site-footer">
@@ -263,7 +245,7 @@
     </div>
     <div class="offcanvas-body">
       <nav class="nav flex-column mb-2" aria-label="Menu chính" data-i18n-aria-label="menu.label">
-        <a class="nav-link fw-semibold" href="index.html" aria-current="page" data-i18n="menu.home">Trang chủ</a>
+        <a class="nav-link" href="index.html" data-i18n="menu.home">Trang chủ</a>
         <a class="nav-link" href="page.html?key=about" data-i18n="menu.about">Giới thiệu</a>
       </nav>
 
