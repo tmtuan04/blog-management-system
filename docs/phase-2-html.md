@@ -2,9 +2,9 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.4 (theo requirements 2.0) |
+| Phiên bản | 1.5 (theo requirements 2.1) |
 | Ngày tạo | 08/10/2026 |
-| Thời gian | ~1 tuần (5 ngày làm việc) |
+| Thời gian | ~2 tuần (10 ngày làm việc, 08/10 - 21/10/2026), gia hạn thêm 1 tuần so với kế hoạch ban đầu |
 | Đầu vào | [requirements.md](requirements.md) (mục 1.5 - Phase 2, mục 4, mục 6.3), [sample-data.md](sample-data.md) |
 | Đầu ra | Thư mục `html/` chứa các file HTML, SCSS, CSS đã build, JS demo; bản deploy trên GitHub Pages: <https://tmtuan04.github.io/blog-management-system/> |
 
