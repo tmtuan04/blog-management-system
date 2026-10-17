@@ -234,11 +234,11 @@ Cột "Route phase 4" là đường dẫn dự kiến trong Angular, ghi lại �
 | `public/category.html` | `/categories/:slug` | UC07 | Tiêu đề danh mục lớn + số bài, chip danh mục đang chọn được tô, danh sách bài như trang chủ | Bình thường, rỗng |
 | `public/search.html` | `/search?q=` | UC19 | "Kết quả cho *từ khóa*" + số kết quả, danh sách thẻ bài, phân trang | Có kết quả, không có kết quả, lỗi từ khóa (< 2 hoặc > 100 ký tự) |
 | `public/404.html` | (mọi route lỗi) | UC06, UC11 | Số "404" lớn, câu thông báo, nút pill "Về trang chủ" | - |
-| `public/register.html` | `/register` | UC01 | Họ tên, email, mật khẩu, xác nhận mật khẩu; nút OAuth | Bình thường, lỗi từng trường (email trùng, mật khẩu yếu, không khớp), loading |
-| `public/login.html` | `/login` | UC02, UC20 | Email, mật khẩu, link "Quên mật khẩu"; nút Google, Github | Bình thường, thông báo đăng ký thành công, sai email/mật khẩu, tài khoản bị khóa, quá số lần thử (429), lỗi OAuth không có email, loading |
-| `public/forgot-password.html` | `/forgot-password` | UC03 | Ô email | Bình thường, lỗi validate, loading, đã gửi ("Nếu email tồn tại, chúng tôi đã gửi hướng dẫn") |
-| `public/reset-password.html` | `/reset-password?token=` | UC03 | Mật khẩu mới, xác nhận | Bình thường, lỗi validate, loading, token hết hạn/không hợp lệ |
-| `public/profile.html` | `/profile` | UC12 | Avatar lớn + nút đổi ảnh, họ tên, email (chỉ đọc), role (chỉ đọc); khối đổi mật khẩu riêng | Lỗi validate, lỗi ảnh (sai định dạng, > 2MB), loading, lưu thành công; biến thể tài khoản OAuth chưa có mật khẩu (ẩn ô mật khẩu cũ) |
+| `public/register.html` (**đã làm**) | `/register` | UC01 | Họ tên, email, mật khẩu, xác nhận mật khẩu; nút OAuth | Bình thường, lỗi từng trường (email trùng, mật khẩu yếu, không khớp), loading |
+| `public/login.html` (**đã làm**) | `/login` | UC02, UC20 | Email, mật khẩu, link "Quên mật khẩu"; nút Google, Github | Bình thường, thông báo đăng ký thành công, sai email/mật khẩu, tài khoản bị khóa, quá số lần thử (429), lỗi OAuth không có email, loading |
+| `public/forgot-password.html` (**đã làm**) | `/forgot-password` | UC03 | Ô email | Bình thường, lỗi validate, loading, đã gửi ("Nếu email tồn tại, chúng tôi đã gửi hướng dẫn") |
+| `public/reset-password.html` (**đã làm**) | `/reset-password?token=` | UC03 | Mật khẩu mới, xác nhận | Bình thường, lỗi validate, loading, token hết hạn/không hợp lệ |
+| `public/profile.html` (**đã làm**) | `/profile` | UC12 | Avatar lớn + nút đổi ảnh, họ tên, email (chỉ đọc), role (chỉ đọc); khối đổi mật khẩu riêng | Lỗi validate, lỗi ảnh (sai định dạng, > 2MB), loading, lưu thành công; biến thể tài khoản OAuth chưa có mật khẩu (ẩn ô mật khẩu cũ) |
 
 Các component dùng chung làm cùng các màn này: header, footer, thẻ bài viết, chip danh mục, phân trang, hộp xác nhận (modal), toast, skeleton, khối trạng thái rỗng, bình luận.
 
@@ -249,8 +249,8 @@ Các component dùng chung làm cùng các màn này: header, footer, thẻ bài
 | `admin/posts.html` (**màn mẫu, đã làm**) | `/admin/posts` | UC13 | Tab trạng thái kiểu "Your stories" của Medium (Tất cả, Nháp, Đã đăng, Lưu trữ - theo bản gốc); lọc ngôn ngữ, danh mục; ô tìm tiêu đề. Bảng: thumbnail nhỏ, tiêu đề bản gốc kèm dòng meta "Gốc: Tiếng Việt · Lập trình" (ngôn ngữ gốc và danh mục), badge từng bản dịch (`VI · Đã đăng`, `EN · Nháp`), ngày cập nhật, menu ⋯ (Sửa, Xem trên blog, Xóa) | Bình thường, rỗng, loading (skeleton), đang xóa (hộp xác nhận xóa bài với nút loading), đã xóa (toast thành công) |
 | `admin/post-create.html` (**đã làm**) | `/admin/posts/new` | UC13 | Thanh trên: "Nháp" + nút pill "Lưu". Phần dùng chung: chọn ngôn ngữ gốc, danh mục, upload thumbnail (xem trước). Bản gốc: tiêu đề kiểu Medium (Inter 42px, không viền), tóm tắt, editor, trạng thái | Lỗi validate từng trường, lỗi ảnh, đang lưu |
 | `admin/post-edit.html` | `/admin/posts/:id/edit` | UC13 | Phần dùng chung ở trên (ngôn ngữ gốc chỉ đọc). Dưới là tab ngôn ngữ: tab gốc có nhãn "Gốc"; tab đã có bản dịch hiện form + slug (chỉ đọc) + lượt xem + nút "Xóa bản dịch"; tab chưa có bản dịch hiện khối rỗng với nút "Thêm bản dịch" | Tab có dữ liệu, tab chưa có bản dịch, form bản dịch mới đã điền sẵn nội dung bản gốc, lỗi validate, đang lưu, hộp xác nhận xóa bản dịch |
-| `admin/users.html` | `/admin/users` | UC14 | Tìm theo tên/email; lọc role, trạng thái. Bảng: avatar, họ tên, email, role (badge), trạng thái, ngày tạo, hành động (đổi role, khóa/mở khóa). Modal tạo tài khoản | Bình thường, rỗng, modal có lỗi validate, hộp xác nhận khóa tài khoản, hàng của chính mình bị vô hiệu nút khóa/đổi role |
-| `admin/languages.html` | `/admin/languages` | UC16 | Bảng: mã, tên, mặc định (radio/badge), hoạt động (switch), hành động. Modal thêm/sửa | Ngôn ngữ mặc định không tắt/xóa được (nút disabled + tooltip), lỗi xóa ngôn ngữ đang có bản dịch, modal lỗi validate (mã trùng, sai ISO 639-1) |
+| `admin/users.html` (**đã làm**) | `/admin/users` | UC14 | Tìm theo tên/email; lọc role, trạng thái. Bảng: avatar, họ tên, email, role (badge), trạng thái, ngày tạo, hành động (đổi role, khóa/mở khóa). Modal tạo tài khoản | Bình thường, rỗng, modal có lỗi validate, hộp xác nhận khóa tài khoản, hàng của chính mình bị vô hiệu nút khóa/đổi role |
+| `admin/languages.html` (**đã làm**) | `/admin/languages` | UC16 | Bảng: mã, tên, mặc định (radio/badge), hoạt động (switch), hành động. Modal thêm/sửa | Ngôn ngữ mặc định không tắt/xóa được (nút disabled + tooltip), lỗi xóa ngôn ngữ đang có bản dịch, modal lỗi validate (mã trùng, sai ISO 639-1) |
 
 Component **rich text editor** (giao diện tĩnh), dùng ở form bài viết và form sửa trang tĩnh:
 
@@ -371,8 +371,8 @@ Các việc còn lại chia cho 3 người, mỗi người làm phần của mì
 | # | Việc | Chờ | Ghi chú |
 | --- | --- | --- | --- |
 | B1 | `admin/categories.html`, `admin/pages.html` | | Copy từ khung admin có sẵn. Hộp xác nhận xóa copy từ `posts.html` |
-| B2 | `admin/users.html`, `admin/languages.html` | | |
-| B3 | `public/register.html`, `login.html`, `forgot-password.html`, `reset-password.html`, `profile.html` | | Form: xem [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 6.1 |
+| B2 (**đã làm**) | `admin/users.html`, `admin/languages.html` | | |
+| B3 (**đã làm**) | `public/register.html`, `login.html`, `forgot-password.html`, `reset-password.html`, `profile.html` | | Form: xem [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 6.1 |
 | B4 | `public/search.html`, `public/404.html`, `public/page.html` | A2 | Trang tìm kiếm dùng lại thẻ bài viết |
 | B5 | `admin/ui-translations.html`, `admin/page-edit.html` | A3, C1 | `page-edit` dùng lại rich text editor và toast |
 
