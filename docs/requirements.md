@@ -2,9 +2,9 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 2.0 (dự án do 3 người thực hiện) |
+| Phiên bản | 2.1 (dự án do 3 người thực hiện) |
 | Ngày tạo | 01/10/2026 |
-| Thời gian thực hiện | Khoảng 8 tuần, chia thành 5 phase (xem mục 1.5) |
+| Thời gian thực hiện | Khoảng 9 tuần, chia thành 5 phase (xem mục 1.5) |
 | Nhân sự | 3 người, A làm chủ đạo (~45%), B (~40%), C (~15%) (xem mục 1.4) |
 
 ---
@@ -69,7 +69,7 @@ Các phase làm lần lượt. Một phase chỉ kết thúc khi đạt hết "�
 | Phase | Nội dung | Thời gian | Đầu ra chính |
 | --- | --- | --- | --- |
 | 1 | Xây dựng cơ sở dữ liệu | ~1 tuần | ERD, migrations, seeders |
-| 2 | Xây dựng giao diện HTML | ~1 tuần | Các trang HTML tĩnh cho mọi màn hình |
+| 2 | Xây dựng giao diện HTML | ~2 tuần (gia hạn 1 tuần) | Các trang HTML tĩnh cho mọi màn hình |
 | 3 | Xây dựng backend | ~2,5 tuần | API, Swagger, Postman, test |
 | 4 | Xây dựng frontend | ~2,5 tuần | Ứng dụng Angular chạy được với API thật |
 | 5 | Deploy lên máy ảo Linux | ~1 tuần | Hệ thống chạy trên máy ảo, tài liệu hướng dẫn deploy |

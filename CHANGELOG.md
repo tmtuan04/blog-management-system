@@ -55,6 +55,7 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Changed
 
+- Gia hạn phase 2 thêm 1 tuần (đến 21/10/2026, ~10 ngày làm việc): requirements 2.0 → 2.1 (mục 1.5 phase 2 ~2 tuần, tổng thời gian 8 → 9 tuần); phase 2 doc 1.4 → 1.5 (thời gian ~2 tuần).
 - `html/index.html`: bảng mục lục thêm cột "Người làm" (A - Từ Minh Tuân, B - Ngô Đức, C - Cao Tiến Dũng, theo `SCREENS.md`); đầu trang thêm badge "Đã xong x / y màn", tự đếm từ badge "Đã xong" trong bảng.
 - `admin/users.html` (UC14) viết lại theo quy ước phase 2, sửa lỗi giao diện bảng (avatar nằm trên tên vì class `user-cell`, `role-badge`, `self-tag`, `min-w-0` không có CSS; ảnh avatar sai đường dẫn `../img/avatar-2.svg`): dùng component `user-table`, Bootstrap Icons thay SVG Lucide, modal Bootstrap thay `onclick`/script tự viết, `data-demo` thay `data-state-*`, skeleton bằng `placeholder-glow`; thêm `data-i18n`. Chỉ Super Admin (`data-demo-auths="super_admin"`). Hàng của chính mình có nút ⋯ bị vô hiệu kèm chú thích. Trạng thái demo: bình thường, loading, rỗng (tìm không ra), lỗi validate (email trùng, mật khẩu yếu), đang lưu, hộp xác nhận khóa tài khoản. `index.html`, `SCREENS.md`: đánh dấu màn đã xong.
 - Nhóm từ 2 lên 3 người, C nhận các việc dễ tách từ phần của A:
