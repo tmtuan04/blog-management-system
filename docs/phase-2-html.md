@@ -2,9 +2,9 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.4 (theo requirements 2.0) |
+| Phiên bản | 1.5 (theo requirements 2.1) |
 | Ngày tạo | 08/10/2026 |
-| Thời gian | ~1 tuần (5 ngày làm việc) |
+| Thời gian | ~2 tuần (10 ngày làm việc, 08/10 - 21/10/2026), gia hạn thêm 1 tuần so với kế hoạch ban đầu |
 | Đầu vào | [requirements.md](requirements.md) (mục 1.5 - Phase 2, mục 4, mục 6.3), [sample-data.md](sample-data.md) |
 | Đầu ra | Thư mục `html/` chứa các file HTML, SCSS, CSS đã build, JS demo; bản deploy trên GitHub Pages: <https://tmtuan04.github.io/blog-management-system/> |
 
@@ -90,7 +90,8 @@ html/
 │   ├── layouts/
 │   │   ├── _public.scss        # Header, footer, khung 2 cột
 │   │   ├── _auth.scss          # Khung trang đăng nhập/đăng ký
-│   │   └── _admin.scss         # Sidebar, topbar, khung nội dung
+│   │   ├── _admin.scss         # Sidebar, topbar, khung nội dung
+│   │   └── _editor.scss        # Trang soạn bài: thanh trên tối giản, cột soạn bài (post-create, post-edit)
 │   ├── components/             # Mỗi component một file: _post-card.scss, _comment.scss, _editor.scss...
 │   └── pages/                  # Style riêng của từng trang (chỉ khi thật cần)
 ├── css/main.css                # Kết quả build
@@ -229,7 +230,7 @@ Cột "Route phase 4" là đường dẫn dự kiến trong Angular, ghi lại �
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
 | `public/index.html` (**đã làm**) | `/` | UC05 | Thanh chip danh mục; danh sách thẻ bài viết (10 thẻ); phân trang; sidebar: "Đọc nhiều nhất", danh mục kèm số bài, link footer | Bình thường, loading (skeleton), rỗng ("Chưa có bài viết ở ngôn ngữ này") |
-| `public/post-detail.html` | `/posts/:slug` | UC06, UC08 | Tiêu đề, tóm tắt (dạng subtitle xám), thanh tác giả (avatar, tên, danh mục, ngày đăng, thời gian đọc), thanh lượt xem + số bình luận có viền trên dưới, dòng "Bài viết này có ở các ngôn ngữ", ảnh thumbnail, nội dung rich text đủ mọi định dạng của editor, chip danh mục, khu bình luận, bài cùng danh mục (lưới 2 cột) | Khách (nút "Đăng nhập để bình luận"), đã đăng nhập (ô nhập bình luận), lỗi validate bình luận, đang gửi, chưa có bình luận, hộp xác nhận xóa bình luận |
+| `public/post-detail.html` (**đã làm**) | `/posts/:slug` | UC06, UC08 | Tiêu đề, tóm tắt (dạng subtitle xám), thanh tác giả (avatar, tên, danh mục, ngày đăng, thời gian đọc), thanh lượt xem + số bình luận có viền trên dưới, dòng "Bài viết này có ở các ngôn ngữ", ảnh thumbnail, nội dung rich text đủ mọi định dạng của editor, chip danh mục, khu bình luận, bài cùng danh mục (lưới 2 cột) | Khách (nút "Đăng nhập để bình luận"), đã đăng nhập (ô nhập bình luận), lỗi validate bình luận, đang gửi, chưa có bình luận, hộp xác nhận xóa bình luận |
 | `public/category.html` | `/categories/:slug` | UC07 | Tiêu đề danh mục lớn + số bài, chip danh mục đang chọn được tô, danh sách bài như trang chủ | Bình thường, rỗng |
 | `public/search.html` | `/search?q=` | UC19 | "Kết quả cho *từ khóa*" + số kết quả, danh sách thẻ bài, phân trang | Có kết quả, không có kết quả, lỗi từ khóa (< 2 hoặc > 100 ký tự) |
 | `public/404.html` | (mọi route lỗi) | UC06, UC11 | Số "404" lớn, câu thông báo, nút pill "Về trang chủ" | - |
@@ -246,7 +247,7 @@ Các component dùng chung làm cùng các màn này: header, footer, thẻ bài
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
 | `admin/posts.html` (**màn mẫu, đã làm**) | `/admin/posts` | UC13 | Tab trạng thái kiểu "Your stories" của Medium (Tất cả, Nháp, Đã đăng, Lưu trữ - theo bản gốc); lọc ngôn ngữ, danh mục; ô tìm tiêu đề. Bảng: thumbnail nhỏ, tiêu đề bản gốc kèm dòng meta "Gốc: Tiếng Việt · Lập trình" (ngôn ngữ gốc và danh mục), badge từng bản dịch (`VI · Đã đăng`, `EN · Nháp`), ngày cập nhật, menu ⋯ (Sửa, Xem trên blog, Xóa) | Bình thường, rỗng, loading (skeleton), đang xóa (hộp xác nhận xóa bài với nút loading), đã xóa (toast thành công) |
-| `admin/post-create.html` | `/admin/posts/new` | UC13 | Thanh trên: "Nháp" + nút pill "Lưu". Phần dùng chung: chọn ngôn ngữ gốc, danh mục, upload thumbnail (xem trước). Bản gốc: tiêu đề kiểu Medium (Inter 42px, không viền), tóm tắt, editor, trạng thái | Lỗi validate từng trường, lỗi ảnh, đang lưu |
+| `admin/post-create.html` (**đã làm**) | `/admin/posts/new` | UC13 | Thanh trên: "Nháp" + nút pill "Lưu". Phần dùng chung: chọn ngôn ngữ gốc, danh mục, upload thumbnail (xem trước). Bản gốc: tiêu đề kiểu Medium (Inter 42px, không viền), tóm tắt, editor, trạng thái | Lỗi validate từng trường, lỗi ảnh, đang lưu |
 | `admin/post-edit.html` | `/admin/posts/:id/edit` | UC13 | Phần dùng chung ở trên (ngôn ngữ gốc chỉ đọc). Dưới là tab ngôn ngữ: tab gốc có nhãn "Gốc"; tab đã có bản dịch hiện form + slug (chỉ đọc) + lượt xem + nút "Xóa bản dịch"; tab chưa có bản dịch hiện khối rỗng với nút "Thêm bản dịch" | Tab có dữ liệu, tab chưa có bản dịch, form bản dịch mới đã điền sẵn nội dung bản gốc, lỗi validate, đang lưu, hộp xác nhận xóa bản dịch |
 | `admin/users.html` | `/admin/users` | UC14 | Tìm theo tên/email; lọc role, trạng thái. Bảng: avatar, họ tên, email, role (badge), trạng thái, ngày tạo, hành động (đổi role, khóa/mở khóa). Modal tạo tài khoản | Bình thường, rỗng, modal có lỗi validate, hộp xác nhận khóa tài khoản, hàng của chính mình bị vô hiệu nút khóa/đổi role |
 | `admin/languages.html` | `/admin/languages` | UC16 | Bảng: mã, tên, mặc định (radio/badge), hoạt động (switch), hành động. Modal thêm/sửa | Ngôn ngữ mặc định không tắt/xóa được (nút disabled + tooltip), lỗi xóa ngôn ngữ đang có bản dịch, modal lỗi validate (mã trùng, sai ISO 639-1) |
@@ -257,6 +258,7 @@ Component **rich text editor** (giao diện tĩnh), dùng ở form bài viết v
 - Vùng nhập dùng `contenteditable`, font Source Serif 4 20px giống trang chi tiết, không khung viền, có placeholder "Kể câu chuyện của bạn...".
 - Có trạng thái lỗi (viền dưới đỏ + dòng lỗi) và trạng thái đang upload ảnh.
 - Phase 2 chỉ dựng giao diện, chưa cần nút bấm hoạt động. Phase 4 sẽ thay bằng thư viện editor và giữ style này.
+- **Đã làm** ở `components/_editor.scss`, mẫu dùng trong `admin/post-create.html`. Trang viết/sửa bài dùng layout `layouts/_editor.scss` (thanh trên tối giản như Medium, không có sidebar admin); `page-edit` vẫn dùng khung admin, chỉ chép khối `<!-- component: rich-text-editor -->`.
 
 ### 5.3. Trang tĩnh, danh mục, bản dịch giao diện
 
@@ -321,6 +323,7 @@ Mỗi trang có nhiều trạng thái (mục 5) nhưng chỉ là một file. Dù
   - Trạng thái trang, khai báo bằng `<body data-demo-states="...">`: `normal` (Bình thường), `error` (Lỗi validate), `loading`, `empty` (Rỗng). Trang cần trạng thái riêng thì tự đặt tên và khai báo nhãn, ví dụ `data-demo-states="normal deleting" data-demo-label-deleting="Đang xóa"`.
   - Vai trò người xem, khai báo bằng `<body data-demo-auths="...">`: `guest`, `user`, `blog_owner`, `super_admin`. Trang public thường dùng `guest user`, trang quản trị dùng `blog_owner super_admin`.
 - Khối chỉ có ở một vài trạng thái gắn `data-demo="empty"` (hoặc nhiều trạng thái: `data-demo="normal error"`); khối chỉ có với một số vai trò gắn `data-demo-auth="super_admin"` (hoặc `data-demo-auth="user blog_owner super_admin"` cho mọi tài khoản đã đăng nhập). Bấm nút thì JS bật/tắt thuộc tính `hidden` của các khối này. Modal gắn `data-demo-modal="<trạng thái>"` thì tự mở ở trạng thái đó. Cách đánh dấu đầy đủ ghi ở comment đầu file `js/demo-state.js`.
+- Trạng thái chỉ có với một số vai trò thì khai báo `data-demo-auths-<trạng thái>` trên `<body>`, ví dụ `data-demo-auths-error="user blog_owner super_admin"` (khách không có ô bình luận nên không có lỗi validate). Thanh demo ẩn nút trạng thái không hợp với vai trò đang chọn và tự sửa tổ hợp sai khi đổi vai trò hoặc mở link.
 - Trạng thái được ghi lên URL (`?demo=error&auth=user`) để gửi link hoặc chụp màn hình đúng trạng thái.
 - Trạng thái lỗi dùng đúng class của Bootstrap: `is-invalid` trên ô nhập + `invalid-feedback` ngay dưới, để phase 4 nối thẳng với Angular Validators.
 - Trạng thái loading: nút bị `disabled`, có `spinner-border spinner-border-sm` + chữ "Đang lưu...".
@@ -358,8 +361,8 @@ Các việc còn lại chia cho 3 người, mỗi người làm phần của mì
 | # | Việc | Chờ | Ghi chú |
 | --- | --- | --- | --- |
 | A2 (**đã làm**) | Thẻ bài viết (`components/_post-card.scss`), `public/index.html` | | Thẻ bài viết dùng lại ở trang danh mục, tìm kiếm, bài liên quan. **Merge sớm** vì B và C cần |
-| A3 | Rich text editor (component), `admin/post-create.html` | | **Merge sớm** vì B cần cho `page-edit` |
-| A4 | `public/post-detail.html` (gồm bình luận) | | Nội dung bài dùng class `.prose` |
+| A3 (**đã làm**) | Rich text editor (component), `admin/post-create.html` | | **Merge sớm** vì B cần cho `page-edit` |
+| A4 (**đã làm**) | `public/post-detail.html` (gồm bình luận) | | Nội dung bài dùng class `.prose` |
 | A5 | `admin/post-edit.html` | | Tab ngôn ngữ dùng `.nav-tabs` của Bootstrap |
 | A6 | Duyệt và sửa các lỗi C báo ở C3 mà đụng tới phần dùng chung, bật chặn link chết trong workflow deploy | C3 | Trang mục lục `html/index.html` đã có từ lúc dựng deploy; mỗi PR làm xong màn nào thì tự đổi dòng của màn đó thành link |
 

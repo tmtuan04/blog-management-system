@@ -1,0 +1,92 @@
+// Form bài viết (UC13), dùng ở post-create và post-edit.
+//   .post-form__shared        Phần dùng chung cho mọi ngôn ngữ (ngôn ngữ gốc, danh mục, thumbnail), kẻ dưới
+//   .post-form__shared-wide   Ô chiếm cả hàng trong lưới 2 cột (thumbnail)
+//   .post-form__head          Dòng "Bản gốc · Tiếng Việt" + ô trạng thái của bản dịch
+//   .post-form__title         Ô tiêu đề kiểu Medium: không viền, dùng kèm .text-post-title
+//   .post-form__excerpt       Ô tóm tắt: chữ xám như subtitle trên trang chi tiết
+// Hai ô tiêu đề, tóm tắt chỉ có viền dưới màu đỏ khi lỗi (.is-invalid), dòng lỗi là .invalid-feedback ngay sau.
+
+.post-form__shared {
+  display: grid;
+  gap: 1rem 1.5rem;
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--bl-border);
+
+  @include media-breakpoint-up(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-label {
+    margin-bottom: .375rem;
+    font-weight: 500;
+  }
+}
+
+.post-form__shared-wide {
+  @include media-breakpoint-up(md) {
+    grid-column: 1 / -1;
+  }
+}
+
+.post-form__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.post-form__status {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+
+  .form-select {
+    width: auto;
+  }
+}
+
+.post-form__title,
+.post-form__excerpt {
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  color: var(--bl-text);
+  resize: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  outline: 0;
+  // Ô tự cao theo nội dung (Chrome, Edge); trình duyệt chưa hỗ trợ thì dùng số dòng ở thuộc tính rows
+  field-sizing: content;
+
+  &::placeholder {
+    color: var(--bl-muted);
+    opacity: 1;
+  }
+
+  &.is-invalid {
+    border-bottom-color: var(--bl-danger);
+  }
+}
+
+.post-form__excerpt {
+  margin-top: .75rem;
+  font-size: 1.125rem;
+  line-height: 1.625rem;
+  color: var(--bl-text-secondary);
+
+  @include media-breakpoint-up(md) {
+    font-size: 1.375rem;
+    line-height: 1.875rem;
+  }
+}
+
+// Khoảng cách giữa tóm tắt và thanh công cụ của editor
+.post-form__body {
+  margin-top: 2rem;
+}
