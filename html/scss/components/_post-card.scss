@@ -140,6 +140,41 @@
 }
 
 // ---------------------------------------------------------------------------
+// Biến thể lưới: "Bài viết cùng danh mục" trên trang chi tiết (lưới 2 cột từ md).
+// Giữ nguyên markup của thẻ thường, chỉ đưa thumbnail lên trên toàn chiều rộng.
+// ---------------------------------------------------------------------------
+.post-card--grid {
+  flex-direction: column;
+  gap: 1rem;
+  align-items: stretch;
+  height: 100%;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: 0;
+
+  @include media-breakpoint-up(md) {
+    gap: 1rem;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  .post-card__thumb {
+    order: -1;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+  }
+
+  .post-card__title {
+    @include line-clamp(2);
+  }
+
+  .post-card__excerpt {
+    margin-top: .25rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Skeleton khi đang tải
 // ---------------------------------------------------------------------------
 .post-card--skeleton {

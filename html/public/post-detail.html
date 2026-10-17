@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hướng dẫn Angular · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="../js/theme.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body data-demo-states="normal error sending no-comments replying deleting" data-demo-label-sending="Đang gửi" data-demo-label-no-comments="Chưa có bình luận" data-demo-label-replying="Đang trả lời" data-demo-label-deleting="Xóa bình luận" data-demo-auths="guest user blog_owner super_admin" data-demo-auths-error="user blog_owner super_admin" data-demo-auths-sending="user blog_owner super_admin" data-demo-auths-replying="user blog_owner super_admin" data-demo-auths-deleting="user blog_owner super_admin">
+
+  <!-- component: site-header -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <button type="button" class="icon-btn d-md-none" data-bs-toggle="offcanvas" data-bs-target="#publicMenu" aria-controls="publicMenu" aria-label="Mở menu" data-i18n-aria-label="common.open_menu">
+        <i class="bi bi-list" aria-hidden="true"></i>
+      </button>
+      <a class="brand" href="index.html" data-i18n="common.site_name">Inkwell</a>
+
+      <nav class="site-header__nav" aria-label="Menu chính" data-i18n-aria-label="menu.label">
+        <a href="index.html" data-i18n="menu.home">Trang chủ</a>
+        <a href="page.html?key=about" data-i18n="menu.about">Giới thiệu</a>
+      </nav>
+
+      <form class="site-header__search" action="search.html" role="search">
+        <label class="visually-hidden" for="siteSearch" data-i18n="common.search">Tìm kiếm</label>
+        <div class="search-input">
+          <i class="bi bi-search search-input__icon" aria-hidden="true"></i>
+          <input type="search" class="form-control search-input__control" id="siteSearch" name="q" placeholder="Tìm kiếm" data-i18n-placeholder="common.search">
+        </div>
+      </form>
+
+      <div class="site-header__actions">
+        <button type="button" class="icon-btn d-md-none" data-bs-toggle="collapse" data-bs-target="#siteSearchBar" aria-controls="siteSearchBar" aria-expanded="false" aria-label="Tìm kiếm" data-i18n-aria-label="common.search">
+          <i class="bi bi-search" aria-hidden="true"></i>
+        </button>
+
+        <a class="site-header__write" href="../admin/post-create.html" data-demo-auth="blog_owner super_admin">
+          <i class="bi bi-pencil-square" aria-hidden="true"></i>
+          <span data-i18n="menu.write">Viết bài</span>
+        </a>
+
+        <!-- component: language-switcher -->
+        <div class="dropdown d-none d-md-block">
+          <button type="button" class="icon-btn icon-btn--text" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Ngôn ngữ" data-i18n-aria-label="common.language">
+            VI <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item active" href="#" aria-current="true">Tiếng Việt <i class="bi bi-check2 ms-auto" aria-hidden="true"></i></a></li>
+            <li><a class="dropdown-item" href="#">English</a></li>
+          </ul>
+        </div>
+        <!-- /component: language-switcher -->
+
+        <!-- component: theme-toggle -->
+        <button type="button" class="icon-btn theme-toggle d-none d-md-inline-flex" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối" data-i18n-aria-label="common.dark_mode">
+          <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+          <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+        </button>
+        <!-- /component: theme-toggle -->
+
+        <a class="site-header__login" href="login.html" data-demo-auth="guest" data-i18n="auth.login">Đăng nhập</a>
+        <a class="btn btn-primary btn-sm px-3" href="register.html" data-demo-auth="guest" data-i18n="auth.get_started">Bắt đầu</a>
+
+        <!-- component: user-menu -->
+        <div class="dropdown ms-1" data-demo-auth="user blog_owner super_admin">
+          <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản" data-i18n-aria-label="menu.account">
+            <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="user">LC</span>
+            <img class="avatar" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+            <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end">
+            <div class="px-3 py-2" data-demo-auth="user">
+              <div class="fw-semibold">Lê Minh Cường</div>
+              <div class="text-meta">user@blog.local</div>
+            </div>
+            <div class="px-3 py-2" data-demo-auth="blog_owner">
+              <div class="fw-semibold">Nguyễn Văn An</div>
+              <div class="text-meta">owner1@blog.local</div>
+            </div>
+            <div class="px-3 py-2" data-demo-auth="super_admin">
+              <div class="fw-semibold">Super Admin</div>
+              <div class="text-meta">admin@blog.local</div>
+            </div>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item" href="profile.html">
+              <i class="bi bi-person" aria-hidden="true"></i>
+              <span data-i18n="menu.profile">Hồ sơ</span>
+            </a>
+            <a class="dropdown-item" href="../admin/posts.html" data-demo-auth="blog_owner super_admin">
+              <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+              <span data-i18n="menu.manage_posts">Quản lý bài viết</span>
+            </a>
+            <a class="dropdown-item" href="../admin/users.html" data-demo-auth="super_admin">
+              <i class="bi bi-speedometer2" aria-hidden="true"></i>
+              <span data-i18n="menu.admin">Trang quản trị</span>
+            </a>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item" href="login.html">
+              <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+              <span data-i18n="menu.logout">Đăng xuất</span>
+            </a>
+          </div>
+        </div>
+        <!-- /component: user-menu -->
+      </div>
+    </div>
+  </header>
+  <!-- /component: site-header -->
+
+  <!-- component: site-search-bar (chỉ dưới md, mở bằng nút 🔍 trên header) -->
+  <form class="site-search-bar collapse d-md-none" id="siteSearchBar" action="search.html" role="search">
+    <button type="button" class="icon-btn" data-bs-toggle="collapse" data-bs-target="#siteSearchBar" aria-controls="siteSearchBar" aria-label="Đóng tìm kiếm" data-i18n-aria-label="common.close_search">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <label class="visually-hidden" for="mobileSearch" data-i18n="common.search">Tìm kiếm</label>
+    <input type="search" class="form-control" id="mobileSearch" name="q" placeholder="Tìm bài viết..." data-i18n-placeholder="common.search_posts">
+  </form>
+  <!-- /component: site-search-bar -->
+
+  <div class="site-body">
+    <main class="site-body__main">
+      <!-- component: post-detail -->
+      <article class="post-detail">
+        <header>
+          <h1 class="post-detail__title text-post-title">Hướng dẫn Angular</h1>
+          <p class="post-detail__subtitle">Tìm hiểu cách dựng một ứng dụng Angular từ đầu: component, service, routing và cách gọi API từ backend.</p>
+
+          <!-- component: post-author -->
+          <div class="post-detail__author">
+            <img class="avatar avatar--lg" src="../assets/img/avatars/2.svg" alt="">
+            <div class="post-detail__author-info">
+              <div class="post-detail__author-line">
+                <span class="post-detail__author-name">Nguyễn Văn An</span>
+                <span class="post-detail__sep" aria-hidden="true">·</span>
+                <a class="post-detail__category" href="category.html?slug=lap-trinh">Lập trình</a>
+              </div>
+              <div class="text-meta">
+                <span>6 <span data-i18n="post.min_read">phút đọc</span></span>
+                <span aria-hidden="true">·</span>
+                <time datetime="2026-10-12">12/10/2026</time>
+              </div>
+            </div>
+          </div>
+          <!-- /component: post-author -->
+
+          <!-- component: post-actions -->
+          <div class="post-detail__actions">
+            <span><i class="bi bi-eye" aria-hidden="true"></i>120 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+            <a href="#comments">
+              <i class="bi bi-chat" aria-hidden="true"></i><span data-demo="normal error sending replying deleting">4</span><span data-demo="no-comments">0</span>
+              <span class="visually-hidden" data-i18n="comment.count">bình luận</span>
+            </a>
+          </div>
+          <!-- /component: post-actions -->
+
+          <!-- component: post-languages: chỉ liệt kê ngôn ngữ đang hoạt động có bản dịch published -->
+          <p class="post-detail__languages">
+            <i class="bi bi-translate" aria-hidden="true"></i>
+            <span data-i18n="post.available_in">Bài viết này có ở các ngôn ngữ:</span>
+            <span class="post-detail__language-current" aria-current="true">Tiếng Việt</span>
+            <span aria-hidden="true">·</span>
+            <a href="post-detail.html?slug=angular-tutorial&amp;lang=en" hreflang="en" lang="en">English</a>
+          </p>
+          <!-- /component: post-languages -->
+        </header>
+
+        <figure class="post-detail__cover">
+          <img src="../assets/img/posts/1.svg" alt="">
+        </figure>
+
+        <!-- component: post-content (HTML từ editor, đã lọc ở backend) -->
+        <div class="post-detail__content prose">
+          <p>Angular là framework frontend do Google phát triển, đi kèm sẵn mọi thứ cần cho một ứng dụng lớn: <strong>component</strong>, <strong>dependency injection</strong>, router, form và HTTP client. Bài này đi từ lúc tạo dự án đến khi gọi được API thật từ backend NestJS.</p>
+          <p>Bạn chỉ cần biết <em>JavaScript cơ bản</em> và đã cài Node.js. Nếu chưa quen TypeScript, hãy đọc qua <a href="post-detail.html?slug=lam-quen-voi-typescript">Làm quen với TypeScript trong một buổi chiều</a> trước khi bắt đầu.</p>
+
+          <h2>Tạo dự án</h2>
+          <p>Cài Angular CLI rồi tạo dự án mới. Chọn <u>có routing</u> và dùng SCSS cho style:</p>
+          <pre><code>npm install -g @angular/cli
+ng new blog-frontend --routing --style=scss
+cd blog-frontend
+ng serve</code></pre>
+          <p>Mở <code>http://localhost:4200</code>, trang chào mừng của Angular hiện ra là dự án đã chạy.</p>
+
+          <h2>Component đầu tiên</h2>
+          <p>Mỗi phần giao diện là một component gồm ba thứ: class TypeScript, template HTML và style. Tạo thẻ bài viết bằng lệnh <code>ng generate component post-card</code>, rồi khai báo dữ liệu đầu vào:</p>
+          <pre><code>@Component({
+  selector: 'app-post-card',
+  templateUrl: './post-card.component.html',
+})
+export class PostCardComponent {
+  @Input() post!: Post;
+}</code></pre>
+
+          <figure>
+            <img src="../assets/img/posts/3.svg" alt="Sơ đồ cây component: AppComponent chứa PostListComponent, PostListComponent chứa nhiều PostCardComponent">
+            <figcaption>Cây component của trang chủ: mỗi thẻ bài viết là một PostCardComponent.</figcaption>
+          </figure>
+
+          <h3>Truyền dữ liệu giữa các component</h3>
+          <p>Có ba cách hay dùng, theo thứ tự nên ưu tiên:</p>
+          <ol>
+            <li><strong>@Input / @Output</strong> cho quan hệ cha con trực tiếp.</li>
+            <li><strong>Service dùng chung</strong> khi hai component không liên quan cần cùng một dữ liệu.</li>
+            <li><strong>State management</strong> (NgRx, Signals store) khi ứng dụng đủ lớn.</li>
+          </ol>
+
+          <h2>Gọi API từ backend</h2>
+          <p>Đừng gọi <code>HttpClient</code> thẳng trong component. Đặt mọi lời gọi API trong service để component chỉ lo hiển thị:</p>
+          <ul>
+            <li>Dễ viết test vì có thể thay service bằng bản giả.</li>
+            <li>Đổi địa chỉ API chỉ phải sửa một chỗ.</li>
+            <li>Interceptor gắn token, xử lý lỗi chung cho mọi request.</li>
+          </ul>
+          <blockquote>Component càng “ngốc” càng tốt: nhận dữ liệu, hiển thị, báo sự kiện lên trên. Mọi logic để ở service.</blockquote>
+
+          <h3>Một vài lỗi hay gặp</h3>
+          <p>Lỗi CORS khi gọi API ở môi trường dev thường do backend chưa bật CORS cho <code>localhost:4200</code>. Lỗi <em>NullInjectorError</em> nghĩa là service chưa được cung cấp: thêm <code>providedIn: 'root'</code> vào decorator <code>@Injectable</code>.</p>
+          <p>Phần tiếp theo sẽ nói về routing có tham số và guard bảo vệ trang quản trị.</p>
+        </div>
+        <!-- /component: post-content -->
+
+        <!-- component: post-tags -->
+        <nav class="post-detail__tags category-chips category-chips--wrap" aria-label="Danh mục" data-i18n-aria-label="post.categories">
+          <a class="category-chip" href="category.html?slug=lap-trinh">Lập trình</a>
+        </nav>
+        <!-- /component: post-tags -->
+
+        <!-- component: comment-section -->
+        <section class="post-detail__section" aria-labelledby="comments">
+          <h2 class="post-detail__section-title" id="comments">
+            <span data-i18n="comment.title">Bình luận</span>
+            (<span data-demo="normal error sending replying deleting">4</span><span data-demo="no-comments">0</span>)
+          </h2>
+
+          <!-- component: comment-login (khách) -->
+          <div class="comment-login" data-demo-auth="guest">
+            <p class="comment-login__text" data-i18n="comment.login_prompt">Đăng nhập để tham gia thảo luận cùng tác giả và người đọc khác.</p>
+            <a class="btn btn-primary" href="login.html" data-i18n="comment.login_to_comment">Đăng nhập để bình luận</a>
+          </div>
+          <!-- /component: comment-login -->
+
+          <!-- component: comment-form (đã đăng nhập) -->
+          <form class="comment-form" novalidate data-demo-auth="user blog_owner super_admin">
+            <div class="comment-form__user">
+              <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="user">LC</span>
+              <span class="comment-form__user-name" data-demo-auth="user">Lê Minh Cường</span>
+              <img class="avatar" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+              <span class="comment-form__user-name" data-demo-auth="blog_owner">Nguyễn Văn An</span>
+              <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+              <span class="comment-form__user-name" data-demo-auth="super_admin">Super Admin</span>
+            </div>
+            <label class="visually-hidden" for="commentContent" data-i18n="comment.label">Nội dung bình luận</label>
+            <textarea class="form-control comment-form__input" id="commentContent" rows="3" maxlength="1000" placeholder="Bạn nghĩ gì về bài viết này?" data-i18n-placeholder="comment.placeholder" data-demo-invalid></textarea>
+            <div class="invalid-feedback" data-i18n="validation.comment_length">Bình luận phải có từ 1 đến 1000 ký tự.</div>
+            <div class="comment-form__footer">
+              <span class="text-meta">0 / 1000</span>
+              <div class="comment-form__buttons">
+                <button type="submit" class="btn btn-primary btn-sm px-3" data-demo-loading="sending" data-loading-text="Đang gửi..." data-loading-i18n="comment.sending">
+                  <span data-i18n="comment.submit">Gửi</span>
+                </button>
+              </div>
+            </div>
+          </form>
+          <!-- /component: comment-form -->
+
+          <!-- component: comment-list
+               Nút ⋯ (xóa) theo quyền UC08, vai trò demo: user = Lê Minh Cường (xóa bình luận của mình),
+               blog_owner = Nguyễn Văn An, tác giả bài (xóa mọi bình luận trên bài), super_admin (xóa mọi bình luận).
+               "Trả lời" chỉ có ở bình luận gốc (trả lời tối đa 1 cấp). -->
+          <ol class="comment-list" data-demo="normal error sending replying deleting">
+            <!-- component: comment -->
+            <li class="comment">
+              <div class="comment__header">
+                <span class="avatar avatar--initials" aria-hidden="true">LC</span>
+                <div class="comment__author">
+                  <div class="comment__name-line"><span class="comment__name">Lê Minh Cường</span></div>
+                  <time class="text-meta" datetime="2026-10-12T21:15">12/10/2026 21:15</time>
+                </div>
+                <div class="dropdown" data-demo-auth="user blog_owner super_admin">
+                  <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                    <i class="bi bi-three-dots" aria-hidden="true"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteCommentModal">
+                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                        <span data-i18n="common.delete">Xóa</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <p class="comment__content">Bài viết rất hay!</p>
+              <div class="comment__actions" data-demo-auth="user blog_owner super_admin">
+                <button type="button" class="comment__action">
+                  <i class="bi bi-reply" aria-hidden="true"></i>
+                  <span data-i18n="comment.reply">Trả lời</span>
+                </button>
+              </div>
+
+              <ol class="comment__replies">
+                <!-- component: comment (trả lời) -->
+                <li class="comment">
+                  <div class="comment__header">
+                    <img class="avatar" src="../assets/img/avatars/2.svg" alt="">
+                    <div class="comment__author">
+                      <div class="comment__name-line">
+                        <span class="comment__name">Nguyễn Văn An</span>
+                        <span class="comment__badge" data-i18n="comment.author_badge">Tác giả</span>
+                      </div>
+                      <time class="text-meta" datetime="2026-10-12T22:00">12/10/2026 22:00</time>
+                    </div>
+                    <div class="dropdown" data-demo-auth="blog_owner super_admin">
+                      <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                        <i class="bi bi-three-dots" aria-hidden="true"></i>
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                          <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteCommentModal">
+                            <i class="bi bi-trash3" aria-hidden="true"></i>
+                            <span data-i18n="common.delete">Xóa</span>
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <p class="comment__content">Cảm ơn bạn đã đọc.</p>
+                </li>
+                <!-- /component: comment -->
+
+                <!-- component: comment-form (trả lời) -->
+                <li data-demo="replying" data-demo-auth="user blog_owner super_admin">
+                  <form class="comment-form comment-form--reply" novalidate>
+                    <label class="visually-hidden" for="replyContent" data-i18n="comment.reply_label">Nội dung trả lời</label>
+                    <textarea class="form-control comment-form__input" id="replyContent" rows="2" maxlength="1000" placeholder="Trả lời Lê Minh Cường..." data-i18n-placeholder="comment.reply_placeholder"></textarea>
+                    <div class="comment-form__footer">
+                      <span class="text-meta">0 / 1000</span>
+                      <div class="comment-form__buttons">
+                        <button type="button" class="btn btn-outline-secondary btn-sm px-3" data-i18n="common.cancel">Hủy</button>
+                        <button type="submit" class="btn btn-primary btn-sm px-3" data-i18n="comment.reply">Trả lời</button>
+                      </div>
+                    </div>
+                  </form>
+                </li>
+                <!-- /component: comment-form -->
+              </ol>
+            </li>
+            <!-- /component: comment -->
+
+            <!-- component: comment -->
+            <li class="comment">
+              <div class="comment__header">
+                <span class="avatar avatar--initials" aria-hidden="true">TN</span>
+                <div class="comment__author">
+                  <div class="comment__name-line"><span class="comment__name">Tôn Nữ Hoàng Thị Phương Thảo Nguyên</span></div>
+                  <time class="text-meta" datetime="2026-10-13T08:42">13/10/2026 08:42</time>
+                </div>
+                <div class="dropdown" data-demo-auth="blog_owner super_admin">
+                  <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                    <i class="bi bi-three-dots" aria-hidden="true"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteCommentModal">
+                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                        <span data-i18n="common.delete">Xóa</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <p class="comment__content">Mình làm theo đến phần gọi API thì bị lỗi CORS, dù backend đã chạy ở cổng 3000.
+Mình đã thử:
+- Xóa node_modules rồi chạy lại npm install
+- Thêm proxy.conf.json nhưng vẫn không được
+
+Log lỗi đầy đủ: AccessToXMLHttpRequestAtHttpLocalhost3000ApiPostsFromOriginHttpLocalhost4200HasBeenBlockedByCorsPolicy
+Bạn có thể viết thêm phần cấu hình CORS bên NestJS không?</p>
+              <div class="comment__actions" data-demo-auth="user blog_owner super_admin">
+                <button type="button" class="comment__action">
+                  <i class="bi bi-reply" aria-hidden="true"></i>
+                  <span data-i18n="comment.reply">Trả lời</span>
+                </button>
+              </div>
+            </li>
+            <!-- /component: comment -->
+
+            <!-- component: comment -->
+            <li class="comment">
+              <div class="comment__header">
+                <span class="avatar avatar--initials" aria-hidden="true">TB</span>
+                <div class="comment__author">
+                  <div class="comment__name-line"><span class="comment__name">Trần Thị Bình</span></div>
+                  <time class="text-meta" datetime="2026-10-14T19:05">14/10/2026 19:05</time>
+                </div>
+                <div class="dropdown" data-demo-auth="blog_owner super_admin">
+                  <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                    <i class="bi bi-three-dots" aria-hidden="true"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteCommentModal">
+                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                        <span data-i18n="common.delete">Xóa</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <p class="comment__content">Phần sau có nói về standalone component không bạn?</p>
+              <div class="comment__actions" data-demo-auth="user blog_owner super_admin">
+                <button type="button" class="comment__action">
+                  <i class="bi bi-reply" aria-hidden="true"></i>
+                  <span data-i18n="comment.reply">Trả lời</span>
+                </button>
+              </div>
+            </li>
+            <!-- /component: comment -->
+          </ol>
+          <!-- /component: comment-list -->
+
+          <!-- component: empty-state -->
+          <div class="empty-state" data-demo="no-comments">
+            <i class="bi bi-chat-square-text empty-state__icon" aria-hidden="true"></i>
+            <h3 class="empty-state__title" data-i18n="comment.empty_title">Chưa có bình luận nào</h3>
+            <p class="empty-state__text" data-i18n="comment.empty_text">Hãy là người đầu tiên chia sẻ suy nghĩ về bài viết này.</p>
+          </div>
+          <!-- /component: empty-state -->
+        </section>
+        <!-- /component: comment-section -->
+
+        <!-- component: related-posts: bài cùng danh mục, có bản dịch published ở cùng ngôn ngữ -->
+        <section class="post-detail__section" aria-labelledby="relatedHeading">
+          <h2 class="post-detail__section-title" id="relatedHeading" data-i18n="post.related">Bài viết cùng danh mục</h2>
+          <div class="row row-cols-1 row-cols-md-2 g-4 g-md-5">
+            <div class="col">
+              <!-- component: post-card (grid) -->
+              <article class="post-card post-card--grid">
+                <div class="post-card__body">
+                  <div class="post-card__author">
+                    <img class="avatar avatar--sm" src="../assets/img/avatars/2.svg" alt="">
+                    <span class="post-card__author-name">Nguyễn Văn An</span>
+                  </div>
+                  <h3 class="post-card__title text-card-title"><a href="post-detail.html?slug=lam-quen-voi-typescript">Làm quen với TypeScript trong một buổi chiều</a></h3>
+                  <p class="post-card__excerpt text-excerpt">Kiểu dữ liệu, interface, generic và cách cấu hình tsconfig cho dự án Node.js đầu tiên của bạn.</p>
+                  <div class="post-card__meta text-meta">
+                    <time datetime="2026-10-06">06/10/2026</time>
+                    <span aria-hidden="true">·</span>
+                    <span><i class="bi bi-eye" aria-hidden="true"></i>63 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+                  </div>
+                </div>
+                <a class="post-card__thumb" href="post-detail.html?slug=lam-quen-voi-typescript" tabindex="-1" aria-hidden="true">
+                  <img src="../assets/img/posts/6.svg" alt="">
+                </a>
+              </article>
+              <!-- /component: post-card -->
+            </div>
+            <div class="col">
+              <!-- component: post-card (grid) -->
+              <article class="post-card post-card--grid">
+                <div class="post-card__body">
+                  <div class="post-card__author">
+                    <span class="avatar avatar--sm avatar--initials" aria-hidden="true">TB</span>
+                    <span class="post-card__author-name">Trần Thị Bình</span>
+                  </div>
+                  <h3 class="post-card__title text-card-title"><a href="post-detail.html?slug=tu-con-so-khong-den-ung-dung-web-dau-tien">Từ con số không đến ứng dụng web đầu tiên: hành trình sáu tháng vừa đi làm vừa tự học lập trình vào mỗi buổi tối</a></h3>
+                  <p class="post-card__excerpt text-excerpt">Không có bằng cấp công nghệ thông tin, không có người hướng dẫn, chỉ có một chiếc laptop cũ và hai tiếng mỗi tối.</p>
+                  <div class="post-card__meta text-meta">
+                    <time datetime="2026-10-11">11/10/2026</time>
+                    <span aria-hidden="true">·</span>
+                    <span><i class="bi bi-eye" aria-hidden="true"></i>86 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+                  </div>
+                </div>
+                <a class="post-card__thumb" href="post-detail.html?slug=tu-con-so-khong-den-ung-dung-web-dau-tien" tabindex="-1" aria-hidden="true">
+                  <img src="../assets/img/posts/2.svg" alt="">
+                </a>
+              </article>
+              <!-- /component: post-card -->
+            </div>
+            <div class="col">
+              <!-- component: post-card (grid) -->
+              <article class="post-card post-card--grid">
+                <div class="post-card__body">
+                  <div class="post-card__author">
+                    <span class="avatar avatar--sm avatar--initials" aria-hidden="true">TN</span>
+                    <span class="post-card__author-name">Tôn Nữ Hoàng Thị Phương Thảo Nguyên</span>
+                  </div>
+                  <h3 class="post-card__title text-card-title"><a href="post-detail.html?slug=viet-code-sach-hon-moi-ngay">Viết code sạch hơn mỗi ngày với năm thói quen nhỏ</a></h3>
+                  <p class="post-card__excerpt text-excerpt">Đặt tên rõ nghĩa, giữ hàm ngắn, viết test trước khi sửa lỗi, xóa code không dùng và đọc lại diff trước khi commit.</p>
+                  <div class="post-card__meta text-meta">
+                    <time datetime="2026-10-09">09/10/2026</time>
+                    <span aria-hidden="true">·</span>
+                    <span><i class="bi bi-eye" aria-hidden="true"></i>97 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+                  </div>
+                </div>
+                <a class="post-card__thumb" href="post-detail.html?slug=viet-code-sach-hon-moi-ngay" tabindex="-1" aria-hidden="true">
+                  <img src="../assets/img/posts/3.svg" alt="">
+                </a>
+              </article>
+              <!-- /component: post-card -->
+            </div>
+            <div class="col">
+              <!-- component: post-card (grid) -->
+              <article class="post-card post-card--grid">
+                <div class="post-card__body">
+                  <div class="post-card__author">
+                    <img class="avatar avatar--sm" src="../assets/img/avatars/2.svg" alt="">
+                    <span class="post-card__author-name">Nguyễn Văn An</span>
+                  </div>
+                  <h3 class="post-card__title text-card-title"><a href="post-detail.html?slug=toi-uu-truy-van-mysql-fulltext-ngram">Tối ưu truy vấn MySQL với FULLTEXT index và parser ngram</a></h3>
+                  <p class="post-card__excerpt text-excerpt">Tìm kiếm tiếng Việt có dấu bằng FULLTEXT index: cách tạo index, chọn độ dài ngram và đo tốc độ truy vấn.</p>
+                  <div class="post-card__meta text-meta">
+                    <time datetime="2026-10-03">03/10/2026</time>
+                    <span aria-hidden="true">·</span>
+                    <span><i class="bi bi-eye" aria-hidden="true"></i>312 <span class="visually-hidden" data-i18n="post.views">lượt xem</span></span>
+                  </div>
+                </div>
+                <a class="post-card__thumb" href="post-detail.html?slug=toi-uu-truy-van-mysql-fulltext-ngram" tabindex="-1" aria-hidden="true">
+                  <img src="../assets/img/posts/1.svg" alt="">
+                </a>
+              </article>
+              <!-- /component: post-card -->
+            </div>
+          </div>
+        </section>
+        <!-- /component: related-posts -->
+      </article>
+      <!-- /component: post-detail -->
+    </main>
+  </div>
+
+  <!-- component: site-footer -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <span>© 2026 <span data-i18n="common.site_name">Inkwell</span></span>
+      <a href="page.html?key=about" data-i18n="footer.about">Giới thiệu</a>
+      <a href="page.html?key=contact" data-i18n="footer.contact">Liên hệ</a>
+      <a href="page.html?key=privacy" data-i18n="footer.privacy">Chính sách bảo mật</a>
+    </div>
+  </footer>
+  <!-- /component: site-footer -->
+
+  <!-- component: public-offcanvas (menu mobile, mở bằng nút ☰) -->
+  <div class="offcanvas offcanvas-start public-offcanvas" id="publicMenu" tabindex="-1" aria-labelledby="publicMenuLabel">
+    <div class="offcanvas-header">
+      <a class="brand" href="index.html" id="publicMenuLabel" data-i18n="common.site_name">Inkwell</a>
+      <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" aria-label="Đóng menu" data-i18n-aria-label="common.close_menu"></button>
+    </div>
+    <div class="offcanvas-body">
+      <nav class="nav flex-column mb-2" aria-label="Menu chính" data-i18n-aria-label="menu.label">
+        <a class="nav-link" href="index.html" data-i18n="menu.home">Trang chủ</a>
+        <a class="nav-link" href="page.html?key=about" data-i18n="menu.about">Giới thiệu</a>
+      </nav>
+
+      <div class="public-offcanvas__group">
+        <div class="public-offcanvas__label" id="offcanvasLanguageLabel" data-i18n="common.language">Ngôn ngữ</div>
+        <div class="btn-group w-100" role="group" aria-labelledby="offcanvasLanguageLabel">
+          <button type="button" class="btn btn-primary btn-sm" aria-pressed="true">Tiếng Việt</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" aria-pressed="false">English</button>
+        </div>
+      </div>
+
+      <div class="public-offcanvas__group">
+        <!-- data-theme-toggle chỉ gắn lên <input>, xem comment đầu js/theme.js -->
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="offcanvasDarkMode" data-theme-toggle>
+          <label class="form-check-label" for="offcanvasDarkMode" data-i18n="common.dark_mode">Giao diện tối</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: public-offcanvas -->
+
+  <!-- component: confirm-dialog -->
+  <div class="modal fade" id="deleteCommentModal" tabindex="-1" aria-labelledby="deleteCommentModalTitle" aria-hidden="true" data-demo-modal="deleting">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="deleteCommentModalTitle" data-i18n="comment.delete_title">Xóa bình luận?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-semibold mb-2">Lê Minh Cường: “Bài viết rất hay!”</p>
+          <p class="text-body-secondary mb-0" data-i18n="comment.delete_warning">Bình luận này và các câu trả lời của nó sẽ bị xóa vĩnh viễn. Không thể hoàn tác.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="button" class="btn btn-danger" data-demo-loading="deleting" data-loading-text="Đang xóa..." data-loading-i18n="common.deleting">
+            <span data-i18n="common.delete">Xóa</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: confirm-dialog -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/demo-state.js"></script>
+</body>
+</html>

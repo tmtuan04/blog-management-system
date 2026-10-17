@@ -29,6 +29,14 @@
  *   <div data-demo-auth="guest">                    Chỉ hiện khi xem với vai trò khách
  *   <div data-demo-auth="user blog_owner super_admin">  Hiện với mọi tài khoản đã đăng nhập
  *
+ * 3. Trạng thái chỉ có với một số vai trò (VD: khách không có ô bình luận nên không có "Lỗi validate")
+ *   <body data-demo-auths-error="user blog_owner super_admin">
+ *                                                    Trạng thái "error" chỉ có với các vai trò này. Đang ở vai trò
+ *                                                    khác thì nút "error" bị ẩn khỏi thanh. Đổi sang vai trò không hợp
+ *                                                    thì tự về trạng thái đầu tiên hợp lệ; đổi sang trạng thái không
+ *                                                    hợp thì tự đổi sang vai trò đầu tiên hợp lệ.
+ *                                                    Trạng thái không khai báo thì có với mọi vai trò.
+ *
  * Phần tử không có data-demo / data-demo-auth thì luôn hiện.
  * Trạng thái được ghi lên URL (?demo=error&auth=user) để gửi link hoặc chụp màn hình đúng trạng thái.
  *
@@ -51,13 +59,17 @@
     return (value || '').split(/\s+/).filter(Boolean);
   }
 
-  // Lấy nhãn hiển thị của trạng thái. dataset tự đổi kebab-case sang camelCase:
+  // Đọc thuộc tính data-<prefix>-<trạng thái> trên <body>. dataset tự đổi kebab-case sang camelCase:
   // thuộc tính data-demo-label-error-email được đọc qua body.dataset.demoLabelErrorEmail,
   // nên regex ở đây viết hoa chữ đầu và chữ sau dấu "-" ("error-email" -> "ErrorEmail") cho khớp.
+  function stateAttr(prefix, state) {
+    return body.dataset[prefix + state.replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase())];
+  }
+
+  // Lấy nhãn hiển thị của trạng thái.
   // Thứ tự ưu tiên: nhãn khai báo trên <body> > nhãn có sẵn > chính tên trạng thái.
   function stateLabel(state) {
-    const key = 'demoLabel' + state.replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase());
-    return body.dataset[key] || STATE_LABELS[state] || state;
+    return stateAttr('demoLabel', state) || STATE_LABELS[state] || state;
   }
 
   const states = splitList(body.dataset.demoStates || Object.keys(STATE_LABELS).join(' '));
@@ -77,6 +89,27 @@
   const params = new URLSearchParams(window.location.search);
   let currentState = states.includes(params.get('demo')) ? params.get('demo') : states[0];
   let currentAuth = auths.includes(params.get('auth')) ? params.get('auth') : auths[0];
+
+  // Trạng thái có với vai trò này không (data-demo-auths-<trạng thái>, mục 3 ở comment đầu file).
+  // Trang không có phần vai trò hoặc trạng thái không khai báo thì luôn có.
+  function stateAllowsAuth(state, auth) {
+    const allowed = stateAttr('demoAuths', state);
+    return !hasAuth || allowed === undefined || splitList(allowed).includes(auth);
+  }
+
+  // Sửa tổ hợp không hợp lệ. keep = 'state': giữ trạng thái, đổi vai trò; keep = 'auth': giữ vai trò, đổi trạng thái.
+  // Không tìm được giá trị hợp lệ (khai báo sai) thì giữ nguyên.
+  function fixCombination(keep) {
+    if (stateAllowsAuth(currentState, currentAuth)) return;
+    if (keep === 'state') {
+      currentAuth = auths.find((auth) => stateAllowsAuth(currentState, auth)) || currentAuth;
+    } else {
+      currentState = states.find((state) => stateAllowsAuth(state, currentAuth)) || currentState;
+    }
+  }
+
+  // Link có ?demo= thì ưu tiên giữ trạng thái trên link
+  fixCombination(params.has('demo') ? 'state' : 'auth');
 
   // Thuộc tính rỗng (data-demo-loading) nghĩa là dùng trạng thái mặc định
   // VD: data-demo-loading=""         -> activeIn('', 'loading')        -> bật khi currentState === 'loading'
@@ -157,6 +190,8 @@
     document.querySelectorAll('.demo-bar__btn').forEach((button) => {
       const active = button.dataset.state === currentState || button.dataset.auth === currentAuth;
       button.setAttribute('aria-pressed', String(active));
+      // Ẩn nút trạng thái không có với vai trò đang chọn
+      if (button.dataset.state) button.hidden = !stateAllowsAuth(button.dataset.state, currentAuth);
     });
 
     // Đồng bộ trạng thái lên URL. Dùng replaceState (không phải pushState) để
@@ -209,8 +244,14 @@
     bar.addEventListener('click', (event) => {
       const button = event.target.closest('.demo-bar__btn');
       if (!button) return;
-      if (button.dataset.state) currentState = button.dataset.state;
-      if (button.dataset.auth) currentAuth = button.dataset.auth;
+      if (button.dataset.state) {
+        currentState = button.dataset.state;
+        fixCombination('state');
+      }
+      if (button.dataset.auth) {
+        currentAuth = button.dataset.auth;
+        fixCombination('auth');
+      }
       render();
     });
 
