@@ -1,6 +1,6 @@
 # Danh sách màn hình phase 2
 
-Tổng cộng **20 màn**: A 5 màn (đã xong 4), B 14 màn (đã xong 3), C 1 màn. Nguồn: [docs/phase-2-html.md](../docs/phase-2-html.md) mục 5 và 8.
+Tổng cộng **20 màn**: A 5 màn (đã xong 4), B 14 màn (đã xong 9), C 1 màn. Nguồn: [docs/phase-2-html.md](../docs/phase-2-html.md) mục 5 và 8.
 
 Quy ước: mỗi việc (A1, B1...) là **một nhánh và một PR** vào `dev`. Việc có nhiều màn thì các màn đó nằm chung một nhánh. Tên nhánh theo dạng `feature/html-<phần>`.
 
@@ -29,7 +29,7 @@ Cột "Chờ": việc của người khác phải merge vào `dev` rồi mới b
 | B1 | **Quản lý danh mục** ✅ | `admin/categories.html` | Bảng danh mục, tên và slug theo từng ngôn ngữ, modal thêm/sửa, xác nhận xóa, lỗi xóa danh mục đang có bài | `feature/html-admin-categories-pages` | |
 | B1 | **Quản lý trang tĩnh** ✅ | `admin/pages.html` | Danh sách trang Giới thiệu, Liên hệ, Chính sách bảo mật: ngôn ngữ đã có nội dung, trạng thái hiển thị, nút "Sửa" | *(chung nhánh trên)* | |
 | B2 | **Quản lý người dùng** ✅ | `admin/users.html` | Bảng người dùng, đổi vai trò, khóa/mở khóa, tạo tài khoản | `feature/html-admin-users-languages` | |
-| B2 | **Quản lý ngôn ngữ** | `admin/languages.html` | Bảng ngôn ngữ, đặt ngôn ngữ mặc định, bật/tắt, thêm/sửa | *(chung nhánh trên)* | |
+| B2 | **Quản lý ngôn ngữ** ✅ | `admin/languages.html` | Bảng ngôn ngữ, đặt ngôn ngữ mặc định, bật/tắt, thêm/sửa | *(chung nhánh trên)* | |
 | B5 | **Quản lý bản dịch giao diện** | `admin/ui-translations.html` | Bảng key và bản dịch theo từng ngôn ngữ, sửa ngay trong ô | `feature/html-admin-translations-page-edit` | A3 |
 | B5 | **Sửa trang tĩnh** | `admin/page-edit.html` | Sửa nội dung trang tĩnh, mỗi ngôn ngữ một tab, có trình soạn thảo | *(chung nhánh trên)* | A3 |
 
@@ -37,11 +37,11 @@ Cột "Chờ": việc của người khác phải merge vào `dev` rồi mới b
 
 | Việc | Màn | File | Mô tả ngắn | Nhánh | Chờ |
 |---|---|---|---|---|---|
-| B3 | **Đăng ký** | `public/register.html` | Họ tên, email, mật khẩu, nút đăng ký bằng Google/Github | `feature/html-auth-profile` | A1 |
-| B3 | **Đăng nhập** | `public/login.html` | Email, mật khẩu, quên mật khẩu, đăng nhập bằng Google/Github | *(chung nhánh trên)* | A1 |
-| B3 | **Quên mật khẩu** | `public/forgot-password.html` | Nhập email để nhận link đặt lại mật khẩu | *(chung nhánh trên)* | A1 |
-| B3 | **Đặt lại mật khẩu** | `public/reset-password.html` | Nhập mật khẩu mới và xác nhận | *(chung nhánh trên)* | A1 |
-| B3 | **Hồ sơ cá nhân** | `public/profile.html` | Đổi ảnh đại diện, họ tên, đổi mật khẩu | *(chung nhánh trên)* | A1 |
+| B3 | **Đăng ký** ✅ | `public/register.html` | Họ tên, email, mật khẩu, nút đăng ký bằng Google/Github | `feature/html-auth-profile` | A1 |
+| B3 | **Đăng nhập** ✅ | `public/login.html` | Email, mật khẩu, quên mật khẩu, đăng nhập bằng Google/Github | *(chung nhánh trên)* | A1 |
+| B3 | **Quên mật khẩu** ✅ | `public/forgot-password.html` | Nhập email để nhận link đặt lại mật khẩu | *(chung nhánh trên)* | A1 |
+| B3 | **Đặt lại mật khẩu** ✅ | `public/reset-password.html` | Nhập mật khẩu mới và xác nhận | *(chung nhánh trên)* | A1 |
+| B3 | **Hồ sơ cá nhân** ✅ | `public/profile.html` | Đổi ảnh đại diện, họ tên, đổi mật khẩu | *(chung nhánh trên)* | A1 |
 
 ### Public (3 màn)
 

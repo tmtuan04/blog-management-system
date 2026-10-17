@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ngôn ngữ · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="../js/theme.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body data-demo-states="normal error saving deleting in-use" data-demo-label-saving="Đang lưu" data-demo-label-deleting="Đang xóa" data-demo-label-in-use="Lỗi xóa" data-demo-auths="super_admin">
+  <div class="admin-layout">
+
+    <!-- component: admin-sidebar -->
+    <aside class="admin-sidebar offcanvas-lg offcanvas-start" id="adminSidebar" tabindex="-1" aria-labelledby="adminSidebarLabel">
+      <div class="offcanvas-header admin-sidebar__brand">
+        <a class="brand" href="../public/index.html" id="adminSidebarLabel" data-i18n="common.site_name">Inkwell</a>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" data-bs-target="#adminSidebar" aria-label="Đóng menu" data-i18n-aria-label="common.close_menu"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="admin-sidebar__brand d-none d-lg-flex">
+          <a class="brand" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+        </div>
+        <nav aria-label="Menu quản trị" data-i18n-aria-label="admin.nav.label">
+          <ul class="admin-sidebar__nav">
+            <li>
+              <a class="admin-sidebar__link" href="../admin/posts.html">
+                <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.posts">Bài viết</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/users.html">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.users">Người dùng</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/categories.html">
+                <i class="bi bi-folder2" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.categories">Danh mục</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link is-active" href="../admin/languages.html" aria-current="page">
+                <i class="bi bi-globe2" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.languages">Ngôn ngữ</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/ui-translations.html">
+                <i class="bi bi-translate" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.ui_translations">Bản dịch giao diện</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/pages.html">
+                <i class="bi bi-journal-richtext" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.pages">Trang tĩnh</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <div class="admin-sidebar__footer">
+          <a class="admin-sidebar__link" href="../public/index.html">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+            <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+    <!-- /component: admin-sidebar -->
+
+    <div class="admin-main">
+
+      <!-- component: admin-topbar -->
+      <header class="admin-topbar">
+        <button type="button" class="icon-btn d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Mở menu" data-i18n-aria-label="common.open_menu">
+          <i class="bi bi-list" aria-hidden="true"></i>
+        </button>
+        <a class="brand d-lg-none ms-1" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+
+        <div class="d-flex align-items-center gap-1 ms-auto">
+
+          <!-- component: language-switcher -->
+          <div class="dropdown">
+            <button type="button" class="icon-btn icon-btn--text" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Ngôn ngữ" data-i18n-aria-label="common.language">
+              VI <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item active" href="#" aria-current="true">Tiếng Việt <i class="bi bi-check2 ms-auto" aria-hidden="true"></i></a></li>
+              <li><a class="dropdown-item" href="#">English</a></li>
+            </ul>
+          </div>
+          <!-- /component: language-switcher -->
+
+          <!-- component: theme-toggle -->
+          <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối" data-i18n-aria-label="common.dark_mode">
+            <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+            <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+          </button>
+          <!-- /component: theme-toggle -->
+
+          <!-- component: user-menu -->
+          <div class="dropdown ms-1">
+            <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản" data-i18n-aria-label="menu.account">
+              <img class="avatar" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+              <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+              <div class="px-3 py-2" data-demo-auth="blog_owner">
+                <div class="fw-semibold">Nguyễn Văn An</div>
+                <div class="text-meta">owner1@blog.local</div>
+              </div>
+              <div class="px-3 py-2" data-demo-auth="super_admin">
+                <div class="fw-semibold">Super Admin</div>
+                <div class="text-meta">admin@blog.local</div>
+              </div>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="../public/profile.html">
+                <i class="bi bi-person" aria-hidden="true"></i>
+                <span data-i18n="menu.profile">Hồ sơ</span>
+              </a>
+              <a class="dropdown-item" href="../public/index.html">
+                <i class="bi bi-house" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+              </a>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="../public/login.html">
+                <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                <span data-i18n="menu.logout">Đăng xuất</span>
+              </a>
+            </div>
+          </div>
+          <!-- /component: user-menu -->
+
+        </div>
+      </header>
+      <!-- /component: admin-topbar -->
+
+      <main class="admin-content">
+        <div class="admin-page-header">
+          <div>
+            <h1 class="text-page-title mb-1" data-i18n="admin.languages.title">Ngôn ngữ</h1>
+            <p class="text-meta mb-0" data-i18n="admin.languages.subtitle">Luôn có đúng 1 ngôn ngữ mặc định. Ngôn ngữ đã tắt bị ẩn khỏi bộ chọn ngôn ngữ và trang public.</p>
+          </div>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#languageModal">
+            <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>
+            <span data-i18n="admin.languages.add">Thêm ngôn ngữ</span>
+          </button>
+        </div>
+
+        <!-- component: language-table -->
+        <div class="table-responsive">
+          <table class="table table-hover align-middle language-table">
+            <thead>
+              <tr>
+                <th scope="col" data-i18n="admin.languages.col_code">Mã</th>
+                <th scope="col" data-i18n="admin.languages.col_name">Tên hiển thị</th>
+                <th scope="col" data-i18n="admin.languages.col_default">Mặc định</th>
+                <th scope="col" data-i18n="admin.languages.col_active">Hoạt động</th>
+                <th scope="col" class="language-table__count d-none d-md-table-cell" data-i18n="admin.languages.col_translations">Bản dịch bài</th>
+                <th scope="col" class="language-table__actions"><span class="visually-hidden" data-i18n="common.actions">Thao tác</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Ngôn ngữ mặc định: không tắt, không xóa được (switch và nút xóa bị khóa, có tooltip) -->
+              <tr>
+                <td><span class="language-table__code">vi</span></td>
+                <td class="fw-semibold">Tiếng Việt</td>
+                <td><span class="status-badge status-badge--success" data-i18n="admin.languages.default">Mặc định</span></td>
+                <td>
+                  <span class="d-inline-block" title="Không thể tắt ngôn ngữ mặc định" data-i18n-title="admin.languages.cannot_disable_default">
+                    <span class="form-check form-switch mb-0">
+                      <input class="form-check-input" type="checkbox" role="switch" id="activeVi" checked disabled aria-label="Hoạt động" data-i18n-aria-label="admin.languages.col_active">
+                    </span>
+                  </span>
+                </td>
+                <td class="language-table__count d-none d-md-table-cell">14</td>
+                <td class="language-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editLanguageModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li title="Không thể xóa ngôn ngữ mặc định" data-i18n-title="admin.languages.cannot_delete_default">
+                        <button type="button" class="dropdown-item text-danger" disabled>
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Đang có bản dịch bài viết: bấm xóa thì báo lỗi -->
+              <tr>
+                <td><span class="language-table__code">en</span></td>
+                <td class="fw-semibold">English</td>
+                <td><span class="text-meta">—</span></td>
+                <td>
+                  <span class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" role="switch" id="activeEn" checked aria-label="Hoạt động" data-i18n-aria-label="admin.languages.col_active">
+                  </span>
+                </td>
+                <td class="language-table__count d-none d-md-table-cell">6</td>
+                <td class="language-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editLanguageModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button type="button" class="dropdown-item">
+                          <i class="bi bi-star" aria-hidden="true"></i>
+                          <span data-i18n="admin.languages.set_default">Đặt làm mặc định</span>
+                        </button>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#languageInUseModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Đã tắt: không đặt làm mặc định được, phải bật trước -->
+              <tr>
+                <td><span class="language-table__code">ja</span></td>
+                <td class="fw-semibold">日本語</td>
+                <td><span class="text-meta">—</span></td>
+                <td>
+                  <span class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" role="switch" id="activeJa" aria-label="Hoạt động" data-i18n-aria-label="admin.languages.col_active">
+                  </span>
+                </td>
+                <td class="language-table__count d-none d-md-table-cell">0</td>
+                <td class="language-table__actions">
+                  <div class="dropdown">
+                    <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Thao tác" data-i18n-aria-label="common.actions">
+                      <i class="bi bi-three-dots" aria-hidden="true"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editLanguageModal">
+                          <i class="bi bi-pencil" aria-hidden="true"></i>
+                          <span data-i18n="common.edit">Sửa</span>
+                        </button>
+                      </li>
+                      <li title="Bật ngôn ngữ trước khi đặt làm mặc định" data-i18n-title="admin.languages.enable_first">
+                        <button type="button" class="dropdown-item" disabled>
+                          <i class="bi bi-star" aria-hidden="true"></i>
+                          <span data-i18n="admin.languages.set_default">Đặt làm mặc định</span>
+                        </button>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#deleteLanguageModal">
+                          <i class="bi bi-trash3" aria-hidden="true"></i>
+                          <span data-i18n="common.delete">Xóa</span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- /component: language-table -->
+      </main>
+
+    </div>
+  </div>
+
+  <!-- component: language-form-dialog -->
+  <!-- Modal thêm ngôn ngữ. Lỗi validate: mã trùng hoặc sai ISO 639-1 (UC16) -->
+  <div class="modal fade" id="languageModal" tabindex="-1" aria-labelledby="languageModalTitle" aria-hidden="true" data-demo-modal="error saving">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content" novalidate>
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="languageModalTitle" data-i18n="admin.languages.add_title">Thêm ngôn ngữ</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="languageCode" data-i18n="admin.languages.code">Mã ngôn ngữ</label>
+            <input type="text" class="form-control font-monospace" id="languageCode" name="code" maxlength="2" value="en" placeholder="fr" required data-demo-invalid>
+            <div class="invalid-feedback" data-i18n="validation.language_code_taken">Mã “en” đã có trong danh sách.</div>
+            <div class="form-text" data-i18n="admin.languages.code_hint">2 chữ cái thường theo ISO 639-1, ví dụ: fr, ja, ko.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="languageName" data-i18n="admin.languages.name">Tên hiển thị</label>
+            <input type="text" class="form-control" id="languageName" name="name" maxlength="50" placeholder="Français" required data-demo-invalid>
+            <div class="invalid-feedback" data-i18n="validation.required">Vui lòng nhập trường này.</div>
+            <div class="form-text" data-i18n="admin.languages.name_hint">Viết bằng chính ngôn ngữ đó, đây là chữ hiện trong bộ chọn ngôn ngữ.</div>
+          </div>
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" role="switch" id="languageActive" name="is_active" checked>
+            <label class="form-check-label" for="languageActive" data-i18n="admin.languages.col_active">Hoạt động</label>
+          </div>
+          <div class="alert-inline alert-inline--success">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            <div data-i18n="admin.languages.copy_note">Toàn bộ bản dịch giao diện của Tiếng Việt sẽ được sao chép sang ngôn ngữ mới để bạn dịch dần.</div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary" data-demo-loading="saving">
+            <span data-i18n="common.save">Lưu</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- /component: language-form-dialog -->
+
+  <!-- Modal sửa ngôn ngữ: mã không sửa được (đã dùng trong URL và bản dịch) -->
+  <div class="modal fade" id="editLanguageModal" tabindex="-1" aria-labelledby="editLanguageModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content" novalidate>
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="editLanguageModalTitle" data-i18n="admin.languages.edit_title">Sửa ngôn ngữ</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="editLanguageCode" data-i18n="admin.languages.code">Mã ngôn ngữ</label>
+            <input type="text" class="form-control font-monospace" id="editLanguageCode" value="en" readonly>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-medium" for="editLanguageName" data-i18n="admin.languages.name">Tên hiển thị</label>
+            <input type="text" class="form-control" id="editLanguageName" name="name" maxlength="50" value="English" required>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary">
+            <span data-i18n="common.save">Lưu</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- component: confirm-dialog -->
+  <div class="modal fade" id="deleteLanguageModal" tabindex="-1" aria-labelledby="deleteLanguageModalTitle" aria-hidden="true" data-demo-modal="deleting">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="deleteLanguageModalTitle" data-i18n="admin.languages.delete_title">Xóa ngôn ngữ?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-semibold mb-2">日本語 (ja)</p>
+          <p class="text-body-secondary mb-0" data-i18n="admin.languages.delete_warning">Bản dịch giao diện của ngôn ngữ này cũng bị xóa. Không thể hoàn tác.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="button" class="btn btn-danger" data-demo-loading="deleting" data-loading-text="Đang xóa..." data-loading-i18n="common.deleting">
+            <span data-i18n="common.delete">Xóa</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: confirm-dialog -->
+
+  <!-- component: language-in-use-dialog -->
+  <!-- Backend từ chối xóa ngôn ngữ đang có bản dịch bài viết (UC16) -->
+  <div class="modal fade" id="languageInUseModal" tabindex="-1" aria-labelledby="languageInUseModalTitle" aria-hidden="true" data-demo-modal="in-use">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="languageInUseModalTitle" data-i18n="admin.languages.in_use_title">Không thể xóa ngôn ngữ</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-semibold mb-2">English (en)</p>
+          <!-- Phase 4: số bản dịch truyền vào key dịch dạng tham số {count} -->
+          <p class="text-body-secondary mb-0" data-i18n="admin.languages.in_use_text">Ngôn ngữ đang có 6 bản dịch bài viết. Bạn có thể tắt ngôn ngữ để ẩn khỏi trang public.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-i18n="common.understood">Đã hiểu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: language-in-use-dialog -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/demo-state.js"></script>
+</body>
+</html>

@@ -80,7 +80,7 @@ Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu
 | Nút | `.btn-primary` (pill đen, chế độ tối thì pill sáng), `.btn-outline-secondary` (pill viền xám), `.btn-danger` |
 | Nút chỉ có icon | `.icon-btn` (☰, ⋯, đổi theme), `.icon-btn.icon-btn--text` (chữ ngắn như "VI"). Luôn có `aria-label` |
 | Logo chữ | `.brand` |
-| Ảnh đại diện | `.avatar`, `.avatar--sm`, `.avatar--lg`; chưa có ảnh thì `.avatar.avatar--initials` |
+| Ảnh đại diện | `.avatar`, `.avatar--sm`, `.avatar--lg`, `.avatar--xl`; chưa có ảnh thì `.avatar.avatar--initials` |
 | Badge trạng thái | `.status-badge` + `--success` / `--warning` / `--muted` / `--danger`, mã ngôn ngữ trong `.status-badge__code` |
 | Tab lọc kiểu Medium | `.page-tabs`, `.page-tabs__link.is-active`, `.page-tabs__count` |
 | Ô tìm kiếm có icon | `.search-input`, `.search-input__icon`, `.search-input__control` |
@@ -91,12 +91,14 @@ Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu
 | Thẻ bài dạng lưới | `.post-card--grid`: thumbnail lên trên, dùng trong `.row.row-cols-md-2` ("Bài viết cùng danh mục"). Mẫu ở [public/post-detail.html](public/post-detail.html) |
 | Trang chi tiết bài | `.post-detail` (cột đọc 680px; `__title` kèm `.text-post-title`, `__subtitle`, `__author`, `__actions`, `__languages`, `__cover`, `__content` kèm `.prose`, `__tags`, `__section`, `__section-title`) |
 | Bình luận | `.comment-form` (`__user`, `__input`, `__footer`, `__buttons`; `--reply` cho ô trả lời), `.comment-login` (khách), `.comment-list` > `.comment` (`__header`, `__author`, `__name`, `__badge`, `__content`, `__actions`, `__action`, `__replies`). Mẫu ở [public/post-detail.html](public/post-detail.html) |
+| Trang hồ sơ | `.profile` (cột 680px; `__section`, `__section-title`, `__section-desc`, `__avatar`, `__avatar-hint`, `__avatar-error`). Mẫu ở [public/profile.html](public/profile.html) |
+| Bảng ngôn ngữ | `.language-table` (`__code` chip mã ISO, `__count`, `__actions`). Mẫu ở [admin/languages.html](admin/languages.html) |
 | Chip danh mục | `.category-chips` (một hàng cuộn ngang) hoặc `.category-chips--wrap`; `.category-chip`, `.is-active` + `aria-current="page"`, số bài trong `.category-chip__count` |
 | Khối sidebar public | `.aside-section`, `.aside-section__title`; dòng link nhỏ `.aside-links` |
 | Dropdown, modal | Dùng thẳng của Bootstrap, màu đã theo theme |
 | Layout admin | `.admin-layout`, `.admin-sidebar`, `.admin-topbar`, `.admin-content`, `.admin-page-header` |
 | Layout public | `.site-header` (`__nav`, `__search`, `__actions`, `__write`, `__login`), `.site-search-bar`, `.site-body` (`__main`, `__aside`), `.site-footer`, `.public-offcanvas` |
-| Layout auth | `.auth-layout` (`__header`, `__main`, `__footer`), `.auth-card` (`__title`, `__oauth`, `__oauth-icon`, `__switch`, `__legal`), `.auth-divider` |
+| Layout auth | `.auth-layout` (`__header`, `__main`, `__footer`), `.auth-card` (`__title`, `__lead`, `__icon`, `__oauth`, `__oauth-icon`, `__switch`, `__legal`), `.auth-divider` |
 | Layout soạn bài | `.editor-topbar` (`__status`, `__actions`), `.editor-page`: thanh trên tối giản, không có sidebar admin. Mẫu ở [admin/post-create.html](admin/post-create.html) |
 | Rich text editor | `.editor` (`__toolbar`, `__tool`, `__sep`, `__content` dùng kèm `.prose`, `__upload`). Placeholder lấy từ `aria-placeholder`, vùng nhập phải rỗng hẳn mới hiện. Lỗi: `.is-invalid` trên `.editor` + `.invalid-feedback` ngay sau. Chép khối `<!-- component: rich-text-editor -->` trong [admin/post-create.html](admin/post-create.html) |
 | Form bài viết | `.post-form__shared` (lưới phần dùng chung), `__shared-wide`, `__head`, `__status`, `__title` (kèm `.text-post-title`), `__excerpt`, `__body` |
