@@ -1,6 +1,6 @@
 # Danh sách màn hình phase 2
 
-Tổng cộng **20 màn**: A 5 màn (đã xong 3), B 14 màn (đã xong 3), C 1 màn. Nguồn: [docs/phase-2-html.md](../docs/phase-2-html.md) mục 5 và 8.
+Tổng cộng **20 màn**: A 5 màn (đã xong 4), B 14 màn (đã xong 3), C 1 màn. Nguồn: [docs/phase-2-html.md](../docs/phase-2-html.md) mục 5 và 8.
 
 Quy ước: mỗi việc (A1, B1...) là **một nhánh và một PR** vào `dev`. Việc có nhiều màn thì các màn đó nằm chung một nhánh. Tên nhánh theo dạng `feature/html-<phần>`.
 
@@ -16,7 +16,7 @@ Cột "Chờ": việc của người khác phải merge vào `dev` rồi mới b
 | A1 | *(không phải màn)* Khung public, khung auth | `_templates/public.html`, `_templates/auth.html`, `layouts/_public.scss`, `layouts/_auth.scss` | Header (4 biến thể theo vai trò), footer, khung trang đăng nhập. **Merge sớm** | `feature/html-layout-public-auth` | |
 | A2 | **Trang chủ** ✅ | `public/index.html` | Chip danh mục, danh sách thẻ bài viết, phân trang, sidebar "Đọc nhiều nhất". Kèm thẻ bài viết, chip danh mục. **Merge sớm** | `feature/html-home` | |
 | A3 | **Viết bài mới** ✅ | `admin/post-create.html` | Form tạo bài: ngôn ngữ gốc, danh mục, ảnh bìa, tiêu đề, tóm tắt, trình soạn thảo. Kèm rich text editor. **Merge sớm** | `feature/html-post-create` | |
-| A4 | **Chi tiết bài viết** | `public/post-detail.html` | Nội dung bài đầy đủ, thông tin tác giả, bình luận, bài cùng danh mục | `feature/html-post-detail` | |
+| A4 | **Chi tiết bài viết** ✅ | `public/post-detail.html` | Nội dung bài đầy đủ, thông tin tác giả, bình luận, bài cùng danh mục | `feature/html-post-detail` | |
 | A5 | **Sửa bài viết** | `admin/post-edit.html` | Sửa bài, mỗi ngôn ngữ một tab, thêm hoặc xóa bản dịch | `feature/html-post-edit` | |
 | A6 | *(không phải màn)* Sửa lỗi phần dùng chung | | Duyệt và sửa các lỗi C báo ở C3 mà đụng tới phần dùng chung, bật chặn link chết trong workflow deploy | `feature/html-index-review` | C3 |
 

@@ -230,7 +230,7 @@ Cột "Route phase 4" là đường dẫn dự kiến trong Angular, ghi lại �
 | File | Route phase 4 | UC | Nội dung chính | Trạng thái bắt buộc |
 | --- | --- | --- | --- | --- |
 | `public/index.html` (**đã làm**) | `/` | UC05 | Thanh chip danh mục; danh sách thẻ bài viết (10 thẻ); phân trang; sidebar: "Đọc nhiều nhất", danh mục kèm số bài, link footer | Bình thường, loading (skeleton), rỗng ("Chưa có bài viết ở ngôn ngữ này") |
-| `public/post-detail.html` | `/posts/:slug` | UC06, UC08 | Tiêu đề, tóm tắt (dạng subtitle xám), thanh tác giả (avatar, tên, danh mục, ngày đăng, thời gian đọc), thanh lượt xem + số bình luận có viền trên dưới, dòng "Bài viết này có ở các ngôn ngữ", ảnh thumbnail, nội dung rich text đủ mọi định dạng của editor, chip danh mục, khu bình luận, bài cùng danh mục (lưới 2 cột) | Khách (nút "Đăng nhập để bình luận"), đã đăng nhập (ô nhập bình luận), lỗi validate bình luận, đang gửi, chưa có bình luận, hộp xác nhận xóa bình luận |
+| `public/post-detail.html` (**đã làm**) | `/posts/:slug` | UC06, UC08 | Tiêu đề, tóm tắt (dạng subtitle xám), thanh tác giả (avatar, tên, danh mục, ngày đăng, thời gian đọc), thanh lượt xem + số bình luận có viền trên dưới, dòng "Bài viết này có ở các ngôn ngữ", ảnh thumbnail, nội dung rich text đủ mọi định dạng của editor, chip danh mục, khu bình luận, bài cùng danh mục (lưới 2 cột) | Khách (nút "Đăng nhập để bình luận"), đã đăng nhập (ô nhập bình luận), lỗi validate bình luận, đang gửi, chưa có bình luận, hộp xác nhận xóa bình luận |
 | `public/category.html` | `/categories/:slug` | UC07 | Tiêu đề danh mục lớn + số bài, chip danh mục đang chọn được tô, danh sách bài như trang chủ | Bình thường, rỗng |
 | `public/search.html` | `/search?q=` | UC19 | "Kết quả cho *từ khóa*" + số kết quả, danh sách thẻ bài, phân trang | Có kết quả, không có kết quả, lỗi từ khóa (< 2 hoặc > 100 ký tự) |
 | `public/404.html` | (mọi route lỗi) | UC06, UC11 | Số "404" lớn, câu thông báo, nút pill "Về trang chủ" | - |
@@ -323,6 +323,7 @@ Mỗi trang có nhiều trạng thái (mục 5) nhưng chỉ là một file. Dù
   - Trạng thái trang, khai báo bằng `<body data-demo-states="...">`: `normal` (Bình thường), `error` (Lỗi validate), `loading`, `empty` (Rỗng). Trang cần trạng thái riêng thì tự đặt tên và khai báo nhãn, ví dụ `data-demo-states="normal deleting" data-demo-label-deleting="Đang xóa"`.
   - Vai trò người xem, khai báo bằng `<body data-demo-auths="...">`: `guest`, `user`, `blog_owner`, `super_admin`. Trang public thường dùng `guest user`, trang quản trị dùng `blog_owner super_admin`.
 - Khối chỉ có ở một vài trạng thái gắn `data-demo="empty"` (hoặc nhiều trạng thái: `data-demo="normal error"`); khối chỉ có với một số vai trò gắn `data-demo-auth="super_admin"` (hoặc `data-demo-auth="user blog_owner super_admin"` cho mọi tài khoản đã đăng nhập). Bấm nút thì JS bật/tắt thuộc tính `hidden` của các khối này. Modal gắn `data-demo-modal="<trạng thái>"` thì tự mở ở trạng thái đó. Cách đánh dấu đầy đủ ghi ở comment đầu file `js/demo-state.js`.
+- Trạng thái chỉ có với một số vai trò thì khai báo `data-demo-auths-<trạng thái>` trên `<body>`, ví dụ `data-demo-auths-error="user blog_owner super_admin"` (khách không có ô bình luận nên không có lỗi validate). Thanh demo ẩn nút trạng thái không hợp với vai trò đang chọn và tự sửa tổ hợp sai khi đổi vai trò hoặc mở link.
 - Trạng thái được ghi lên URL (`?demo=error&auth=user`) để gửi link hoặc chụp màn hình đúng trạng thái.
 - Trạng thái lỗi dùng đúng class của Bootstrap: `is-invalid` trên ô nhập + `invalid-feedback` ngay dưới, để phase 4 nối thẳng với Angular Validators.
 - Trạng thái loading: nút bị `disabled`, có `spinner-border spinner-border-sm` + chữ "Đang lưu...".
@@ -361,7 +362,7 @@ Các việc còn lại chia cho 3 người, mỗi người làm phần của mì
 | --- | --- | --- | --- |
 | A2 (**đã làm**) | Thẻ bài viết (`components/_post-card.scss`), `public/index.html` | | Thẻ bài viết dùng lại ở trang danh mục, tìm kiếm, bài liên quan. **Merge sớm** vì B và C cần |
 | A3 (**đã làm**) | Rich text editor (component), `admin/post-create.html` | | **Merge sớm** vì B cần cho `page-edit` |
-| A4 | `public/post-detail.html` (gồm bình luận) | | Nội dung bài dùng class `.prose` |
+| A4 (**đã làm**) | `public/post-detail.html` (gồm bình luận) | | Nội dung bài dùng class `.prose` |
 | A5 | `admin/post-edit.html` | | Tab ngôn ngữ dùng `.nav-tabs` của Bootstrap |
 | A6 | Duyệt và sửa các lỗi C báo ở C3 mà đụng tới phần dùng chung, bật chặn link chết trong workflow deploy | C3 | Trang mục lục `html/index.html` đã có từ lúc dựng deploy; mỗi PR làm xong màn nào thì tự đổi dòng của màn đó thành link |
 
