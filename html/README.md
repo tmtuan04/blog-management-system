@@ -88,6 +88,9 @@ Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu
 | Phân trang | `.pagination-bar` bọc dòng "Hiển thị..." và `.pagination` của Bootstrap |
 | Trạng thái rỗng | `.empty-state`, `__icon`, `__title`, `__text` |
 | Thẻ bài viết | `.post-card` (`__body`, `__author`, `__author-name`, `__category`, `__title`, `__excerpt`, `__meta`, `__thumb`); `--compact` cho sidebar, `--skeleton` khi loading. Bài không có ảnh thì bỏ `__thumb`. Mẫu ở [public/index.html](public/index.html) |
+| Thẻ bài dạng lưới | `.post-card--grid`: thumbnail lên trên, dùng trong `.row.row-cols-md-2` ("Bài viết cùng danh mục"). Mẫu ở [public/post-detail.html](public/post-detail.html) |
+| Trang chi tiết bài | `.post-detail` (cột đọc 680px; `__title` kèm `.text-post-title`, `__subtitle`, `__author`, `__actions`, `__languages`, `__cover`, `__content` kèm `.prose`, `__tags`, `__section`, `__section-title`) |
+| Bình luận | `.comment-form` (`__user`, `__input`, `__footer`, `__buttons`; `--reply` cho ô trả lời), `.comment-login` (khách), `.comment-list` > `.comment` (`__header`, `__author`, `__name`, `__badge`, `__content`, `__actions`, `__action`, `__replies`). Mẫu ở [public/post-detail.html](public/post-detail.html) |
 | Chip danh mục | `.category-chips` (một hàng cuộn ngang) hoặc `.category-chips--wrap`; `.category-chip`, `.is-active` + `aria-current="page"`, số bài trong `.category-chip__count` |
 | Khối sidebar public | `.aside-section`, `.aside-section__title`; dòng link nhỏ `.aside-links` |
 | Dropdown, modal | Dùng thẳng của Bootstrap, màu đã theo theme |
