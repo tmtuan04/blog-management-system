@@ -94,6 +94,9 @@ Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu
 | Trang hồ sơ | `.profile` (cột 680px; `__section`, `__section-title`, `__section-desc`, `__avatar`, `__avatar-hint`, `__avatar-error`). Mẫu ở [public/profile.html](public/profile.html) |
 | Bảng ngôn ngữ | `.language-table` (`__code` chip mã ISO, `__count`, `__actions`). Mẫu ở [admin/languages.html](admin/languages.html) |
 | Chip danh mục | `.category-chips` (một hàng cuộn ngang) hoặc `.category-chips--wrap`; `.category-chip`, `.is-active` + `aria-current="page"`, số bài trong `.category-chip__count` |
+| Trang tìm kiếm | `.search-head` (`__form`, `__title`, `__prefix`), gợi ý khi không có kết quả `.search-tips`. Mẫu ở [public/search.html](public/search.html) |
+| Trang tĩnh | `.static-page` (cột đọc 680px), `__title` + `.text-page-title`, `__meta` + `.text-meta`, nội dung `.prose`. Mẫu ở [public/page.html](public/page.html) |
+| Trang 404 | `.not-found` (`__code`, `__title`, `__text`) |
 | Khối sidebar public | `.aside-section`, `.aside-section__title`; dòng link nhỏ `.aside-links` |
 | Dropdown, modal | Dùng thẳng của Bootstrap, màu đã theo theme |
 | Layout admin | `.admin-layout`, `.admin-sidebar`, `.admin-topbar`, `.admin-content`, `.admin-page-header` |
