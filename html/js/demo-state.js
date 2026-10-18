@@ -10,7 +10,9 @@
  *                                                    Trạng thái đầu tiên là mặc định.
  *   <body data-demo-states="normal deleting" data-demo-label-deleting="Đang xóa">
  *                                                    Trạng thái tự đặt tên thì khai báo nhãn hiện trên thanh.
- *   <div data-demo="empty">                         Chỉ hiện ở trạng thái "empty"
+ *   <body data-demo-param="key">                    Lấy trạng thái từ tham số khác trên URL khi không có ?demo=,
+ *                                                    để link thật mở đúng trạng thái (page.html?key=contact).
+ *   <div data-demo="empty">                        Chỉ hiện ở trạng thái "empty"
  *   <div data-demo="normal error">                  Hiện ở nhiều trạng thái (cách nhau bằng dấu cách)
  *   <input class="form-control" data-demo-invalid>  Thêm .is-invalid ở trạng thái "error"; đặt
  *                                                    <div class="invalid-feedback"> ngay sau ô nhập.
@@ -87,7 +89,9 @@
   // Khôi phục trạng thái từ URL (?demo=...&auth=...). Giá trị không hợp lệ với trang này
   // thì quay về phần tử đầu danh sách, nên link cũ/sai không làm trang vỡ.
   const params = new URLSearchParams(window.location.search);
-  let currentState = states.includes(params.get('demo')) ? params.get('demo') : states[0];
+  // ?demo= ưu tiên hơn tham số khai báo ở data-demo-param (VD: ?key=contact)
+  const stateParam = params.get('demo') || (body.dataset.demoParam && params.get(body.dataset.demoParam));
+  let currentState = states.includes(stateParam) ? stateParam : states[0];
   let currentAuth = auths.includes(params.get('auth')) ? params.get('auth') : auths[0];
 
   // Trạng thái có với vai trò này không (data-demo-auths-<trạng thái>, mục 3 ở comment đầu file).

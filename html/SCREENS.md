@@ -47,9 +47,9 @@ Cột "Chờ": việc của người khác phải merge vào `dev` rồi mới b
 
 | Việc | Màn | File | Mô tả ngắn | Nhánh | Chờ |
 |---|---|---|---|---|---|
-| B4 | **Kết quả tìm kiếm** | `public/search.html` | "Kết quả cho *từ khóa*", danh sách bài, phân trang | `feature/html-search-404-page` | A1, A2 |
-| B4 | **Không tìm thấy trang (404)** | `public/404.html` | Số 404 lớn, thông báo, nút về trang chủ | *(chung nhánh trên)* | A1, A2 |
-| B4 | **Trang tĩnh** | `public/page.html` | Hiển thị trang Giới thiệu, Liên hệ, Chính sách bảo mật | *(chung nhánh trên)* | A1, A2 |
+| B4 | **Kết quả tìm kiếm** ✅ | `public/search.html` | "Kết quả cho *từ khóa*", danh sách bài, phân trang | `feature/html-search-404-page` | A1, A2 |
+| B4 | **Không tìm thấy trang (404)** ✅ | `public/404.html` | Số 404 lớn, thông báo, nút về trang chủ | *(chung nhánh trên)* | A1, A2 |
+| B4 | **Trang tĩnh** ✅ | `public/page.html` | Hiển thị trang Giới thiệu, Liên hệ, Chính sách bảo mật | *(chung nhánh trên)* | A1, A2 |
 
 ## C: 1 màn
 
