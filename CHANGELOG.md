@@ -6,6 +6,12 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Màn tìm kiếm, 404 và trang tĩnh (B4):
+  - `public/search.html` (UC19): ô tìm kiếm lớn, "Kết quả cho <từ khóa>" + số kết quả, 10 thẻ bài, phân trang, sidebar giống trang chủ. Trạng thái demo: có kết quả, không có kết quả (gợi ý + nút về trang chủ), lỗi từ khóa (< 2 hoặc > 100 ký tự).
+  - `public/page.html` (UC11): một file cho cả 3 trang `about`, `contact`, `privacy`, chuyển bằng thanh demo hoặc `?key=` trên URL nên link footer/menu mở đúng trang. Mục "Giới thiệu" trên menu active ở trang about.
+  - `public/404.html`: số "404" lớn, thông báo, nút pill "Về trang chủ".
+  - Component `search-head`, `static-page`, `not-found`.
+- `demo-state.js`: `<body data-demo-param="key">` lấy trạng thái từ tham số khác trên URL khi không có `?demo=`.
 - Deploy giao diện phase 2 lên GitHub Pages (<https://tmtuan04.github.io/blog-management-system/>):
   - `.github/workflows/deploy-pages.yml`: push vào `master` (có thay đổi trong `html/`) hoặc chạy tay thì build CSS, kiểm tra link, deploy thư mục `html/` (bỏ `node_modules`). Link chết chỉ báo thành annotation, chưa chặn deploy.
   - `html/index.html`: trang mục lục 20 màn, màn đã xong có link, màn chưa làm ghi "Chưa làm" và không có link.

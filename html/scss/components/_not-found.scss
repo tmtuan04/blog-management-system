@@ -1,0 +1,34 @@
+// Trang 404: số "404" lớn, tiêu đề, câu thông báo, nút pill về trang chủ. Mẫu ở public/404.html.
+//   .not-found__title  Dùng kèm .text-page-title
+.not-found {
+  max-width: 480px;
+  padding: 5rem 1rem;
+  margin: 0 auto;
+  text-align: center;
+
+  @include media-breakpoint-up(md) {
+    padding: 7rem 1rem;
+  }
+}
+
+.not-found__code {
+  margin-bottom: 1rem;
+  font-size: 6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--bl-text);
+  letter-spacing: -.04em;
+
+  @include media-breakpoint-up(md) {
+    font-size: 8rem;
+  }
+}
+
+.not-found__title {
+  margin-bottom: .75rem;
+}
+
+.not-found__text {
+  margin-bottom: 2rem;
+  color: var(--bl-text-secondary);
+}

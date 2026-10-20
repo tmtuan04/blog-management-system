@@ -1,0 +1,16 @@
+// Trang tĩnh (UC11): cột đọc $reading-max-width căn giữa, tiêu đề trang, ngày cập nhật, nội dung .prose.
+// Mẫu ở public/page.html (đủ 3 trang about, contact, privacy).
+//   .static-page__title  Dùng kèm .text-page-title
+//   .static-page__meta   Dùng kèm .text-meta
+.static-page {
+  max-width: $reading-max-width;
+  margin: 0 auto;
+}
+
+.static-page__title {
+  margin-bottom: .5rem;
+}
+
+.static-page__meta {
+  margin-bottom: 2rem;
+}
