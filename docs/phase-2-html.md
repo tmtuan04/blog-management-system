@@ -231,7 +231,7 @@ Cột "Route phase 4" là đường dẫn dự kiến trong Angular, ghi lại �
 | --- | --- | --- | --- | --- |
 | `public/index.html` (**đã làm**) | `/` | UC05 | Thanh chip danh mục; danh sách thẻ bài viết (10 thẻ); phân trang; sidebar: "Đọc nhiều nhất", danh mục kèm số bài, link footer | Bình thường, loading (skeleton), rỗng ("Chưa có bài viết ở ngôn ngữ này") |
 | `public/post-detail.html` (**đã làm**) | `/posts/:slug` | UC06, UC08 | Tiêu đề, tóm tắt (dạng subtitle xám), thanh tác giả (avatar, tên, danh mục, ngày đăng, thời gian đọc), thanh lượt xem + số bình luận có viền trên dưới, dòng "Bài viết này có ở các ngôn ngữ", ảnh thumbnail, nội dung rich text đủ mọi định dạng của editor, chip danh mục, khu bình luận, bài cùng danh mục (lưới 2 cột) | Khách (nút "Đăng nhập để bình luận"), đã đăng nhập (ô nhập bình luận), lỗi validate bình luận, đang gửi, chưa có bình luận, hộp xác nhận xóa bình luận |
-| `public/category.html` | `/categories/:slug` | UC07 | Tiêu đề danh mục lớn + số bài, chip danh mục đang chọn được tô, danh sách bài như trang chủ | Bình thường, rỗng |
+| `public/category.html` (**đã làm**) | `/categories/:slug` | UC07 | Tiêu đề danh mục lớn + số bài, chip danh mục đang chọn được tô, danh sách bài như trang chủ | Bình thường, rỗng |
 | `public/search.html` | `/search?q=` | UC19 | "Kết quả cho *từ khóa*" + số kết quả, danh sách thẻ bài, phân trang | Có kết quả, không có kết quả, lỗi từ khóa (< 2 hoặc > 100 ký tự) |
 | `public/404.html` | (mọi route lỗi) | UC06, UC11 | Số "404" lớn, câu thông báo, nút pill "Về trang chủ" | - |
 | `public/register.html` (**đã làm**) | `/register` | UC01 | Họ tên, email, mật khẩu, xác nhận mật khẩu; nút OAuth | Bình thường, lỗi từng trường (email trùng, mật khẩu yếu, không khớp), loading |
@@ -381,7 +381,7 @@ Các việc còn lại chia cho 3 người, mỗi người làm phần của mì
 | # | Việc | Chờ | Ghi chú |
 | --- | --- | --- | --- |
 | C1 (**đã làm**) | Toast (`components/_toast.scss`), gắn vào `admin/posts.html` (trạng thái xóa xong hiện toast thành công) | | Dùng `.toast` của Bootstrap, màu lấy từ token. **Merge sớm** vì B cần cho `page-edit` |
-| C2 | `public/category.html` | A2 | Copy `_templates/public.html`, dùng lại thẻ bài viết của `public/index.html` |
+| C2 (**đã làm**) | `public/category.html` | A2 | Copy `_templates/public.html`, dùng lại thẻ bài viết của `public/index.html` |
 | C3 | Kiểm tra toàn bộ theo mục 9 (360px, 768px, 1280px; sáng/tối; Chrome, Edge, Firefox; `npm run check-links`), ghi lỗi thành danh sách, tự sửa lỗi nằm trong một trang, lỗi ở phần dùng chung thì chuyển A | A5, B5 | Làm sau cùng. Ghi danh sách lỗi vào mô tả PR |
 
 Nếu đến lượt mà việc phải chờ chưa merge, làm trước việc tiếp theo không phải chờ. C làm xong C1 khi chưa có A2 thì hỏi A để nhận thêm việc kiểm tra các màn đã merge.

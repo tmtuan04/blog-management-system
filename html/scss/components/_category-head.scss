@@ -1,0 +1,24 @@
+// Đầu trang bài viết theo danh mục (UC07): tên danh mục lớn căn giữa, dòng "Danh mục · N bài viết". Mẫu ở public/category.html.
+//   Đặt ngay sau .category-chips, giống trang chủ đề của Medium
+.category-head {
+  margin-bottom: 2rem;
+  text-align: center;
+
+  @include media-breakpoint-up(md) {
+    margin-bottom: 3rem;
+  }
+}
+
+.category-head__title {
+  margin-bottom: .5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 2.5rem;
+  letter-spacing: -.016em;
+  overflow-wrap: anywhere;
+
+  @include media-breakpoint-up(md) {
+    font-size: 2.75rem;
+    line-height: 3.25rem;
+  }
+}

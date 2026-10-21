@@ -1,6 +1,6 @@
 # Danh sách màn hình phase 2
 
-Tổng cộng **20 màn**: A 5 màn (đã xong 4), B 14 màn (đã xong 9), C 1 màn. Nguồn: [docs/phase-2-html.md](../docs/phase-2-html.md) mục 5 và 8.
+Tổng cộng **20 màn**: A 5 màn (đã xong 4), B 14 màn (đã xong 9), C 1 màn (đã xong 1). Nguồn: [docs/phase-2-html.md](../docs/phase-2-html.md) mục 5 và 8.
 
 Quy ước: mỗi việc (A1, B1...) là **một nhánh và một PR** vào `dev`. Việc có nhiều màn thì các màn đó nằm chung một nhánh. Tên nhánh theo dạng `feature/html-<phần>`.
 
@@ -56,7 +56,7 @@ Cột "Chờ": việc của người khác phải merge vào `dev` rồi mới b
 | Việc | Màn | File | Mô tả ngắn | Nhánh | Chờ |
 |---|---|---|---|---|---|
 | C1 | *(không phải màn)* Toast ✅ | `components/_toast.scss` | Toast thành công, gắn vào `admin/posts.html` | `feature/html-toast` | |
-| C2 | **Bài viết theo danh mục** | `public/category.html` | Tiêu đề danh mục, số bài, chip danh mục đang chọn, danh sách bài. Dùng lại thẻ bài viết và chip danh mục của `public/index.html` | `feature/html-category` | A2 |
+| C2 | **Bài viết theo danh mục** ✅ | `public/category.html` | Tiêu đề danh mục, số bài, chip danh mục đang chọn, danh sách bài. Dùng lại thẻ bài viết và chip danh mục của `public/index.html` | `feature/html-category` | A2 |
 | C3 | *(không phải màn)* Kiểm tra toàn bộ | | Kiểm tra theo mục 9, ghi lỗi vào mô tả PR, lỗi ở phần dùng chung chuyển A | `feature/html-check` | A5, B5 |
 
 ---

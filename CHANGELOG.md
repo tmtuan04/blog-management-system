@@ -6,6 +6,7 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Màn bài viết theo danh mục (C2): `public/category.html` (UC07): hàng chip danh mục (chip đang xem được tô), tên danh mục lớn căn giữa + số bài, 10 thẻ bài, phân trang, sidebar giống trang chủ. Trạng thái demo: bình thường, rỗng (danh mục chưa có bài ở ngôn ngữ đang chọn). Component `category-head`.
 - Màn tìm kiếm, 404 và trang tĩnh (B4):
   - `public/search.html` (UC19): ô tìm kiếm lớn, "Kết quả cho <từ khóa>" + số kết quả, 10 thẻ bài, phân trang, sidebar giống trang chủ. Trạng thái demo: có kết quả, không có kết quả (gợi ý + nút về trang chủ), lỗi từ khóa (< 2 hoặc > 100 ký tự).
   - `public/page.html` (UC11): một file cho cả 3 trang `about`, `contact`, `privacy`, chuyển bằng thanh demo hoặc `?key=` trên URL nên link footer/menu mở đúng trang. Mục "Giới thiệu" trên menu active ở trang about.
