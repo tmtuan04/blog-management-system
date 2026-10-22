@@ -1,4 +1,4 @@
-// Form bài viết (UC13), dùng ở post-create và post-edit.
+// Form bài viết (UC13), dùng ở post-create và post-edit. Tab ngôn ngữ của post-edit: components/_translation-tabs.scss.
 //   .post-form__shared        Phần dùng chung cho mọi ngôn ngữ (ngôn ngữ gốc, danh mục, thumbnail), kẻ dưới
 //   .post-form__shared-wide   Ô chiếm cả hàng trong lưới 2 cột (thumbnail)
 //   .post-form__head          Dòng "Bản gốc · Tiếng Việt" + ô trạng thái của bản dịch
@@ -20,6 +20,12 @@
   .form-label {
     margin-bottom: .375rem;
     font-weight: 500;
+  }
+
+  // Ô chỉ đọc (ngôn ngữ gốc ở post-edit): nền xám để không bị nhầm là ô nhập được
+  .form-control[readonly] {
+    color: var(--bl-text-secondary);
+    background-color: var(--bl-bg-subtle);
   }
 }
 

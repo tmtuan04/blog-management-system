@@ -106,9 +106,11 @@ Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu
 | Layout soạn bài | `.editor-topbar` (`__status`, `__actions`), `.editor-page`: thanh trên tối giản, không có sidebar admin. Mẫu ở [admin/post-create.html](admin/post-create.html) |
 | Rich text editor | `.editor` (`__toolbar`, `__tool`, `__sep`, `__content` dùng kèm `.prose`, `__upload`). Placeholder lấy từ `aria-placeholder`, vùng nhập phải rỗng hẳn mới hiện. Lỗi: `.is-invalid` trên `.editor` + `.invalid-feedback` ngay sau. Chép khối `<!-- component: rich-text-editor -->` trong [admin/post-create.html](admin/post-create.html) |
 | Form bài viết | `.post-form__shared` (lưới phần dùng chung), `__shared-wide`, `__head`, `__status`, `__title` (kèm `.text-post-title`), `__excerpt`, `__body` |
+| Tab ngôn ngữ (sửa bài) | `.nav-tabs.translation-tabs`, chấm trạng thái `.translation-tabs__dot` (`--published`, `--draft`, `--none`, `--error`), nhãn `.translation-tabs__origin` ("Gốc"); dòng thông tin bản dịch `.translation-meta` (`__item`, `__slug`, `__end`). Mẫu ở [admin/post-edit.html](admin/post-edit.html) |
 | Chọn ảnh có xem trước | `.thumb-upload__input` (input file ẩn), `__drop` (khung kéo thả, `.is-invalid` khi lỗi), `__title`, `__hint`, `__preview`, `__actions` |
 | Thông báo trong form | `.alert-inline` (lỗi), `.alert-inline--success` |
 | Toast | `.toast` của Bootstrap trong `.toast-container`, icon `.toast__icon`; demo: `data-demo-toast="<trạng thái>"`, mẫu ở cuối [admin/posts.html](admin/posts.html) |
+| Tab nội dung | `.nav-tabs` của Bootstrap; demo: `data-demo-tab="<trạng thái>"` trên nút tab để tự chọn tab ở trạng thái đó |
 | Nút đổi theme | Xem comment đầu [js/theme.js](js/theme.js) |
 | Trạng thái demo | Xem comment đầu [js/demo-state.js](js/demo-state.js). Mở trang với `?demo=empty&auth=super_admin` để vào thẳng một trạng thái |
 
