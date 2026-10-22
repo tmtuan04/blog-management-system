@@ -6,6 +6,8 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Màn sửa bài viết (A5): `admin/post-edit.html` (UC13): phần dùng chung ở trên (ngôn ngữ gốc chỉ đọc, danh mục, thumbnail), tab ngôn ngữ `.nav-tabs` (tab gốc có nhãn "Gốc", chấm màu theo trạng thái bản dịch), dòng thông tin bản dịch (slug chỉ đọc, lượt xem, ngày đăng, nút "Xóa bản dịch"; bản gốc không có nút xóa), form bản dịch dùng lại `post-form` và rich text editor. Trạng thái demo: tab gốc, tab bản dịch, chưa có bản dịch (khối rỗng + nút "Thêm bản dịch"), bản dịch mới điền sẵn nội dung gốc, lỗi validate (chấm đỏ trên tab), đang lưu, hộp xác nhận xóa bản dịch, đã lưu (toast). Component `translation-tabs`; ô chỉ đọc trong `.post-form__shared` có nền xám.
+- `demo-state.js`: `data-demo-tab="<trạng thái>"` trên nút tab để tự chọn tab ở trạng thái đó.
 - Màn bài viết theo danh mục (C2): `public/category.html` (UC07): hàng chip danh mục (chip đang xem được tô), tên danh mục lớn căn giữa + số bài, 10 thẻ bài, phân trang, sidebar giống trang chủ. Trạng thái demo: bình thường, rỗng (danh mục chưa có bài ở ngôn ngữ đang chọn). Component `category-head`.
 - Màn tìm kiếm, 404 và trang tĩnh (B4):
   - `public/search.html` (UC19): ô tìm kiếm lớn, "Kết quả cho <từ khóa>" + số kết quả, 10 thẻ bài, phân trang, sidebar giống trang chủ. Trạng thái demo: có kết quả, không có kết quả (gợi ý + nút về trang chủ), lỗi từ khóa (< 2 hoặc > 100 ký tự).

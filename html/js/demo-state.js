@@ -23,6 +23,8 @@
  *     data-loading-i18n="common.deleting"           Key UI translation của chữ đó (mặc định common.saving)
  *   <div class="modal" data-demo-modal="deleting">  Tự mở modal ở trạng thái đó (để chụp màn hình)
  *   <div class="toast" data-demo-toast="deleted">   Tự hiện toast ở trạng thái đó, không tự ẩn (để chụp màn hình)
+ *   <button data-bs-toggle="tab" data-demo-tab="error">  Tự chọn tab (.nav-tabs) đó ở các trạng thái này.
+ *                                                    Trạng thái không gắn tab nào thì giữ tab đang chọn.
  *
  * 2. Vai trò người xem
  *   <body data-demo-auths="blog_owner super_admin"> Các vai trò trang có. Mặc định "guest user" nếu trang
@@ -188,6 +190,10 @@
         const toast = window.bootstrap.Toast.getOrCreateInstance(el, { autohide: false });
         if (activeIn(el.dataset.demoToast)) toast.show();
         else toast.hide();
+      });
+      // Tab chỉ cần chọn, không cần bỏ chọn: Bootstrap tự bỏ tab cũ trong cùng nhóm
+      document.querySelectorAll('[data-demo-tab]').forEach((el) => {
+        if (activeIn(el.dataset.demoTab)) window.bootstrap.Tab.getOrCreateInstance(el).show();
       });
     }
     // Đánh dấu nút đang chọn (aria-pressed) cho cả nhóm trạng thái lẫn nhóm vai trò
