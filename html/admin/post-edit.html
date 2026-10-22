@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sửa bài viết · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="../js/theme.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<!--
+  Dữ liệu demo: bài "Hướng dẫn Angular" (sample-data post 1), gốc Tiếng Việt, đã có bản English.
+  Hai trạng thái "Chưa có bản dịch" và "Bản dịch mới" giả sử bài chưa có bản English.
+  Mỗi trạng thái tự chọn tab ngôn ngữ bằng data-demo-tab (xem js/demo-state.js).
+-->
+<body data-demo-states="normal translation no-translation new-translation error loading deleting saved" data-demo-label-normal="Tab gốc" data-demo-label-translation="Tab bản dịch" data-demo-label-no-translation="Chưa có bản dịch" data-demo-label-new-translation="Bản dịch mới" data-demo-label-loading="Đang lưu" data-demo-label-deleting="Xóa bản dịch" data-demo-label-saved="Đã lưu" data-demo-auths="blog_owner super_admin">
+
+  <!-- component: editor-topbar -->
+  <header class="editor-topbar">
+    <a class="icon-btn" href="posts.html" aria-label="Về danh sách bài viết" data-i18n-aria-label="admin.post_form.back">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </a>
+    <a class="brand d-none d-sm-inline" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+    <span class="editor-topbar__status" data-demo="normal translation no-translation new-translation error deleting"><span data-i18n="admin.post_form.saved_at">Đã lưu lúc</span> 14:32</span>
+    <span class="editor-topbar__status" data-demo="loading" data-i18n="common.saving">Đang lưu...</span>
+    <span class="editor-topbar__status" data-demo="saved"><span data-i18n="admin.post_form.saved_at">Đã lưu lúc</span> 14:35</span>
+
+    <div class="editor-topbar__actions">
+
+      <!-- component: language-switcher -->
+      <div class="dropdown">
+        <button type="button" class="icon-btn icon-btn--text" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Ngôn ngữ" data-i18n-aria-label="common.language">
+          VI <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item active" href="#" aria-current="true">Tiếng Việt <i class="bi bi-check2 ms-auto" aria-hidden="true"></i></a></li>
+          <li><a class="dropdown-item" href="#">English</a></li>
+        </ul>
+      </div>
+      <!-- /component: language-switcher -->
+
+      <!-- component: theme-toggle -->
+      <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối" data-i18n-aria-label="common.dark_mode">
+        <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+        <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+      </button>
+      <!-- /component: theme-toggle -->
+
+      <!-- Lưu: lưu phần dùng chung và tab đang mở -->
+      <button type="submit" form="postForm" class="btn btn-primary btn-sm" data-demo-loading>
+        <span data-i18n="common.save">Lưu</span>
+      </button>
+
+      <!-- component: user-menu -->
+      <div class="dropdown">
+        <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản" data-i18n-aria-label="menu.account">
+          <img class="avatar" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+          <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end">
+          <div class="px-3 py-2" data-demo-auth="blog_owner">
+            <div class="fw-semibold">Nguyễn Văn An</div>
+            <div class="text-meta">owner1@blog.local</div>
+          </div>
+          <div class="px-3 py-2" data-demo-auth="super_admin">
+            <div class="fw-semibold">Super Admin</div>
+            <div class="text-meta">admin@blog.local</div>
+          </div>
+          <hr class="dropdown-divider">
+          <a class="dropdown-item" href="../public/profile.html">
+            <i class="bi bi-person" aria-hidden="true"></i>
+            <span data-i18n="menu.profile">Hồ sơ</span>
+          </a>
+          <a class="dropdown-item" href="posts.html">
+            <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+            <span data-i18n="admin.nav.posts">Bài viết</span>
+          </a>
+          <a class="dropdown-item" href="../public/index.html">
+            <i class="bi bi-house" aria-hidden="true"></i>
+            <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+          </a>
+          <hr class="dropdown-divider">
+          <a class="dropdown-item" href="../public/login.html">
+            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+            <span data-i18n="menu.logout">Đăng xuất</span>
+          </a>
+        </div>
+      </div>
+      <!-- /component: user-menu -->
+
+    </div>
+  </header>
+  <!-- /component: editor-topbar -->
+
+  <main class="editor-page">
+    <h1 class="visually-hidden" data-i18n="admin.post_form.edit_title">Sửa bài viết</h1>
+
+    <form id="postForm" novalidate>
+
+      <div class="alert-inline mb-4" role="alert" data-demo="error">
+        <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+        <div data-i18n="admin.post_form.save_error_tab">Chưa lưu được bài viết. Kiểm tra các ô báo đỏ trong tab có chấm đỏ.</div>
+      </div>
+
+      <!-- component: post-shared-fields -->
+      <!-- Phần dùng chung cho mọi bản dịch (bảng posts). Ngôn ngữ gốc chỉ đọc khi sửa bài. -->
+      <section class="post-form__shared" aria-label="Thông tin chung" data-i18n-aria-label="admin.post_form.shared">
+        <div>
+          <label class="form-label" for="postLanguage" data-i18n="admin.post_form.original_language">Ngôn ngữ gốc</label>
+          <input type="text" class="form-control" id="postLanguage" value="Tiếng Việt" readonly aria-describedby="postLanguageHint">
+          <div class="form-text" id="postLanguageHint" data-i18n="admin.post_form.original_language_hint">Không đổi được sau khi tạo bài.</div>
+        </div>
+
+        <div>
+          <label class="form-label" for="postCategory" data-i18n="admin.post_form.category">Danh mục</label>
+          <select class="form-select" id="postCategory" name="category_id">
+            <option value="" data-i18n="admin.post_form.category_placeholder">Chọn danh mục</option>
+            <option value="1" selected>Lập trình</option>
+            <option value="2">Đời sống</option>
+            <option value="3">Du lịch</option>
+            <option value="4">Thiết kế</option>
+            <option value="5">Công nghệ</option>
+          </select>
+        </div>
+
+        <!-- component: thumb-upload -->
+        <div class="post-form__shared-wide">
+          <span class="form-label d-block" id="postThumbnailLabel">
+            <span data-i18n="admin.post_form.thumbnail">Ảnh thumbnail</span>
+            <span class="text-body-secondary fw-normal" data-i18n="admin.post_form.thumbnail_shared">(dùng chung mọi ngôn ngữ)</span>
+          </span>
+          <input type="file" class="thumb-upload__input visually-hidden" id="postThumbnail" name="thumbnail" accept="image/jpeg,image/png,image/webp" aria-labelledby="postThumbnailLabel">
+          <div class="thumb-upload__preview">
+            <img src="../assets/img/posts/1.svg" alt="Xem trước ảnh thumbnail" data-i18n-alt="admin.post_form.thumbnail_preview">
+            <div class="thumb-upload__actions">
+              <label class="btn btn-outline-secondary btn-sm" for="postThumbnail" data-i18n="admin.post_form.thumbnail_change">Đổi ảnh</label>
+              <button type="button" class="btn btn-outline-secondary btn-sm" aria-label="Xóa ảnh" data-i18n-aria-label="admin.post_form.thumbnail_remove">
+                <i class="bi bi-trash3" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- /component: thumb-upload -->
+      </section>
+      <!-- /component: post-shared-fields -->
+
+      <!-- component: translation-tabs -->
+      <ul class="nav nav-tabs translation-tabs" role="tablist" aria-label="Bản dịch theo ngôn ngữ" data-i18n-aria-label="admin.post_form.translations">
+        <li class="nav-item" role="presentation">
+          <button type="button" class="nav-link active" id="tabViBtn" data-bs-toggle="tab" data-bs-target="#tabVi" role="tab" aria-controls="tabVi" aria-selected="true" data-demo-tab="normal loading saved">
+            <span class="translation-tabs__dot translation-tabs__dot--published" aria-hidden="true"></span>
+            Tiếng Việt
+            <span class="translation-tabs__origin" data-i18n="admin.posts.original_language">Gốc</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button type="button" class="nav-link" id="tabEnBtn" data-bs-toggle="tab" data-bs-target="#tabEn" role="tab" aria-controls="tabEn" aria-selected="false" data-demo-tab="translation no-translation new-translation error deleting">
+            <span class="translation-tabs__dot translation-tabs__dot--published" aria-hidden="true" data-demo="normal translation loading deleting saved"></span>
+            <span class="translation-tabs__dot translation-tabs__dot--none" aria-hidden="true" data-demo="no-translation"></span>
+            <span class="translation-tabs__dot translation-tabs__dot--draft" aria-hidden="true" data-demo="new-translation"></span>
+            <span class="translation-tabs__dot translation-tabs__dot--error" aria-hidden="true" data-demo="error"></span>
+            English
+            <span class="translation-tabs__missing" data-demo="no-translation" data-i18n="admin.post_form.no_translation_short">· Chưa có</span>
+            <span class="visually-hidden" data-demo="error" data-i18n="admin.post_form.tab_has_error">(có lỗi)</span>
+          </button>
+        </li>
+      </ul>
+      <!-- /component: translation-tabs -->
+
+      <div class="tab-content">
+
+        <!-- Tab ngôn ngữ gốc: luôn có dữ liệu, không có nút xóa -->
+        <section class="tab-pane show active" id="tabVi" role="tabpanel" aria-labelledby="tabViBtn" tabindex="0">
+          <!-- component: translation-meta -->
+          <div class="translation-meta">
+            <span class="translation-meta__item"><span data-i18n="admin.post_form.slug">Slug</span><span class="translation-meta__slug">huong-dan-angular</span></span>
+            <span class="translation-meta__item"><i class="bi bi-eye" aria-hidden="true"></i>120 <span data-i18n="post.views">lượt xem</span></span>
+            <span class="translation-meta__item"><i class="bi bi-calendar3" aria-hidden="true"></i><span data-i18n="admin.post_form.published_on">Đăng ngày</span> 01/09/2026</span>
+            <span class="translation-meta__end" data-i18n="admin.post_form.original_not_deletable">Bản gốc không xóa riêng được</span>
+          </div>
+          <!-- /component: translation-meta -->
+
+          <div class="post-form__head">
+            <p class="text-meta mb-0"><span data-i18n="admin.post_form.original">Bản gốc</span> · Tiếng Việt</p>
+            <div class="post-form__status">
+              <label class="text-meta" for="postStatusVi" data-i18n="admin.post_form.status">Trạng thái</label>
+              <select class="form-select form-select-sm" id="postStatusVi" name="translations[vi][status]">
+                <option value="draft" data-i18n="post.status.draft">Nháp</option>
+                <option value="published" selected data-i18n="post.status.published">Đã đăng</option>
+                <option value="archived" data-i18n="post.status.archived">Lưu trữ</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="visually-hidden" for="postTitleVi" data-i18n="admin.post_form.title">Tiêu đề</label>
+          <textarea class="post-form__title text-post-title" id="postTitleVi" name="translations[vi][title]" rows="1" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title">Hướng dẫn Angular</textarea>
+
+          <label class="visually-hidden" for="postExcerptVi" data-i18n="admin.post_form.excerpt">Tóm tắt</label>
+          <textarea class="post-form__excerpt" id="postExcerptVi" name="translations[vi][excerpt]" rows="2" maxlength="500" placeholder="Tóm tắt ngắn hiện trên thẻ bài viết (không bắt buộc, tối đa 500 ký tự)" data-i18n-placeholder="admin.post_form.excerpt_placeholder">Làm quen với Angular từ con số 0.</textarea>
+
+          <div class="post-form__body">
+            <!-- component: rich-text-editor -->
+            <div class="editor">
+              <div class="editor__toolbar" role="toolbar" aria-label="Định dạng" data-i18n-aria-label="admin.editor.toolbar" aria-controls="postContentVi">
+                <button type="button" class="editor__tool" aria-label="Tiêu đề lớn" data-i18n-aria-label="admin.editor.heading_2"><i class="bi bi-type-h2" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-label="Tiêu đề nhỏ" data-i18n-aria-label="admin.editor.heading_3"><i class="bi bi-type-h3" aria-hidden="true"></i></button>
+                <span class="editor__sep" aria-hidden="true"></span>
+                <button type="button" class="editor__tool" aria-pressed="false" aria-label="In đậm" data-i18n-aria-label="admin.editor.bold"><i class="bi bi-type-bold" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-pressed="false" aria-label="In nghiêng" data-i18n-aria-label="admin.editor.italic"><i class="bi bi-type-italic" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-pressed="false" aria-label="Gạch chân" data-i18n-aria-label="admin.editor.underline"><i class="bi bi-type-underline" aria-hidden="true"></i></button>
+                <span class="editor__sep" aria-hidden="true"></span>
+                <button type="button" class="editor__tool" aria-label="Danh sách" data-i18n-aria-label="admin.editor.bullet_list"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-label="Danh sách đánh số" data-i18n-aria-label="admin.editor.ordered_list"><i class="bi bi-list-ol" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-label="Trích dẫn" data-i18n-aria-label="admin.editor.quote"><i class="bi bi-quote" aria-hidden="true"></i></button>
+                <span class="editor__sep" aria-hidden="true"></span>
+                <button type="button" class="editor__tool" aria-label="Chèn link" data-i18n-aria-label="admin.editor.link"><i class="bi bi-link-45deg" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-label="Chèn ảnh" data-i18n-aria-label="admin.editor.image"><i class="bi bi-image" aria-hidden="true"></i></button>
+              </div>
+              <div class="editor__content prose" id="postContentVi" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder">
+                <p>Angular là framework frontend do Google phát triển, viết bằng <strong>TypeScript</strong> và đi kèm gần như mọi thứ một ứng dụng lớn cần: routing, form, gọi HTTP, kiểm thử.</p>
+                <h2>Chuẩn bị môi trường</h2>
+                <p>Bạn cần Node.js bản LTS và Angular CLI. Cài CLI bằng lệnh <code>npm install -g @angular/cli</code>, sau đó tạo dự án mới với <code>ng new</code>.</p>
+                <h3>Cấu trúc một dự án</h3>
+                <ul>
+                  <li><code>src/app</code>: component, service, route của ứng dụng.</li>
+                  <li><code>src/assets</code>: ảnh, font, file tĩnh.</li>
+                  <li><code>angular.json</code>: cấu hình build.</li>
+                </ul>
+                <blockquote>Đừng cố học hết một lúc. Làm một màn hình nhỏ chạy được rồi mới đọc tiếp.</blockquote>
+                <p>Bài sau sẽ nói về <a href="#">component và data binding</a>.</p>
+              </div>
+            </div>
+            <div class="invalid-feedback" data-i18n="validation.content_required">Nhập nội dung bài viết.</div>
+            <!-- /component: rich-text-editor -->
+          </div>
+        </section>
+
+        <!-- Tab bản dịch English -->
+        <section class="tab-pane" id="tabEn" role="tabpanel" aria-labelledby="tabEnBtn" tabindex="0">
+
+          <!-- Đã có bản dịch: thông tin bản dịch + nút xóa, form đã điền -->
+          <div data-demo="normal translation error loading deleting saved">
+            <!-- component: translation-meta -->
+            <div class="translation-meta">
+              <span class="translation-meta__item"><span data-i18n="admin.post_form.slug">Slug</span><span class="translation-meta__slug">angular-tutorial</span></span>
+              <span class="translation-meta__item"><i class="bi bi-eye" aria-hidden="true"></i>30 <span data-i18n="post.views">lượt xem</span></span>
+              <span class="translation-meta__item"><i class="bi bi-calendar3" aria-hidden="true"></i><span data-i18n="admin.post_form.published_on">Đăng ngày</span> 03/09/2026</span>
+              <button type="button" class="btn btn-outline-secondary btn-sm translation-meta__end" data-bs-toggle="modal" data-bs-target="#deleteTranslationModal">
+                <i class="bi bi-trash3 me-1" aria-hidden="true"></i><span data-i18n="admin.post_form.delete_translation">Xóa bản dịch</span>
+              </button>
+            </div>
+            <!-- /component: translation-meta -->
+
+            <div class="post-form__head">
+              <p class="text-meta mb-0"><span data-i18n="admin.post_form.translation">Bản dịch</span> · English</p>
+              <div class="post-form__status">
+                <label class="text-meta" for="postStatusEn" data-i18n="admin.post_form.status">Trạng thái</label>
+                <select class="form-select form-select-sm" id="postStatusEn" name="translations[en][status]">
+                  <option value="draft" data-i18n="post.status.draft">Nháp</option>
+                  <option value="published" selected data-i18n="post.status.published">Đã đăng</option>
+                  <option value="archived" data-i18n="post.status.archived">Lưu trữ</option>
+                </select>
+              </div>
+            </div>
+
+            <label class="visually-hidden" for="postTitleEn" data-i18n="admin.post_form.title">Tiêu đề</label>
+            <textarea class="post-form__title text-post-title" id="postTitleEn" name="translations[en][title]" rows="1" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title" data-demo="normal translation loading deleting saved">Angular tutorial</textarea>
+            <!-- Lỗi: tiêu đề quá ngắn (cần 5 đến 255 ký tự) -->
+            <textarea class="post-form__title text-post-title" id="postTitleEnError" name="translations[en][title]" rows="1" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title" data-demo="error" data-demo-invalid aria-describedby="postTitleEnFeedback">Ng</textarea>
+            <div class="invalid-feedback" id="postTitleEnFeedback" data-i18n="validation.post_title_length">Tiêu đề cần từ 5 đến 255 ký tự.</div>
+
+            <label class="visually-hidden" for="postExcerptEn" data-i18n="admin.post_form.excerpt">Tóm tắt</label>
+            <textarea class="post-form__excerpt" id="postExcerptEn" name="translations[en][excerpt]" rows="2" maxlength="500" placeholder="Tóm tắt ngắn hiện trên thẻ bài viết (không bắt buộc, tối đa 500 ký tự)" data-i18n-placeholder="admin.post_form.excerpt_placeholder">Learn Angular from scratch.</textarea>
+
+            <div class="post-form__body">
+              <!-- component: rich-text-editor -->
+              <div class="editor">
+                <div class="editor__toolbar" role="toolbar" aria-label="Định dạng" data-i18n-aria-label="admin.editor.toolbar" aria-controls="postContentEn">
+                  <button type="button" class="editor__tool" aria-label="Tiêu đề lớn" data-i18n-aria-label="admin.editor.heading_2"><i class="bi bi-type-h2" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-label="Tiêu đề nhỏ" data-i18n-aria-label="admin.editor.heading_3"><i class="bi bi-type-h3" aria-hidden="true"></i></button>
+                  <span class="editor__sep" aria-hidden="true"></span>
+                  <button type="button" class="editor__tool" aria-pressed="false" aria-label="In đậm" data-i18n-aria-label="admin.editor.bold"><i class="bi bi-type-bold" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-pressed="false" aria-label="In nghiêng" data-i18n-aria-label="admin.editor.italic"><i class="bi bi-type-italic" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-pressed="false" aria-label="Gạch chân" data-i18n-aria-label="admin.editor.underline"><i class="bi bi-type-underline" aria-hidden="true"></i></button>
+                  <span class="editor__sep" aria-hidden="true"></span>
+                  <button type="button" class="editor__tool" aria-label="Danh sách" data-i18n-aria-label="admin.editor.bullet_list"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-label="Danh sách đánh số" data-i18n-aria-label="admin.editor.ordered_list"><i class="bi bi-list-ol" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-label="Trích dẫn" data-i18n-aria-label="admin.editor.quote"><i class="bi bi-quote" aria-hidden="true"></i></button>
+                  <span class="editor__sep" aria-hidden="true"></span>
+                  <button type="button" class="editor__tool" aria-label="Chèn link" data-i18n-aria-label="admin.editor.link"><i class="bi bi-link-45deg" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-label="Chèn ảnh" data-i18n-aria-label="admin.editor.image"><i class="bi bi-image" aria-hidden="true"></i></button>
+                </div>
+                <div class="editor__content prose" id="postContentEn" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder">
+                  <p>Angular is a frontend framework built by Google. It is written in <strong>TypeScript</strong> and ships almost everything a large app needs: routing, forms, HTTP calls and testing.</p>
+                  <h2>Setting up</h2>
+                  <p>You need Node.js LTS and the Angular CLI. Install the CLI with <code>npm install -g @angular/cli</code>, then create a new project with <code>ng new</code>.</p>
+                  <h3>Project structure</h3>
+                  <ul>
+                    <li><code>src/app</code>: components, services and routes.</li>
+                    <li><code>src/assets</code>: images, fonts and static files.</li>
+                    <li><code>angular.json</code>: build configuration.</li>
+                  </ul>
+                  <blockquote>Do not try to learn everything at once. Get one small screen working, then read on.</blockquote>
+                  <p>The next post covers <a href="#">components and data binding</a>.</p>
+                </div>
+              </div>
+              <div class="invalid-feedback" data-i18n="validation.content_required">Nhập nội dung bài viết.</div>
+              <!-- /component: rich-text-editor -->
+            </div>
+          </div>
+
+          <!-- Chưa có bản dịch -->
+          <!-- component: empty-state -->
+          <div class="empty-state" data-demo="no-translation">
+            <i class="bi bi-translate empty-state__icon" aria-hidden="true"></i>
+            <h2 class="empty-state__title"><span data-i18n="admin.post_form.no_translation_title">Chưa có bản dịch</span> English</h2>
+            <p class="empty-state__text" data-i18n="admin.post_form.no_translation_text">Thêm bản dịch để bài viết hiện khi người đọc chọn ngôn ngữ này. Form sẽ điền sẵn nội dung bản gốc để bạn dịch lại.</p>
+            <button type="button" class="btn btn-primary">
+              <i class="bi bi-plus-lg me-1" aria-hidden="true"></i><span data-i18n="admin.post_form.add_translation">Thêm bản dịch</span>
+            </button>
+          </div>
+          <!-- /component: empty-state -->
+
+          <!-- Bản dịch mới: điền sẵn nội dung bản gốc, chưa có slug, lượt xem -->
+          <div data-demo="new-translation">
+            <div class="alert-inline alert-inline--success mb-4" role="status">
+              <i class="bi bi-info-circle" aria-hidden="true"></i>
+              <div data-i18n="admin.post_form.prefilled_hint">Đã điền sẵn nội dung bản gốc (Tiếng Việt). Dịch lại các ô rồi bấm Lưu. Slug sẽ tự tạo từ tiêu đề mới.</div>
+            </div>
+
+            <div class="post-form__head">
+              <p class="text-meta mb-0"><span data-i18n="admin.post_form.new_translation">Bản dịch mới</span> · English</p>
+              <div class="post-form__status">
+                <label class="text-meta" for="postStatusNew" data-i18n="admin.post_form.status">Trạng thái</label>
+                <select class="form-select form-select-sm" id="postStatusNew" name="translations[en][status]">
+                  <option value="draft" selected data-i18n="post.status.draft">Nháp</option>
+                  <option value="published" data-i18n="post.status.published">Đã đăng</option>
+                  <option value="archived" data-i18n="post.status.archived">Lưu trữ</option>
+                </select>
+              </div>
+            </div>
+
+            <label class="visually-hidden" for="postTitleNew" data-i18n="admin.post_form.title">Tiêu đề</label>
+            <textarea class="post-form__title text-post-title" id="postTitleNew" name="translations[en][title]" rows="1" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title">Hướng dẫn Angular</textarea>
+
+            <label class="visually-hidden" for="postExcerptNew" data-i18n="admin.post_form.excerpt">Tóm tắt</label>
+            <textarea class="post-form__excerpt" id="postExcerptNew" name="translations[en][excerpt]" rows="2" maxlength="500" placeholder="Tóm tắt ngắn hiện trên thẻ bài viết (không bắt buộc, tối đa 500 ký tự)" data-i18n-placeholder="admin.post_form.excerpt_placeholder">Làm quen với Angular từ con số 0.</textarea>
+
+            <div class="post-form__body">
+              <!-- component: rich-text-editor -->
+              <div class="editor">
+                <div class="editor__toolbar" role="toolbar" aria-label="Định dạng" data-i18n-aria-label="admin.editor.toolbar" aria-controls="postContentNew">
+                  <button type="button" class="editor__tool" aria-label="Tiêu đề lớn" data-i18n-aria-label="admin.editor.heading_2"><i class="bi bi-type-h2" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-label="Tiêu đề nhỏ" data-i18n-aria-label="admin.editor.heading_3"><i class="bi bi-type-h3" aria-hidden="true"></i></button>
+                  <span class="editor__sep" aria-hidden="true"></span>
+                  <button type="button" class="editor__tool" aria-pressed="false" aria-label="In đậm" data-i18n-aria-label="admin.editor.bold"><i class="bi bi-type-bold" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-pressed="false" aria-label="In nghiêng" data-i18n-aria-label="admin.editor.italic"><i class="bi bi-type-italic" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-pressed="false" aria-label="Gạch chân" data-i18n-aria-label="admin.editor.underline"><i class="bi bi-type-underline" aria-hidden="true"></i></button>
+                  <span class="editor__sep" aria-hidden="true"></span>
+                  <button type="button" class="editor__tool" aria-label="Danh sách" data-i18n-aria-label="admin.editor.bullet_list"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-label="Danh sách đánh số" data-i18n-aria-label="admin.editor.ordered_list"><i class="bi bi-list-ol" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-label="Trích dẫn" data-i18n-aria-label="admin.editor.quote"><i class="bi bi-quote" aria-hidden="true"></i></button>
+                  <span class="editor__sep" aria-hidden="true"></span>
+                  <button type="button" class="editor__tool" aria-label="Chèn link" data-i18n-aria-label="admin.editor.link"><i class="bi bi-link-45deg" aria-hidden="true"></i></button>
+                  <button type="button" class="editor__tool" aria-label="Chèn ảnh" data-i18n-aria-label="admin.editor.image"><i class="bi bi-image" aria-hidden="true"></i></button>
+                </div>
+                <div class="editor__content prose" id="postContentNew" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder">
+                  <p>Angular là framework frontend do Google phát triển, viết bằng <strong>TypeScript</strong> và đi kèm gần như mọi thứ một ứng dụng lớn cần: routing, form, gọi HTTP, kiểm thử.</p>
+                  <h2>Chuẩn bị môi trường</h2>
+                  <p>Bạn cần Node.js bản LTS và Angular CLI. Cài CLI bằng lệnh <code>npm install -g @angular/cli</code>, sau đó tạo dự án mới với <code>ng new</code>.</p>
+                </div>
+              </div>
+              <div class="invalid-feedback" data-i18n="validation.content_required">Nhập nội dung bài viết.</div>
+              <!-- /component: rich-text-editor -->
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </form>
+  </main>
+
+  <!-- component: confirm-dialog -->
+  <div class="modal fade" id="deleteTranslationModal" tabindex="-1" aria-labelledby="deleteTranslationModalTitle" aria-hidden="true" data-demo-modal="deleting">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h2 class="modal-title fs-5" id="deleteTranslationModalTitle"><span data-i18n="admin.post_form.delete_translation_title">Xóa bản dịch</span> English?</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="fw-semibold mb-2">Angular tutorial</p>
+          <p class="text-body-secondary mb-0" data-i18n="admin.post_form.delete_translation_warning">Bản dịch này cùng lượt xem và bình luận của nó sẽ bị xóa vĩnh viễn. Bản gốc và các bản dịch khác không bị ảnh hưởng. Không thể hoàn tác.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="common.cancel">Hủy</button>
+          <button type="button" class="btn btn-danger">
+            <span data-i18n="admin.post_form.delete_translation">Xóa bản dịch</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: confirm-dialog -->
+
+  <!-- component: toast -->
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div class="toast" id="saveSuccessToast" role="status" aria-live="polite" aria-atomic="true" data-demo-toast="saved">
+      <div class="toast-header">
+        <i class="bi bi-check-circle-fill toast__icon me-2" aria-hidden="true"></i>
+        <strong class="me-auto" data-i18n="common.success">Thành công</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+      </div>
+      <div class="toast-body" data-i18n="admin.post_form.save_success">Đã lưu bài viết.</div>
+    </div>
+  </div>
+  <!-- /component: toast -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/demo-state.js"></script>
+</body>
+</html>
