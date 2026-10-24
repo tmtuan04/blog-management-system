@@ -6,6 +6,14 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- `docs/phase-3-backend.md`: kế hoạch phase 3 (backend NestJS, 26/10 - 11/11/2026) gồm
+  - Công cụ, cấu trúc thư mục `backend/`, `docker-compose.yml` cho MySQL + Redis.
+  - Khung backend (A1): format response và lỗi (thêm trường `code`), guard JWT + role, đọc `Accept-Language`, phân trang, bảng key Redis và quy tắc xóa cache, upload, lọc HTML, slug, Swagger.
+  - Danh sách API theo module, kèm quyền, UC, màn HTML phase 2 dùng API đó và người làm.
+  - Seeders (gồm UI translation lấy từ key `data-i18n` của `html/`), unit test, integration test, Postman collection chạy bằng Postman CLI.
+  - Thứ tự làm của A (A1-A7), B (B1-B7), C (C1-C3), lịch theo ngày, checklist điều kiện hoàn thành, 5 quyết định cần thống nhất (Q1-Q5), mục ngoài phạm vi.
+  - Migrations và seeders của phase 1 chưa có ở dạng code nên chuyển vào A1, B1, C1.
+- Requirements mục 1.5 phase 3: link tới `docs/phase-3-backend.md`.
 - Màn sửa bài viết (A5): `admin/post-edit.html` (UC13): phần dùng chung ở trên (ngôn ngữ gốc chỉ đọc, danh mục, thumbnail), tab ngôn ngữ `.nav-tabs` (tab gốc có nhãn "Gốc", chấm màu theo trạng thái bản dịch), dòng thông tin bản dịch (slug chỉ đọc, lượt xem, ngày đăng, nút "Xóa bản dịch"; bản gốc không có nút xóa), form bản dịch dùng lại `post-form` và rich text editor. Trạng thái demo: tab gốc, tab bản dịch, chưa có bản dịch (khối rỗng + nút "Thêm bản dịch"), bản dịch mới điền sẵn nội dung gốc, lỗi validate (chấm đỏ trên tab), đang lưu, hộp xác nhận xóa bản dịch, đã lưu (toast). Component `translation-tabs`; ô chỉ đọc trong `.post-form__shared` có nền xám.
 - `demo-state.js`: `data-demo-tab="<trạng thái>"` trên nút tab để tự chọn tab ở trạng thái đó.
 - Màn bài viết theo danh mục (C2): `public/category.html` (UC07): hàng chip danh mục (chip đang xem được tô), tên danh mục lớn căn giữa + số bài, 10 thẻ bài, phân trang, sidebar giống trang chủ. Trạng thái demo: bình thường, rỗng (danh mục chưa có bài ở ngôn ngữ đang chọn). Component `category-head`.
