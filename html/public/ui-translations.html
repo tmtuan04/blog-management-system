@@ -1,0 +1,448 @@
+<!doctype html>
+<!--
+  Khung mẫu trang public (docs/phase-2-html.md mục 4.1).
+  Cách dùng: copy file này vào public/, đổi <title>, đổi mục .is-active + aria-current trong menu,
+  rồi viết nội dung trong <main class="site-body__main">. Trang không cần sidebar thì xóa <aside>.
+  Header có 4 biến thể theo vai trò, chuyển bằng thanh demo (hoặc ?auth=super_admin trên URL).
+  Sửa header, footer hoặc offcanvas thì sửa ở mọi file trong public/ trong cùng một PR.
+-->
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bản dịch · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="../js/theme.js"></script>
+
+  <link rel="preconnect"  href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body data-demo-states="normal editing" data-demo-auths="guest user blog_owner super_admin">
+
+  <!-- component: site-header -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <button type="button" class="icon-btn d-md-none" data-bs-toggle="offcanvas" data-bs-target="#publicMenu" aria-controls="publicMenu" aria-label="Mở menu" data-i18n-aria-label="common.open_menu">
+        <i class="bi bi-list" aria-hidden="true"></i>
+      </button>
+      <a class="brand" href="index.html" data-i18n="common.site_name">Inkwell</a>
+
+      <nav class="site-header__nav" aria-label="Menu chính" data-i18n-aria-label="menu.label">
+        <a class="is-active" href="index.html" aria-current="page" data-i18n="menu.home">Trang chủ</a>
+        <a href="page.html?key=about" data-i18n="menu.about">Giới thiệu</a>
+      </nav>
+
+      <form class="site-header__search" action="search.html" role="search">
+        <label class="visually-hidden" for="siteSearch" data-i18n="common.search">Tìm kiếm</label>
+        <div class="search-input">
+          <i class="bi bi-search search-input__icon" aria-hidden="true"></i>
+          <input type="search" class="form-control search-input__control" id="siteSearch" name="q" placeholder="Tìm kiếm" data-i18n-placeholder="common.search">
+        </div>
+      </form>
+
+      <div class="site-header__actions">
+        <button type="button" class="icon-btn d-md-none" data-bs-toggle="collapse" data-bs-target="#siteSearchBar" aria-controls="siteSearchBar" aria-expanded="false" aria-label="Tìm kiếm" data-i18n-aria-label="common.search">
+          <i class="bi bi-search" aria-hidden="true"></i>
+        </button>
+
+        <a class="site-header__write" href="../admin/post-create.html" data-demo-auth="blog_owner super_admin">
+          <i class="bi bi-pencil-square" aria-hidden="true"></i>
+          <span data-i18n="menu.write">Viết bài</span>
+        </a>
+
+        <!-- component: language-switcher -->
+        <div class="dropdown d-none d-md-block">
+          <button type="button" class="icon-btn icon-btn--text" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Ngôn ngữ" data-i18n-aria-label="common.language">
+            VI <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item active" href="#" aria-current="true">Tiếng Việt <i class="bi bi-check2 ms-auto" aria-hidden="true"></i></a></li>
+            <li><a class="dropdown-item" href="#">English</a></li>
+          </ul>
+        </div>
+        <!-- /component: language-switcher -->
+
+        <!-- component: theme-toggle -->
+        <button type="button" class="icon-btn theme-toggle d-none d-md-inline-flex" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối" data-i18n-aria-label="common.dark_mode">
+          <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+          <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+        </button>
+        <!-- /component: theme-toggle -->
+
+        <a class="site-header__login" href="login.html" data-demo-auth="guest" data-i18n="auth.login">Đăng nhập</a>
+        <a class="btn btn-primary btn-sm px-3" href="register.html" data-demo-auth="guest" data-i18n="auth.get_started">Bắt đầu</a>
+
+        <!-- component: user-menu -->
+        <div class="dropdown ms-1" data-demo-auth="user blog_owner super_admin">
+          <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản" data-i18n-aria-label="menu.account">
+            <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="user">LC</span>
+            <img class="avatar" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+            <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end">
+            <div class="px-3 py-2" data-demo-auth="user">
+              <div class="fw-semibold">Lê Minh Cường</div>
+              <div class="text-meta">user@blog.local</div>
+            </div>
+            <div class="px-3 py-2" data-demo-auth="blog_owner">
+              <div class="fw-semibold">Nguyễn Văn An</div>
+              <div class="text-meta">owner1@blog.local</div>
+            </div>
+            <div class="px-3 py-2" data-demo-auth="super_admin">
+              <div class="fw-semibold">Super Admin</div>
+              <div class="text-meta">admin@blog.local</div>
+            </div>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item" href="profile.html">
+              <i class="bi bi-person" aria-hidden="true"></i>
+              <span data-i18n="menu.profile">Hồ sơ</span>
+            </a>
+            <a class="dropdown-item" href="../admin/posts.html" data-demo-auth="blog_owner super_admin">
+              <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+              <span data-i18n="menu.manage_posts">Quản lý bài viết</span>
+            </a>
+            <a class="dropdown-item" href="../admin/users.html" data-demo-auth="super_admin">
+              <i class="bi bi-speedometer2" aria-hidden="true"></i>
+              <span data-i18n="menu.admin">Trang quản trị</span>
+            </a>
+            <hr class="dropdown-divider">
+            <a class="dropdown-item" href="login.html">
+              <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+              <span data-i18n="menu.logout">Đăng xuất</span>
+            </a>
+          </div>
+        </div>
+        <!-- /component: user-menu -->
+      </div>
+    </div>
+  </header>
+  <!-- /component: site-header -->
+
+  <!-- component: site-search-bar (chỉ dưới md, mở bằng nút 🔍 trên header) -->
+  <form class="site-search-bar collapse d-md-none" id="siteSearchBar" action="search.html" role="search">
+    <button type="button" class="icon-btn" data-bs-toggle="collapse" data-bs-target="#siteSearchBar" aria-controls="siteSearchBar" aria-label="Đóng tìm kiếm" data-i18n-aria-label="common.close_search">
+      <i class="bi bi-arrow-left" aria-hidden="true"></i>
+    </button>
+    <label class="visually-hidden" for="mobileSearch" data-i18n="common.search">Tìm kiếm</label>
+    <input type="search" class="form-control" id="mobileSearch" name="q" placeholder="Tìm bài viết..." data-i18n-placeholder="common.search_posts">
+  </form>
+  <!-- /component: site-search-bar -->
+
+  <div class="site-body">
+    <main class="admin-content">
+      <div class="admin-page-header">
+        <div>
+          <h1 class="text-page-title mb-1">Bản dịch giao diện</h1>
+          <p class="text-meta mb-0">Chữ ngắn trên menu, nút, footer, thông báo. Ô trống thì giao diện hiện giá trị Tiếng
+            Việt.</p>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="showModal()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+            stroke-linejoin="round" data-lucide="plus" class="lucide lucide-plus bi bi-plus-lg me-1" aria-hidden="true">
+            <path d="M5 12h14"></path>
+            <path d="M12 5v14"></path>
+          </svg>Thêm key
+        </button>
+
+        <div class="modal-dialog modal-dialog-centered" hidden>
+          <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+              <div>
+                <h2 class="modal-title fs-5" id="kAddTitle">Thêm key</h2>
+              </div>
+              <button type="button" class="btn-close" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label fw-medium" for="kKey">Key</label>
+                <input type="text" class="form-control font-monospace" id="kKey" value="menu.home" placeholder="menu.blog"
+                  data-state-show="modal-error" data-invalid-on="modal-error" hidden="">
+                <input type="text" class="form-control font-monospace" id="kKeyN" value="" placeholder="menu.blog"
+                  data-state-show="modal-add">
+                <div class="invalid-feedback">Key “menu.home” đã có. Tìm key đó trong bảng để sửa giá trị.</div>
+                <div class="lang-field-hint mt-1" data-state-show="modal-add">Chữ thường, số, dấu chấm và gạch dưới. Ví dụ:
+                  menu.blog, post.read_more.</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-medium" for="kVi">Tiếng Việt <span class="text-meta">· bắt buộc</span></label>
+                <input type="text" class="form-control" id="kVi" placeholder="Giá trị mặc định">
+              </div>
+              <div class="mb-1">
+                <label class="form-label fw-medium" for="kEn">English</label>
+                <input type="text" class="form-control" id="kEn" placeholder="Để trống thì dùng giá trị Tiếng Việt">
+              </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+              <button type="button" class="btn btn-outline-secondary">Hủy</button>
+              <button type="button" class="btn btn-primary">Thêm key</button>
+            </div>
+          </div>
+        </div>
+        
+        <script>
+          function showModal() {
+            const modal = document.querySelector('.modal-dialog');
+            modal.hidden = false;
+          }
+        </script>
+
+      </div>
+    
+      <!-- component: ui-translation-filter -->
+      <form class="row g-2 mb-3" role="search" aria-label="Tìm bản dịch">
+        <div class="col-12 col-md-6">
+          <label class="visually-hidden" for="trSearch">Tìm theo key hoặc giá trị</label>
+          <div class="search-input">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="search"
+              class="lucide lucide-search bi bi-search search-input__icon" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.3-4.3"></path>
+            </svg>
+            <input type="search" class="form-control search-input__control" id="trSearch"
+              placeholder="Tìm theo key hoặc giá trị..." value="">
+          </div>
+        </div>
+        <div class="col-12 col-md-auto ms-md-auto d-flex align-items-center gap-3 text-meta">
+          <span>24 key</span>
+          <span><span class="tr-legend" aria-hidden="true"></span>3 ô thiếu bản English</span>
+        </div>
+      </form>
+      <!-- /component: ui-translation-filter -->
+    
+      <div class="table-responsive" data-state-hide="empty">
+        <table class="table align-middle tr-table">
+          <thead>
+            <tr>
+              <th scope="col" class="tr-table__key">Key</th>
+              <th scope="col">Tiếng Việt <span class="role-chip">Mặc định</span></th>
+              <th scope="col">English</th>
+              <th scope="col"><span class="visually-hidden">Thao tác</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="cell-key">menu.home</span></td>
+              <td><button type="button" class="tr-cell">Trang chủ</button></td>
+              <td><button type="button" class="tr-cell">Home</button></td>
+              <td class="text-end"><button type="button" class="icon-btn" aria-label="Xóa key menu.home"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                    data-lucide="trash-2" class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="cell-key">menu.about</span></td>
+              <td><button type="button" class="tr-cell">Giới thiệu</button></td>
+              <td>
+                <button type="button" class="tr-cell" data-state-hide="editing saving">About</button>
+                <div class="tr-edit" data-state-show="editing saving" hidden="">
+                  <input type="text" class="form-control form-control-sm" value="About us"
+                    aria-label="English cho menu.about" data-state-hide="saving">
+                  <input type="text" class="form-control form-control-sm" value="About us"
+                    aria-label="English cho menu.about" disabled="" data-state-show="saving" hidden="">
+                  <div class="tr-edit__actions">
+                    <span class="tr-edit__hint" data-state-show="editing" hidden="">Enter để lưu · Esc để hủy</span>
+                    <span class="tr-edit__hint" data-state-show="saving" hidden=""><span
+                        class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Đang lưu...</span>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-state-show="editing"
+                      hidden="">Hủy</button>
+                    <button type="button" class="btn btn-primary btn-sm" data-state-show="editing" hidden="">Lưu</button>
+                  </div>
+                </div>
+              </td>
+              <td class="text-end"><button type="button" class="icon-btn" aria-label="Xóa key menu.about"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                    data-lucide="trash-2" class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="cell-key">menu.contact</span></td>
+              <td><button type="button" class="tr-cell">Liên hệ</button></td>
+              <td><button type="button" class="tr-cell tr-cell--missing">Chưa có, dùng: Liên hệ</button></td>
+              <td class="text-end"><button type="button" class="icon-btn" aria-label="Xóa key menu.contact"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                    data-lucide="trash-2" class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="cell-key">menu.privacy</span></td>
+              <td><button type="button" class="tr-cell">Chính sách bảo mật</button></td>
+              <td><button type="button" class="tr-cell tr-cell--missing">Chưa có, dùng: Chính sách bảo mật</button></td>
+              <td class="text-end"><button type="button" class="icon-btn" aria-label="Xóa key menu.privacy"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                    data-lucide="trash-2" class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="cell-key">menu.write</span></td>
+              <td><button type="button" class="tr-cell">Viết bài</button></td>
+              <td><button type="button" class="tr-cell">Write</button></td>
+              <td class="text-end"><button type="button" class="icon-btn" aria-label="Xóa key menu.write"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                    data-lucide="trash-2" class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="cell-key">auth.login</span></td>
+              <td><button type="button" class="tr-cell">Đăng nhập</button></td>
+              <td><button type="button" class="tr-cell">Sign in</button></td>
+              <td class="text-end"><button type="button" class="icon-btn" aria-label="Xóa key auth.login"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                    data-lucide="trash-2" class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="cell-key">auth.register</span></td>
+              <td><button type="button" class="tr-cell">Đăng ký</button></td>
+              <td><button type="button" class="tr-cell">Sign up</button></td>
+              <td class="text-end"><button type="button" class="icon-btn" aria-label="Xóa key auth.register"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                    data-lucide="trash-2" class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="cell-key">common.search</span></td>
+              <td><button type="button" class="tr-cell">Tìm kiếm</button></td>
+              <td><button type="button" class="tr-cell">Search</button></td>
+              <td class="text-end"><button type="button" class="icon-btn" aria-label="Xóa key common.search"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                    data-lucide="trash-2" class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg></button></td>
+            </tr>
+            <tr>
+              <td><span class="cell-key">footer.copyright</span></td>
+              <td><button type="button" class="tr-cell">© 2026 Inkwell. Đã đăng ký bản quyền.</button></td>
+              <td><button type="button" class="tr-cell tr-cell--missing">Chưa có, dùng: © 2026 Inkwell. Đã đăng ký bản
+                  quyền.</button></td>
+              <td class="text-end"><button type="button" class="icon-btn" aria-label="Xóa key footer.copyright"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"
+                    data-lucide="trash-2" class="lucide lucide-trash-2 bi bi-trash3" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                    <line x1="10" x2="10" y1="11" y2="17"></line>
+                    <line x1="14" x2="14" y1="11" y2="17"></line>
+                  </svg></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    
+      <div class="pagination-bar text-meta" data-state-hide="empty">Hiện 1-9 trong 24 key</div>
+    
+      <!-- component: empty-state -->
+      <div class="empty-state" data-state-show="empty" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="search"
+          class="lucide lucide-search bi bi-search empty-state__icon" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <h2 class="empty-state__title">Không tìm thấy key nào</h2>
+        <p class="empty-state__text">Không có key hoặc giá trị nào khớp với “dashbord”. Thử từ khóa khác, hoặc thêm key mới.
+        </p>
+        <button type="button" class="btn btn-outline-secondary">Xóa từ khóa</button>
+      </div>
+      <!-- /component: empty-state -->
+    </main>
+  </div>
+
+  <!-- component: site-footer -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <span>© 2026 <span data-i18n="common.site_name">Inkwell</span></span>
+      <a href="page.html?key=about" data-i18n="footer.about">Giới thiệu</a>
+      <a href="page.html?key=contact" data-i18n="footer.contact">Liên hệ</a>
+      <a href="page.html?key=privacy" data-i18n="footer.privacy">Chính sách bảo mật</a>
+    </div>
+  </footer>
+  <!-- /component: site-footer -->
+
+  <!-- component: public-offcanvas (menu mobile, mở bằng nút ☰) -->
+  <div class="offcanvas offcanvas-start public-offcanvas" id="publicMenu" tabindex="-1" aria-labelledby="publicMenuLabel">
+    <div class="offcanvas-header">
+      <a class="brand" href="index.html" id="publicMenuLabel" data-i18n="common.site_name">Inkwell</a>
+      <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" aria-label="Đóng menu" data-i18n-aria-label="common.close_menu"></button>
+    </div>
+    <div class="offcanvas-body">
+      <nav class="nav flex-column mb-2" aria-label="Menu chính" data-i18n-aria-label="menu.label">
+        <a class="nav-link fw-semibold" href="index.html" aria-current="page" data-i18n="menu.home">Trang chủ</a>
+        <a class="nav-link" href="page.html?key=about" data-i18n="menu.about">Giới thiệu</a>
+      </nav>
+
+      <div class="public-offcanvas__group">
+        <div class="public-offcanvas__label" id="offcanvasLanguageLabel" data-i18n="common.language">Ngôn ngữ</div>
+        <div class="btn-group w-100" role="group" aria-labelledby="offcanvasLanguageLabel">
+          <button type="button" class="btn btn-primary btn-sm" aria-pressed="true">Tiếng Việt</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" aria-pressed="false">English</button>
+        </div>
+      </div>
+
+      <div class="public-offcanvas__group">
+        <!-- data-theme-toggle chỉ gắn lên <input>, xem comment đầu js/theme.js -->
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="offcanvasDarkMode" data-theme-toggle>
+          <label class="form-check-label" for="offcanvasDarkMode" data-i18n="common.dark_mode">Giao diện tối</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: public-offcanvas -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/demo-state.js"></script>
+</body>
+</html>
