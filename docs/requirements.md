@@ -123,6 +123,8 @@ Màn hình cần làm:
 
 #### Phase 3 - Xây dựng backend
 
+Chi tiết (danh sách API, khung backend, thứ tự làm, lịch) xem [phase-3-backend.md](phase-3-backend.md).
+
 Công việc:
 
 - A dựng khung backend NestJS trước (cấu trúc module, interceptor format response, exception filter xử lý lỗi, guard xác thực và phân quyền, upload, lọc HTML, Redis, Swagger). B và C bắt đầu code API sau khi khung backend được merge.
