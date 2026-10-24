@@ -6,6 +6,11 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Xác thực UC01-UC04 (A2), module `auth` và `users`:
+  - `POST /auth/register` (role `user`, email trùng → 409 kèm `errors[{ field: "email" }]`), `POST /auth/login` (sai email/mật khẩu cùng một thông báo `INVALID_CREDENTIALS`, bị khóa `ACCOUNT_LOCKED`, quá 5 lần sai / 15 phút theo IP + email → 429, đăng nhập đúng thì xóa bộ đếm), `POST /auth/refresh` (xoay vòng, refresh token cũ dùng lại → 401 `TOKEN_EXPIRED`), `POST /auth/logout`, `POST /auth/forgot-password` (luôn cùng message, token 15 phút, 3 lần / 15 phút / IP), `POST /auth/reset-password` (token dùng một lần, thu hồi mọi phiên), `GET /auth/me`.
+  - `TokenService`: refresh token ký bằng secret riêng, lưu `auth:refresh:{jti}` và `auth:user-refresh:{userId}`; `revokeAll(userId)` để B5 (UC14) dùng khi khóa tài khoản.
+  - DTO dùng câu lỗi của màn HTML phase 2; `@Match()` cho xác nhận mật khẩu.
+  - Unit test `AuthService`, `TokenService`, `UsersService`; e2e `test/auth.e2e-spec.ts`; Postman folder `00 - Auth` (13 request, lưu `accessToken`, `ownerAccessToken`, `adminAccessToken`).
 - Khung backend phase 3 (A1), thư mục `backend/`:
   - `docker-compose.yml` ở gốc repo: `mysql:8.4` (`utf8mb4`, tạo sẵn `blog_dev`, `blog_test`, user `blog`) và `redis:7`; đổi cổng host bằng `MYSQL_HOST_PORT`, `REDIS_HOST_PORT` khi máy đã cài sẵn MySQL/Redis.
   - Project NestJS 11 (TypeScript strict, plugin Swagger của Nest CLI), `.env.example` đủ biến ở mục 7.3, validate bằng Joi lúc khởi động. `NODE_ENV=test` tự dùng `blog_test` và Redis db 1.

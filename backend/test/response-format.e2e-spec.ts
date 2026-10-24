@@ -67,6 +67,32 @@ describe('Response format 6.4 (e2e)', () => {
     });
   });
 
+  describe('Auth', () => {
+    it('thành công', async () => {
+      const { token } = await tokenFor(ctx.app, 'user');
+      const res = await request(server())
+        .get('/api/v1/auth/me')
+        .set(bearer(token))
+        .expect(200);
+      expectSuccess(res.body);
+    });
+
+    it('lỗi validate', async () => {
+      const res = await request(server())
+        .post('/api/v1/auth/register')
+        .send({})
+        .expect(400);
+      expectError(res.body);
+      expect(res.body.code).toBe('VALIDATION_ERROR');
+      expect(res.body.errors.length).toBeGreaterThan(0);
+    });
+
+    it('401 khi không có token', async () => {
+      const res = await request(server()).get('/api/v1/auth/me').expect(401);
+      expectError(res.body);
+    });
+  });
+
   describe('Uploads', () => {
     it('lỗi validate có errors[] với field', async () => {
       const { token } = await tokenFor(ctx.app, 'blog_owner');
