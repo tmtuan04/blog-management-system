@@ -1,4 +1,3 @@
-import { ConfigService } from '@nestjs/config';
 import { hash } from 'bcrypt';
 import { AppException } from '../../common/errors';
 import { MailService } from '../../infra/mail/mail.service';
@@ -38,7 +37,7 @@ describe('AuthService', () => {
     tokens as unknown as TokenService,
     { client } as unknown as RedisService,
     mail as unknown as MailService,
-    config as unknown as ConfigService,
+    config as never,
   );
 
   const userOf = (overrides: Partial<User> = {}) =>

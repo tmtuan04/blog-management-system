@@ -11,6 +11,7 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
   - `TokenService`: refresh token ký bằng secret riêng, lưu `auth:refresh:{jti}` và `auth:user-refresh:{userId}`; `revokeAll(userId)` để B5 (UC14) dùng khi khóa tài khoản.
   - DTO dùng câu lỗi của màn HTML phase 2; `@Match()` cho xác nhận mật khẩu.
   - Unit test `AuthService`, `TokenService`, `UsersService`; e2e `test/auth.e2e-spec.ts`; Postman folder `00 - Auth` (13 request, lưu `accessToken`, `ownerAccessToken`, `adminAccessToken`).
+  - Bảo mật dependency: `sanitize-html` lên 2.18 (sửa các lỗi XSS đã công bố), `multer` lên 2.5.0 qua `overrides`. Lệnh `test*` chạy Jest với `--experimental-vm-modules` để nạp được `htmlparser2` ESM.
 - Khung backend phase 3 (A1), thư mục `backend/`:
   - `docker-compose.yml` ở gốc repo: `mysql:8.4` (`utf8mb4`, tạo sẵn `blog_dev`, `blog_test`, user `blog`) và `redis:7`; đổi cổng host bằng `MYSQL_HOST_PORT`, `REDIS_HOST_PORT` khi máy đã cài sẵn MySQL/Redis.
   - Project NestJS 11 (TypeScript strict, plugin Swagger của Nest CLI), `.env.example` đủ biến ở mục 7.3, validate bằng Joi lúc khởi động. `NODE_ENV=test` tự dùng `blog_test` và Redis db 1.

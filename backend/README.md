@@ -43,6 +43,8 @@ Tài khoản mẫu (sau khi seed): mật khẩu chung `Password123`.
 | `npm run db:seed` / `db:seed:undo` | Nạp / xóa dữ liệu mẫu |
 | `npm run db:test:migrate` | Chạy migrations trên database test |
 
+Các lệnh `test*` chạy Jest với `node --experimental-vm-modules` vì `sanitize-html` 2.18 dùng `htmlparser2` dạng ESM. Gọi Jest trực tiếp (`npx jest`) sẽ báo lỗi "Must use import to load ES Module".
+
 Postman (cần dữ liệu vừa seed và app đang chạy):
 
 ```bash
