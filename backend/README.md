@@ -1,98 +1,90 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend - Blog Management System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS 11 + Sequelize (MySQL 8) + Redis. Kế hoạch và quy ước: [docs/phase-3-backend.md](../docs/phase-3-backend.md).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+## Chạy lần đầu
 
 ```bash
-$ npm install
+# 1. MySQL + Redis (ở gốc repo)
+docker compose up -d
+
+# 2. Cài thư viện và tạo .env
+cd backend
+npm install
+cp .env.example .env   # điền JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, MAIL_*
+
+# 3. Tạo bảng và dữ liệu mẫu
+npm run db:migrate
+npm run db:seed        # có từ việc B1
+
+# 4. Chạy
+npm run start:dev
 ```
 
-## Compile and run the project
+- API: <http://localhost:3000/api/v1>
+- Swagger: <http://localhost:3000/api-docs> (bấm Authorize, dán access token)
+- Ảnh upload: <http://localhost:3000/uploads/...>
+
+Máy đã cài sẵn MySQL hoặc Redis chiếm cổng 3306/6379: tạo file `.env` ở **gốc repo** với `MYSQL_HOST_PORT=3307` và `REDIS_HOST_PORT=6380` rồi chạy lại `docker compose up -d`, sau đó đổi `DB_PORT`, `REDIS_PORT` trong `backend/.env` cho khớp.
+
+Tài khoản mẫu (sau khi seed): mật khẩu chung `Password123`.
+
+## Lệnh
+
+| Lệnh | Việc |
+| --- | --- |
+| `npm run start:dev` | Chạy dev, tự reload |
+| `npm run lint` | ESLint + Prettier (tự sửa) |
+| `npm run test` | Unit test (`src/**/*.spec.ts`) |
+| `npm run test:cov` | Unit test + độ phủ, báo lỗi nếu tầng service dưới 70% |
+| `npm run test:e2e` | Integration test trên `blog_test` + Redis db 1 (tự chạy migrations) |
+| `npm run db:migrate` | Chạy migrations |
+| `npm run db:migrate:undo:all` | Rollback mọi migration |
+| `npm run db:seed` / `db:seed:undo` | Nạp / xóa dữ liệu mẫu |
+| `npm run db:test:migrate` | Chạy migrations trên database test |
+
+Postman (cần dữ liệu vừa seed và app đang chạy):
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+postman collection run docs/postman/blog-api.postman_collection.json -e docs/postman/local.postman_environment.json
 ```
 
-## Run tests
+## Cấu trúc
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```text
+database/            # sequelize-cli: config.js, migrations/, seeders/
+src/
+  config/            # Đọc + validate biến môi trường (Joi)
+  common/            # decorators, guards, filters, interceptors, pipes, middleware, dto, utils
+  infra/             # database, redis (CacheService), upload, mail
+  modules/<module>/  # module, controller, service, dto/, models/, *.spec.ts
+test/
+  helpers/           # createTestApp, resetDatabase, tokenFor(role)
+  *.e2e-spec.ts
 ```
 
-## Deployment
+## Viết một module mới
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Copy cách làm của module mẫu `src/modules/languages/`.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+- **Controller** chỉ nhận request, gọi service, đặt `@ResponseMessage('...')`. Không truy vấn DB.
+- **Quyền**: mặc định mọi route cần đăng nhập. Route public thêm `@Public()`; public nhưng cần biết ai đang xem thì `@Public({ optionalAuth: true })`. Giới hạn role: `@Roles('blog_owner')` (Super Admin tự qua).
+- **Người dùng / ngôn ngữ**: `@CurrentUser() user: AuthUser`, `@CurrentLanguage() lang: RequestLanguage`.
+- **Phân trang**: query DTO kế thừa `PaginationQueryDto`; service trả `paginate(items, total, query)`, interceptor tự tách `data` và `meta`.
+- **Lỗi**: ném `AppException` với mã trong `common/errors.ts`, ví dụ `new AppException(409, ErrorCode.CATEGORY_IN_USE, 'Danh mục đang có bài viết')`. Lỗi validate field: `AppException.validation([{ field, message }])`.
+- **Cache**: key và TTL ở `common/utils/redis-keys.ts`; đọc bằng `cache.wrap(key, ttl, load)`, xóa bằng `cache.invalidate(CachePrefix.posts)`.
+- **Swagger**: `@ApiTags`, `@ApiOperation({ summary: 'UCxx - ...' })`, `@ApiDataResponse(Dto)` / `@ApiPaginatedResponse(Dto)`, `@ApiErrorResponses(400, 401, 403)`. Field của DTO tự sinh từ plugin CLI (file `*.dto.ts`), comment `/** */` thành mô tả.
+- **HTML / slug / upload**: `sanitizeRichText`, `hasRichTextContent`, `containsHtml` (`common/utils/html-sanitize.ts`); `generateUniqueSlug` (`common/utils/slug.ts`); `UploadService` (`infra/upload`).
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+## Test
+
+- Unit test mock model (`getModelToken(Model)`), `CacheService`, `RedisService`, `MailService`.
+- E2E: `createTestApp()` dựng app giống `main.ts` với `MailService` mock; `resetDatabase(app)` xóa dữ liệu và nạp 3 role + 2 ngôn ngữ; `tokenFor(app, 'super_admin')` tạo user và access token.
+
+```ts
+const { token } = await tokenFor(ctx.app, 'blog_owner');
+await request(ctx.app.getHttpServer())
+  .get('/api/v1/admin/posts')
+  .set(bearer(token))
+  .expect(200);
 ```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

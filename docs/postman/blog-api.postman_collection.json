@@ -1,0 +1,114 @@
+{
+  "info": {
+    "_postman_id": "2b9a7c1e-blog-api-collection",
+    "name": "Blog Management System API",
+    "description": "Phase 3. Chạy trên dữ liệu vừa seed:\n\npostman collection run docs/postman/blog-api.postman_collection.json -e docs/postman/local.postman_environment.json\n\nFolder 00 - Auth chạy đầu tiên và lưu token vào biến môi trường. Mỗi người chỉ sửa folder của module mình (phase 3 doc mục 6.3).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Mọi request gửi ngôn ngữ đang chọn",
+          "pm.request.headers.upsert({ key: 'Accept-Language', value: pm.environment.get('lang') || 'vi' });"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Format chung requirements 6.4",
+          "const contentType = pm.response.headers.get('Content-Type') || '';",
+          "if (contentType.includes('application/json')) {",
+          "  pm.test('Response có trường success', () => {",
+          "    pm.expect(pm.response.json()).to.have.property('success');",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "00 - Auth",
+      "description": "UC01-UC04 (A2). Lưu token vào biến môi trường cho các folder sau.",
+      "item": []
+    },
+    {
+      "name": "01 - Languages",
+      "item": [
+        {
+          "name": "UC09 - Danh sách ngôn ngữ đang hoạt động",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Có ngôn ngữ mặc định', () => {",
+                  "  pm.expect(pm.response.json().data.some((l) => l.isDefault)).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/languages",
+              "host": ["{{baseUrl}}"],
+              "path": ["languages"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Uploads",
+      "item": [
+        {
+          "name": "UC13 - Upload ảnh khi chưa đăng nhập (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 và success = false', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('UNAUTHORIZED');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/uploads/images",
+              "host": ["{{baseUrl}}"],
+              "path": ["uploads", "images"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
