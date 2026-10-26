@@ -6,6 +6,11 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Màn bản dịch giao diện và sửa trang tĩnh (B5), khung admin, chỉ Super Admin (`data-demo-auths="super_admin"`):
+  - `admin/ui-translations.html` (UC17): ô tìm theo key/giá trị, số key và số ô thiếu bản English; bảng cột key (font đơn cách), mỗi ngôn ngữ một cột, ô là nút bấm để sửa tại chỗ, ô thiếu giá trị nền nhạt + chữ xám "Chưa có, dùng: <giá trị mặc định>"; nút xóa key mở hộp xác nhận. Modal "Thêm key" (key, giá trị Tiếng Việt bắt buộc, English không bắt buộc). Trạng thái demo: bình thường, loading (skeleton), rỗng (không tìm thấy key), đang sửa ô, đang lưu, key trùng, đang xóa.
+  - `admin/page-edit.html` (UC18): link về danh sách trang tĩnh; key và URL public chỉ đọc, switch "Hiển thị" áp dụng cho mọi ngôn ngữ; nút "Xem trên trang public" (mở `public/page.html?key=about` ở tab mới) và "Lưu"; tab ngôn ngữ (`.nav-tabs`), mỗi tab có tiêu đề và rich text editor chép từ `admin/post-create.html`. Trạng thái demo: bình thường, lỗi tab mặc định (thiếu tiêu đề), lỗi điền thiếu ở tab English ("điền đủ cả hai hoặc để trống cả hai"), tab có lỗi có chấm đỏ, đang lưu, đã lưu (toast).
+  - Component `ui-translation-table`, `page-edit`.
+  - `html/index.html`: hai màn thành link, badge "Đã xong". `html/README.md`: thêm bảng bản dịch giao diện, form sửa trang tĩnh vào bảng "Có sẵn để dùng". Phase 2 doc: hai màn và B5 đánh dấu đã làm. `SCREENS.md`: B5 đã xong (B 14/14).
 - Màn tìm kiếm, 404 và trang tĩnh (B4):
   - `public/search.html` (UC19): ô tìm kiếm lớn, "Kết quả cho <từ khóa>" + số kết quả, 10 thẻ bài, phân trang, sidebar giống trang chủ. Trạng thái demo: có kết quả, không có kết quả (gợi ý + nút về trang chủ), lỗi từ khóa (< 2 hoặc > 100 ký tự).
   - `public/page.html` (UC11): một file cho cả 3 trang `about`, `contact`, `privacy`, chuyển bằng thanh demo hoặc `?key=` trên URL nên link footer/menu mở đúng trang. Mục "Giới thiệu" trên menu active ở trang about.
