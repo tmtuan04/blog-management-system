@@ -1,6 +1,6 @@
 // Form sửa trang tĩnh (UC18, admin/page-edit.html).
 // Dùng khung admin; cột form rộng bằng cột đọc để editor hiện giống trang public.
-// Tab ngôn ngữ dùng .nav-tabs của Bootstrap, tab có lỗi thêm chấm đỏ .page-edit__tab-dot.
+// Tab ngôn ngữ dùng chung component translation-tabs với admin/post-edit.html (chấm đỏ: .translation-tabs__dot--error).
 // Editor chép khối rich-text-editor của admin/post-create.html (components/_editor.scss).
 
 .page-edit {
@@ -43,18 +43,4 @@
   font-family: $font-family-monospace;
   font-size: .8125rem;
   overflow-wrap: anywhere;
-}
-
-.page-edit__tabs {
-  margin-bottom: 1.5rem;
-}
-
-.page-edit__tab-dot {
-  display: inline-block;
-  width: .5rem;
-  height: .5rem;
-  margin-left: .25rem;
-  vertical-align: middle;
-  background-color: var(--bl-danger);
-  border-radius: 50%;
 }

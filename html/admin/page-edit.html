@@ -194,20 +194,21 @@
             <div data-i18n="admin.page_edit.error_summary">Chưa lưu được. Sửa các tab có chấm đỏ rồi bấm Lưu lại.</div>
           </div>
 
-          <!-- component: page-language-tabs -->
-          <!-- Mỗi ngôn ngữ đang hoạt động một tab. Tab có lỗi có chấm đỏ; ở trạng thái "Lỗi điền thiếu" bấm tab English để xem lỗi -->
-          <ul class="nav nav-tabs page-edit__tabs" role="tablist" aria-label="Nội dung theo ngôn ngữ" data-i18n-aria-label="admin.page_edit.tabs_label">
+          <!-- component: translation-tabs -->
+          <!-- Mỗi ngôn ngữ đang hoạt động một tab, dùng chung component với admin/post-edit.html. Tab có lỗi có chấm đỏ;
+               data-demo-tab tự chọn tab có lỗi ở trạng thái đó -->
+          <ul class="nav nav-tabs translation-tabs" role="tablist" aria-label="Nội dung theo ngôn ngữ" data-i18n-aria-label="admin.page_edit.tabs_label">
             <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="pageTabViButton" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#pageTabVi" aria-controls="pageTabVi" aria-selected="true">
+              <button class="nav-link active" id="pageTabViButton" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#pageTabVi" aria-controls="pageTabVi" aria-selected="true" data-demo-tab="normal error-default saving saved">
+                <span class="translation-tabs__dot translation-tabs__dot--error" data-demo="error-default"><span class="visually-hidden" data-i18n="admin.page_edit.tab_has_error">Có lỗi</span></span>
                 Tiếng Việt
-                <span class="text-meta" data-i18n="admin.categories.default_suffix">(mặc định)</span>
-                <span class="page-edit__tab-dot" data-demo="error-default"><span class="visually-hidden" data-i18n="admin.page_edit.tab_has_error">Có lỗi</span></span>
+                <span class="translation-tabs__origin" data-i18n="admin.page_edit.default_language">Mặc định</span>
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="pageTabEnButton" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#pageTabEn" aria-controls="pageTabEn" aria-selected="false">
+              <button class="nav-link" id="pageTabEnButton" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#pageTabEn" aria-controls="pageTabEn" aria-selected="false" data-demo-tab="error-pair">
+                <span class="translation-tabs__dot translation-tabs__dot--error" data-demo="error-pair"><span class="visually-hidden" data-i18n="admin.page_edit.tab_has_error">Có lỗi</span></span>
                 English
-                <span class="page-edit__tab-dot" data-demo="error-pair"><span class="visually-hidden" data-i18n="admin.page_edit.tab_has_error">Có lỗi</span></span>
               </button>
             </li>
           </ul>
@@ -303,7 +304,7 @@
             </section>
             <!-- /component: page-translation-form -->
           </div>
-          <!-- /component: page-language-tabs -->
+          <!-- /component: translation-tabs -->
         </form>
       </main>
     </div>

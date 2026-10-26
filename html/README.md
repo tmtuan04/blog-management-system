@@ -94,8 +94,9 @@ Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu
 | Trang hồ sơ | `.profile` (cột 680px; `__section`, `__section-title`, `__section-desc`, `__avatar`, `__avatar-hint`, `__avatar-error`). Mẫu ở [public/profile.html](public/profile.html) |
 | Bảng ngôn ngữ | `.language-table` (`__code` chip mã ISO, `__count`, `__actions`). Mẫu ở [admin/languages.html](admin/languages.html) |
 | Bảng bản dịch giao diện | `.ui-translation-filter` (`__search`, `__summary`), `.ui-translation-table` (`__key`, `__value`, `__cell` là nút bấm để sửa, `__cell--missing` ô chưa có giá trị, `__legend`, `__edit` + `__edit-actions` + `__hint` khi sửa tại chỗ, `__actions`). Mẫu ở [admin/ui-translations.html](admin/ui-translations.html) |
-| Form sửa trang tĩnh | `.page-edit` (cột 680px; `__back`, `__info` + `__info-label` + `__code` cho key/URL chỉ đọc, `__tabs` trên `.nav-tabs`, `__tab-dot` chấm đỏ cho tab có lỗi). Mẫu ở [admin/page-edit.html](admin/page-edit.html) |
+| Form sửa trang tĩnh | `.page-edit` (cột 680px; `__back`, `__info` + `__info-label` + `__code` cho key/URL chỉ đọc); tab ngôn ngữ dùng lại `.translation-tabs`. Mẫu ở [admin/page-edit.html](admin/page-edit.html) |
 | Chip danh mục | `.category-chips` (một hàng cuộn ngang) hoặc `.category-chips--wrap`; `.category-chip`, `.is-active` + `aria-current="page"`, số bài trong `.category-chip__count` |
+| Trang danh mục | `.category-head` (`__title`): tên danh mục lớn căn giữa + dòng số bài, đặt sau `.category-chips`. Mẫu ở [public/category.html](public/category.html) |
 | Trang tìm kiếm | `.search-head` (`__form`, `__title`, `__prefix`), gợi ý khi không có kết quả `.search-tips`. Mẫu ở [public/search.html](public/search.html) |
 | Trang tĩnh | `.static-page` (cột đọc 680px), `__title` + `.text-page-title`, `__meta` + `.text-meta`, nội dung `.prose`. Mẫu ở [public/page.html](public/page.html) |
 | Trang 404 | `.not-found` (`__code`, `__title`, `__text`) |
@@ -107,9 +108,11 @@ Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu
 | Layout soạn bài | `.editor-topbar` (`__status`, `__actions`), `.editor-page`: thanh trên tối giản, không có sidebar admin. Mẫu ở [admin/post-create.html](admin/post-create.html) |
 | Rich text editor | `.editor` (`__toolbar`, `__tool`, `__sep`, `__content` dùng kèm `.prose`, `__upload`). Placeholder lấy từ `aria-placeholder`, vùng nhập phải rỗng hẳn mới hiện. Lỗi: `.is-invalid` trên `.editor` + `.invalid-feedback` ngay sau. Chép khối `<!-- component: rich-text-editor -->` trong [admin/post-create.html](admin/post-create.html) |
 | Form bài viết | `.post-form__shared` (lưới phần dùng chung), `__shared-wide`, `__head`, `__status`, `__title` (kèm `.text-post-title`), `__excerpt`, `__body` |
+| Tab ngôn ngữ (sửa bài, sửa trang tĩnh) | `.nav-tabs.translation-tabs`, chấm trạng thái `.translation-tabs__dot` (`--published`, `--draft`, `--none`, `--error`), nhãn `.translation-tabs__origin` ("Gốc"); dòng thông tin bản dịch `.translation-meta` (`__item`, `__slug`, `__end`). Mẫu ở [admin/post-edit.html](admin/post-edit.html) |
 | Chọn ảnh có xem trước | `.thumb-upload__input` (input file ẩn), `__drop` (khung kéo thả, `.is-invalid` khi lỗi), `__title`, `__hint`, `__preview`, `__actions` |
 | Thông báo trong form | `.alert-inline` (lỗi), `.alert-inline--success` |
 | Toast | `.toast` của Bootstrap trong `.toast-container`, icon `.toast__icon`; demo: `data-demo-toast="<trạng thái>"`, mẫu ở cuối [admin/posts.html](admin/posts.html) |
+| Tab nội dung | `.nav-tabs` của Bootstrap; demo: `data-demo-tab="<trạng thái>"` trên nút tab để tự chọn tab ở trạng thái đó |
 | Nút đổi theme | Xem comment đầu [js/theme.js](js/theme.js) |
 | Trạng thái demo | Xem comment đầu [js/demo-state.js](js/demo-state.js). Mở trang với `?demo=empty&auth=super_admin` để vào thẳng một trạng thái |
 

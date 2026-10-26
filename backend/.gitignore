@@ -1,0 +1,18 @@
+# Dependencies, build
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Biến môi trường thật
+.env
+.env.*
+!.env.example
+
+# Ảnh upload, chỉ giữ thư mục
+uploads/*
+!uploads/.gitkeep
+
+# Logs, IDE
+*.log
+.idea/
