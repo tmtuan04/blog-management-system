@@ -1,0 +1,110 @@
+// Bảng bản dịch giao diện (UC17, admin/ui-translations.html).
+// Mỗi dòng một key (font đơn cách), mỗi ngôn ngữ một cột. Giá trị là nút, bấm vào thì sửa tại chỗ.
+// Ô chưa có giá trị tô nền nhạt + chữ xám "Chưa có, dùng: <giá trị ở ngôn ngữ mặc định>".
+//   <td class="ui-translation-table__value">
+//     <button class="ui-translation-table__cell ui-translation-table__cell--missing">...</button>
+//   </td>
+
+// Thanh tìm kiếm: ô tìm bên trái, số key và chú thích ô thiếu bên phải (xuống dòng trên mobile)
+.ui-translation-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.ui-translation-filter__search {
+  flex: 1 1 18rem;
+  max-width: 28rem;
+}
+
+.ui-translation-filter__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem 1rem;
+  margin: 0 0 0 auto;
+}
+
+// Tiêu đề cột ngôn ngữ dài ("Tiếng Việt (mặc định)") được xuống dòng.
+// Ghép .table để thắng white-space: nowrap trong _table.scss (import sau file này)
+.ui-translation-table.table > thead th {
+  white-space: normal;
+}
+
+.ui-translation-table__key {
+  font-family: $font-family-monospace;
+  font-size: .8125rem;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+// min-width để bảng cuộn ngang trên mobile thay vì bóp cột giá trị còn vài chữ
+.ui-translation-table__value {
+  min-width: 11rem;
+}
+
+// Nút lùi ra bằng đúng padding để chữ thẳng hàng với tiêu đề cột
+.ui-translation-table__cell {
+  display: block;
+  width: calc(100% + 1rem);
+  padding: .25rem .5rem;
+  margin: -.25rem -.5rem;
+  color: var(--bl-text);
+  text-align: start;
+  overflow-wrap: anywhere;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: $border-radius;
+
+  &:hover {
+    border-color: var(--bl-border-strong);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bl-accent);
+    outline-offset: 0;
+  }
+}
+
+.ui-translation-table__cell--missing {
+  font-style: italic;
+  color: var(--bl-text-secondary);
+  background-color: var(--bl-bg-subtle);
+}
+
+// Ô vuông chú thích cạnh "3 ô thiếu bản English", cùng màu với ô thiếu
+.ui-translation-table__legend {
+  display: inline-block;
+  width: .75rem;
+  height: .75rem;
+  margin-right: .375rem;
+  vertical-align: -.0625rem;
+  background-color: var(--bl-bg-subtle);
+  border: 1px solid var(--bl-border-strong);
+  border-radius: 2px;
+}
+
+// Sửa tại chỗ: ô nhập, dưới là gợi ý phím tắt và nút Hủy / Lưu
+.ui-translation-table__edit {
+  display: grid;
+  gap: .5rem;
+}
+
+.ui-translation-table__edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+}
+
+.ui-translation-table__hint {
+  margin-right: auto;
+  font-size: .75rem;
+  color: var(--bl-text-secondary);
+}
+
+.ui-translation-table__actions {
+  width: 3rem;
+  text-align: end;
+}

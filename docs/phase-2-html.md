@@ -266,9 +266,9 @@ Component **rich text editor** (giao diện tĩnh), dùng ở form bài viết v
 | --- | --- | --- | --- | --- |
 | `public/page.html` | `/pages/:key` | UC11 | Cột đọc 680px: tiêu đề lớn, nội dung rich text (dùng chung style nội dung bài). Làm mẫu đủ 3 trang `about`, `contact`, `privacy` bằng dữ liệu giả | - (route lỗi dùng `public/404.html`) |
 | `admin/categories.html` (**đã làm**) | `/admin/categories` | UC15 | Bảng: mỗi ngôn ngữ một cột tên, cột đầu là ngôn ngữ mặc định; slug của từng ngôn ngữ nằm dưới tên (ô trống hiện chữ xám "Chưa có, dùng: Đời sống"), số bài, menu ⋯ (Sửa, Xem trên blog, Xóa). Modal thêm/sửa có một ô tên cho mỗi ngôn ngữ | Loading (skeleton), rỗng, modal lỗi validate (thiếu tên ngôn ngữ mặc định), đang lưu, hộp xác nhận xóa (đang xóa), lỗi xóa danh mục đang có bài |
-| `admin/ui-translations.html` | `/admin/ui-translations` | UC17 | Ô tìm theo key/giá trị; bảng: cột key (font monospace), mỗi ngôn ngữ một cột, ô bấm vào thì sửa tại chỗ; ô thiếu giá trị tô nền nhạt + chữ xám. Modal thêm key | Đang sửa một ô, đang lưu, key trùng, rỗng, hộp xác nhận xóa key |
+| `admin/ui-translations.html` (**đã làm**) | `/admin/ui-translations` | UC17 | Ô tìm theo key/giá trị; bảng: cột key (font monospace), mỗi ngôn ngữ một cột, ô bấm vào thì sửa tại chỗ; ô thiếu giá trị tô nền nhạt + chữ xám. Modal thêm key | Đang sửa một ô, đang lưu, key trùng, rỗng, hộp xác nhận xóa key |
 | `admin/pages.html` (**đã làm**) | `/admin/pages` | UC18 | Bảng: tên trang + URL public, key, badge các ngôn ngữ đã có nội dung, trạng thái hiển thị, ngày cập nhật, nút "Sửa". Không phân trang, không tìm kiếm | Bình thường, loading (skeleton) |
-| `admin/page-edit.html` | `/admin/pages/:key/edit` | UC18 | Thông tin key + URL (chỉ đọc), switch "Hiển thị", tab ngôn ngữ (mỗi tab: tiêu đề + rich text editor), nút "Lưu" và "Xem trên trang public" (mở tab mới) | Lỗi validate tab ngôn ngữ mặc định, lỗi "điền đủ cả hai hoặc để trống cả hai" ở tab khác, tab có lỗi được đánh dấu chấm đỏ, đang lưu, toast thành công |
+| `admin/page-edit.html` (**đã làm**) | `/admin/pages/:key/edit` | UC18 | Thông tin key + URL (chỉ đọc), switch "Hiển thị", tab ngôn ngữ (mỗi tab: tiêu đề + rich text editor), nút "Lưu" và "Xem trên trang public" (mở tab mới) | Lỗi validate tab ngôn ngữ mặc định, lỗi "điền đủ cả hai hoặc để trống cả hai" ở tab khác, tab có lỗi được đánh dấu chấm đỏ, đang lưu, toast thành công |
 
 `js/theme.js` (UC10, **đã làm**):
 
@@ -374,7 +374,7 @@ Các việc còn lại chia cho 3 người, mỗi người làm phần của mì
 | B2 (**đã làm**) | `admin/users.html`, `admin/languages.html` | | |
 | B3 (**đã làm**) | `public/register.html`, `login.html`, `forgot-password.html`, `reset-password.html`, `profile.html` | | Form: xem [phase-2-huong-dan.md](phase-2-huong-dan.md) mục 6.1 |
 | B4 (**đã làm**) | `public/search.html`, `public/404.html`, `public/page.html` | A2 | Trang tìm kiếm dùng lại thẻ bài viết |
-| B5 | `admin/ui-translations.html`, `admin/page-edit.html` | A3, C1 | `page-edit` dùng lại rich text editor và toast |
+| B5 (**đã làm**) | `admin/ui-translations.html`, `admin/page-edit.html` | A3, C1 | `page-edit` dùng lại rich text editor và toast |
 
 ### C
 

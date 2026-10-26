@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="vi" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sửa trang tĩnh · Inkwell</title>
+
+  <!-- Gán theme trước khi tải CSS để không bị nháy màu. Không thêm defer/async. -->
+  <script src="../js/theme.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body data-demo-states="normal error-default error-pair saving saved" data-demo-label-error-default="Lỗi tab mặc định" data-demo-label-error-pair="Lỗi điền thiếu" data-demo-label-saving="Đang lưu" data-demo-label-saved="Đã lưu" data-demo-auths="super_admin">
+  <div class="admin-layout">
+
+    <!-- component: admin-sidebar -->
+    <aside class="admin-sidebar offcanvas-lg offcanvas-start" id="adminSidebar" tabindex="-1" aria-labelledby="adminSidebarLabel">
+      <div class="offcanvas-header admin-sidebar__brand">
+        <a class="brand" href="../public/index.html" id="adminSidebarLabel" data-i18n="common.site_name">Inkwell</a>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" data-bs-target="#adminSidebar" aria-label="Đóng menu" data-i18n-aria-label="common.close_menu"></button>
+      </div>
+      <div class="offcanvas-body">
+        <div class="admin-sidebar__brand d-none d-lg-flex">
+          <a class="brand" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+        </div>
+        <nav aria-label="Menu quản trị" data-i18n-aria-label="admin.nav.label">
+          <ul class="admin-sidebar__nav">
+            <li>
+              <a class="admin-sidebar__link" href="../admin/posts.html">
+                <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.posts">Bài viết</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/users.html">
+                <i class="bi bi-people" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.users">Người dùng</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/categories.html">
+                <i class="bi bi-folder2" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.categories">Danh mục</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/languages.html">
+                <i class="bi bi-globe2" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.languages">Ngôn ngữ</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link" href="../admin/ui-translations.html">
+                <i class="bi bi-translate" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.ui_translations">Bản dịch giao diện</span>
+              </a>
+            </li>
+            <li data-demo-auth="super_admin">
+              <a class="admin-sidebar__link is-active" href="../admin/pages.html" aria-current="page">
+                <i class="bi bi-journal-richtext" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.pages">Trang tĩnh</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+        <div class="admin-sidebar__footer">
+          <a class="admin-sidebar__link" href="../public/index.html">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+            <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+          </a>
+        </div>
+      </div>
+    </aside>
+    <!-- /component: admin-sidebar -->
+
+    <div class="admin-main">
+
+      <!-- component: admin-topbar -->
+      <header class="admin-topbar">
+        <button type="button" class="icon-btn d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-label="Mở menu" data-i18n-aria-label="common.open_menu">
+          <i class="bi bi-list" aria-hidden="true"></i>
+        </button>
+        <a class="brand d-lg-none ms-1" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
+
+        <div class="d-flex align-items-center gap-1 ms-auto">
+
+          <!-- component: language-switcher -->
+          <div class="dropdown">
+            <button type="button" class="icon-btn icon-btn--text" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Ngôn ngữ" data-i18n-aria-label="common.language">
+              VI <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item active" href="#" aria-current="true">Tiếng Việt <i class="bi bi-check2 ms-auto" aria-hidden="true"></i></a></li>
+              <li><a class="dropdown-item" href="#">English</a></li>
+            </ul>
+          </div>
+          <!-- /component: language-switcher -->
+
+          <!-- component: theme-toggle -->
+          <button type="button" class="icon-btn theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Giao diện tối" data-i18n-aria-label="common.dark_mode">
+            <i class="bi bi-moon theme-toggle__icon--moon" aria-hidden="true"></i>
+            <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
+          </button>
+          <!-- /component: theme-toggle -->
+
+          <!-- component: user-menu -->
+          <div class="dropdown ms-1">
+            <button type="button" class="icon-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Tài khoản" data-i18n-aria-label="menu.account">
+              <img class="avatar" src="../assets/img/avatars/2.svg" alt="" data-demo-auth="blog_owner">
+              <span class="avatar avatar--initials" aria-hidden="true" data-demo-auth="super_admin">SA</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+              <div class="px-3 py-2" data-demo-auth="blog_owner">
+                <div class="fw-semibold">Nguyễn Văn An</div>
+                <div class="text-meta">owner1@blog.local</div>
+              </div>
+              <div class="px-3 py-2" data-demo-auth="super_admin">
+                <div class="fw-semibold">Super Admin</div>
+                <div class="text-meta">admin@blog.local</div>
+              </div>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="../public/profile.html">
+                <i class="bi bi-person" aria-hidden="true"></i>
+                <span data-i18n="menu.profile">Hồ sơ</span>
+              </a>
+              <a class="dropdown-item" href="../public/index.html">
+                <i class="bi bi-house" aria-hidden="true"></i>
+                <span data-i18n="admin.nav.back_to_blog">Về trang blog</span>
+              </a>
+              <hr class="dropdown-divider">
+              <a class="dropdown-item" href="../public/login.html">
+                <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                <span data-i18n="menu.logout">Đăng xuất</span>
+              </a>
+            </div>
+          </div>
+          <!-- /component: user-menu -->
+
+        </div>
+      </header>
+      <!-- /component: admin-topbar -->
+
+      <main class="admin-content">
+        <form class="page-edit" novalidate>
+          <a class="page-edit__back text-meta" href="pages.html">
+            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+            <span data-i18n="admin.nav.pages">Trang tĩnh</span>
+          </a>
+
+          <div class="admin-page-header">
+            <div>
+              <h1 class="text-page-title mb-1"><span data-i18n="admin.page_edit.title">Sửa trang:</span> Giới thiệu</h1>
+              <p class="text-meta mb-0" data-i18n="admin.page_edit.subtitle">Chỉ sửa nội dung. Chữ trên menu và footer sửa ở Bản dịch giao diện.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+              <a class="btn btn-outline-secondary" href="../public/page.html?key=about" target="_blank" rel="noopener">
+                <i class="bi bi-box-arrow-up-right me-1" aria-hidden="true"></i>
+                <span data-i18n="admin.page_edit.view_public">Xem trên trang public</span>
+              </a>
+              <!-- Lưu tất cả các tab cùng lúc (UC18) -->
+              <button type="submit" class="btn btn-primary" data-demo-loading="saving">
+                <span data-i18n="common.save">Lưu</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- component: page-edit-info -->
+          <!-- Key và URL do seeder tạo, không đổi được -->
+          <div class="page-edit__info">
+            <div>
+              <span class="page-edit__info-label" data-i18n="admin.pages.col_key">Key</span>
+              <span class="page-edit__code">about</span>
+            </div>
+            <div>
+              <span class="page-edit__info-label" data-i18n="admin.page_edit.public_url">URL public</span>
+              <span class="page-edit__code">/pages/about</span>
+            </div>
+            <div class="form-check form-switch mb-0 ms-md-auto">
+              <input class="form-check-input" type="checkbox" role="switch" id="pageVisible" name="is_visible" checked>
+              <label class="form-check-label fw-medium" for="pageVisible">
+                <span data-i18n="admin.pages.col_visibility">Hiển thị</span>
+                <span class="text-meta fw-normal" data-i18n="admin.page_edit.visibility_hint">· áp dụng cho mọi ngôn ngữ</span>
+              </label>
+            </div>
+          </div>
+          <!-- /component: page-edit-info -->
+
+          <div class="alert-inline mb-3" role="alert" data-demo="error-default error-pair">
+            <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+            <div data-i18n="admin.page_edit.error_summary">Chưa lưu được. Sửa các tab có chấm đỏ rồi bấm Lưu lại.</div>
+          </div>
+
+          <!-- component: translation-tabs -->
+          <!-- Mỗi ngôn ngữ đang hoạt động một tab, dùng chung component với admin/post-edit.html. Tab có lỗi có chấm đỏ;
+               data-demo-tab tự chọn tab có lỗi ở trạng thái đó -->
+          <ul class="nav nav-tabs translation-tabs" role="tablist" aria-label="Nội dung theo ngôn ngữ" data-i18n-aria-label="admin.page_edit.tabs_label">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="pageTabViButton" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#pageTabVi" aria-controls="pageTabVi" aria-selected="true" data-demo-tab="normal error-default saving saved">
+                <span class="translation-tabs__dot translation-tabs__dot--error" data-demo="error-default"><span class="visually-hidden" data-i18n="admin.page_edit.tab_has_error">Có lỗi</span></span>
+                Tiếng Việt
+                <span class="translation-tabs__origin" data-i18n="admin.page_edit.default_language">Mặc định</span>
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="pageTabEnButton" type="button" role="tab" data-bs-toggle="tab" data-bs-target="#pageTabEn" aria-controls="pageTabEn" aria-selected="false" data-demo-tab="error-pair">
+                <span class="translation-tabs__dot translation-tabs__dot--error" data-demo="error-pair"><span class="visually-hidden" data-i18n="admin.page_edit.tab_has_error">Có lỗi</span></span>
+                English
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <!-- component: page-translation-form -->
+            <section class="tab-pane fade show active" id="pageTabVi" role="tabpanel" aria-labelledby="pageTabViButton" tabindex="0">
+              <div class="mb-3" data-demo="normal error-pair saving saved">
+                <label class="form-label fw-medium" for="pageTitleVi"><span data-i18n="admin.page_edit.page_title">Tiêu đề</span> <span class="text-meta" data-i18n="common.required_suffix">· bắt buộc</span></label>
+                <input type="text" class="form-control" id="pageTitleVi" name="title_vi" maxlength="255" value="Giới thiệu" required>
+              </div>
+              <div class="mb-3" data-demo="error-default">
+                <label class="form-label fw-medium" for="pageTitleViError"><span data-i18n="admin.page_edit.page_title">Tiêu đề</span> <span class="text-meta" data-i18n="common.required_suffix">· bắt buộc</span></label>
+                <input type="text" class="form-control" id="pageTitleViError" name="title_vi" maxlength="255" value="" required data-demo-invalid="error-default">
+                <div class="invalid-feedback" data-i18n="validation.page_title_length">Tiêu đề của ngôn ngữ mặc định cần từ 2 đến 255 ký tự.</div>
+              </div>
+
+              <span class="form-label fw-medium d-block"><span data-i18n="admin.editor.content">Nội dung</span> <span class="text-meta" data-i18n="common.required_suffix">· bắt buộc</span></span>
+              <!-- component: rich-text-editor -->
+              <div class="editor">
+            <div class="editor__toolbar" role="toolbar" aria-label="Định dạng" data-i18n-aria-label="admin.editor.toolbar" aria-controls="pageContentVi">
+              <button type="button" class="editor__tool" aria-label="Tiêu đề lớn" data-i18n-aria-label="admin.editor.heading_2"><i class="bi bi-type-h2" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Tiêu đề nhỏ" data-i18n-aria-label="admin.editor.heading_3"><i class="bi bi-type-h3" aria-hidden="true"></i></button>
+              <span class="editor__sep" aria-hidden="true"></span>
+              <button type="button" class="editor__tool" aria-pressed="false" aria-label="In đậm" data-i18n-aria-label="admin.editor.bold"><i class="bi bi-type-bold" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-pressed="false" aria-label="In nghiêng" data-i18n-aria-label="admin.editor.italic"><i class="bi bi-type-italic" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-pressed="false" aria-label="Gạch chân" data-i18n-aria-label="admin.editor.underline"><i class="bi bi-type-underline" aria-hidden="true"></i></button>
+              <span class="editor__sep" aria-hidden="true"></span>
+              <button type="button" class="editor__tool" aria-label="Danh sách" data-i18n-aria-label="admin.editor.bullet_list"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Danh sách đánh số" data-i18n-aria-label="admin.editor.ordered_list"><i class="bi bi-list-ol" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Trích dẫn" data-i18n-aria-label="admin.editor.quote"><i class="bi bi-quote" aria-hidden="true"></i></button>
+              <span class="editor__sep" aria-hidden="true"></span>
+              <button type="button" class="editor__tool" aria-label="Chèn link" data-i18n-aria-label="admin.editor.link"><i class="bi bi-link-45deg" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Chèn ảnh" data-i18n-aria-label="admin.editor.image"><i class="bi bi-image" aria-hidden="true"></i></button>
+            </div>
+
+                <div class="editor__content prose" id="pageContentVi" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Nhập nội dung trang..." data-i18n-aria-placeholder="admin.page_edit.content_placeholder">
+                  <p>Inkwell là blog chia sẻ kiến thức lập trình, đời sống và du lịch, viết bằng tiếng Việt và tiếng Anh.</p>
+                  <h2>Mục đích</h2>
+                  <p>Chúng tôi muốn có một nơi đọc <strong>chậm</strong> và kỹ: bài dài, ít quảng cáo, dễ đọc trên điện thoại.</p>
+                  <h2>Đội ngũ tác giả</h2>
+                  <ul>
+                    <li>Nguyễn Văn An: lập trình web</li>
+                    <li>Trần Thị Bình: du lịch và ẩm thực</li>
+                  </ul>
+                  <blockquote>Viết để nhớ, chia sẻ để hiểu.</blockquote>
+                </div>
+              </div>
+              <div class="invalid-feedback" data-i18n="validation.page_content_required">Nhập nội dung ở ngôn ngữ mặc định.</div>
+              <!-- /component: rich-text-editor -->
+            </section>
+
+            <section class="tab-pane fade" id="pageTabEn" role="tabpanel" aria-labelledby="pageTabEnButton" tabindex="0">
+              <p class="form-text mt-0 mb-3" data-i18n="admin.page_edit.optional_hint">Không bắt buộc. Điền đủ cả tiêu đề và nội dung, hoặc để trống cả hai thì trang English hiện bản Tiếng Việt.</p>
+              <div class="mb-3">
+                <label class="form-label fw-medium" for="pageTitleEn" data-i18n="admin.page_edit.page_title">Tiêu đề</label>
+                <input type="text" class="form-control" id="pageTitleEn" name="title_en" maxlength="255" value="About">
+              </div>
+
+              <span class="form-label fw-medium d-block" data-i18n="admin.editor.content">Nội dung</span>
+              <!-- component: rich-text-editor -->
+              <div class="editor" data-demo-invalid="error-pair">
+            <div class="editor__toolbar" role="toolbar" aria-label="Định dạng" data-i18n-aria-label="admin.editor.toolbar" aria-controls="pageContentEn">
+              <button type="button" class="editor__tool" aria-label="Tiêu đề lớn" data-i18n-aria-label="admin.editor.heading_2"><i class="bi bi-type-h2" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Tiêu đề nhỏ" data-i18n-aria-label="admin.editor.heading_3"><i class="bi bi-type-h3" aria-hidden="true"></i></button>
+              <span class="editor__sep" aria-hidden="true"></span>
+              <button type="button" class="editor__tool" aria-pressed="false" aria-label="In đậm" data-i18n-aria-label="admin.editor.bold"><i class="bi bi-type-bold" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-pressed="false" aria-label="In nghiêng" data-i18n-aria-label="admin.editor.italic"><i class="bi bi-type-italic" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-pressed="false" aria-label="Gạch chân" data-i18n-aria-label="admin.editor.underline"><i class="bi bi-type-underline" aria-hidden="true"></i></button>
+              <span class="editor__sep" aria-hidden="true"></span>
+              <button type="button" class="editor__tool" aria-label="Danh sách" data-i18n-aria-label="admin.editor.bullet_list"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Danh sách đánh số" data-i18n-aria-label="admin.editor.ordered_list"><i class="bi bi-list-ol" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Trích dẫn" data-i18n-aria-label="admin.editor.quote"><i class="bi bi-quote" aria-hidden="true"></i></button>
+              <span class="editor__sep" aria-hidden="true"></span>
+              <button type="button" class="editor__tool" aria-label="Chèn link" data-i18n-aria-label="admin.editor.link"><i class="bi bi-link-45deg" aria-hidden="true"></i></button>
+              <button type="button" class="editor__tool" aria-label="Chèn ảnh" data-i18n-aria-label="admin.editor.image"><i class="bi bi-image" aria-hidden="true"></i></button>
+            </div>
+
+                <div class="editor__content prose" id="pageContentEn" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Nhập nội dung trang..." data-i18n-aria-placeholder="admin.page_edit.content_placeholder" data-demo="normal error-default saving saved">
+                  <p>Inkwell is a blog about programming, everyday life and travel, written in Vietnamese and English.</p>
+                  <h2>Why we write</h2>
+                  <p>We want a place for <strong>slow</strong> reading: long posts, few ads, easy to read on a phone.</p>
+                  <h2>Our authors</h2>
+                  <ul>
+                    <li>Nguyễn Văn An: web development</li>
+                    <li>Trần Thị Bình: travel and food</li>
+                  </ul>
+                </div>
+                <div class="editor__content prose" id="pageContentEnEmpty" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Nhập nội dung trang..." data-i18n-aria-placeholder="admin.page_edit.content_placeholder" data-demo="error-pair"></div>
+              </div>
+              <div class="invalid-feedback" data-i18n="validation.page_translation_pair">Điền đủ cả tiêu đề và nội dung, hoặc để trống cả hai.</div>
+              <!-- /component: rich-text-editor -->
+            </section>
+            <!-- /component: page-translation-form -->
+          </div>
+          <!-- /component: translation-tabs -->
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <!-- component: toast -->
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div class="toast" id="saveSuccessToast" role="status" aria-live="polite" aria-atomic="true" data-demo-toast="saved">
+      <div class="toast-header">
+        <i class="bi bi-check-circle-fill toast__icon me-2" aria-hidden="true"></i>
+        <strong class="me-auto" data-i18n="common.success">Thành công</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+      </div>
+      <div class="toast-body" data-i18n="admin.page_edit.save_success">Đã lưu trang Giới thiệu.</div>
+    </div>
+  </div>
+  <!-- /component: toast -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/demo-state.js"></script>
+</body>
+</html>
