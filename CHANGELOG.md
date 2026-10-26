@@ -6,6 +6,21 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Xác thực UC01-UC04 (A2), module `auth` và `users`:
+  - `POST /auth/register` (role `user`, email trùng → 409 kèm `errors[{ field: "email" }]`), `POST /auth/login` (sai email/mật khẩu cùng một thông báo `INVALID_CREDENTIALS`, bị khóa `ACCOUNT_LOCKED`, quá 5 lần sai / 15 phút theo IP + email → 429, đăng nhập đúng thì xóa bộ đếm), `POST /auth/refresh` (xoay vòng, refresh token cũ dùng lại → 401 `TOKEN_EXPIRED`), `POST /auth/logout`, `POST /auth/forgot-password` (luôn cùng message, token 15 phút, 3 lần / 15 phút / IP), `POST /auth/reset-password` (token dùng một lần, thu hồi mọi phiên), `GET /auth/me`.
+  - `TokenService`: refresh token ký bằng secret riêng, lưu `auth:refresh:{jti}` và `auth:user-refresh:{userId}`; `revokeAll(userId)` để B5 (UC14) dùng khi khóa tài khoản.
+  - DTO dùng câu lỗi của màn HTML phase 2; `@Match()` cho xác nhận mật khẩu.
+  - Unit test `AuthService`, `TokenService`, `UsersService`; e2e `test/auth.e2e-spec.ts`; Postman folder `00 - Auth` (13 request, lưu `accessToken`, `ownerAccessToken`, `adminAccessToken`).
+  - Bảo mật dependency: `sanitize-html` lên 2.18 (sửa các lỗi XSS đã công bố), `multer` lên 2.5.0 qua `overrides`. Lệnh `test*` chạy Jest với `--experimental-vm-modules` để nạp được `htmlparser2` ESM.
+- Khung backend phase 3 (A1), thư mục `backend/`:
+  - `docker-compose.yml` ở gốc repo: `mysql:8.4` (`utf8mb4`, tạo sẵn `blog_dev`, `blog_test`, user `blog`) và `redis:7`; đổi cổng host bằng `MYSQL_HOST_PORT`, `REDIS_HOST_PORT` khi máy đã cài sẵn MySQL/Redis.
+  - Project NestJS 11 (TypeScript strict, plugin Swagger của Nest CLI), `.env.example` đủ biến ở mục 7.3, validate bằng Joi lúc khởi động. `NODE_ENV=test` tự dùng `blog_test` và Redis db 1.
+  - 12 migration theo `database.dbml` (khóa ngoại RESTRICT/CASCADE như ERD, FULLTEXT `ngram` trên `post_translations`), `database/config.js` cho 3 môi trường; model `sequelize-typescript` cho 12 bảng (`User` mặc định không lấy `password_hash`).
+  - Phần nền: `TransformInterceptor` + `@ResponseMessage`, `AllExceptionsFilter` (thêm `code`, lỗi unique → 409, lỗi 500 không trả stack), `ValidationPipe` trả `errors[]` dạng `translations.0.title`, `PaginationQueryDto` + `paginate()`, `JwtAuthGuard` global (`@Public`, `optionalAuth`, kiểm tra `is_active` cache 60 giây), `RolesGuard` có kế thừa role, `LanguageMiddleware` + `@CurrentLanguage`, `CacheService` (xóa theo prefix bằng `SCAN`), `redis-keys.ts`, throttler lưu trong Redis, helmet, CORS, upload ảnh `POST /uploads/images` (đuôi + magic bytes + 2MB, tên UUID, phục vụ tĩnh tại `/uploads`), `sanitizeRichText`, `generateUniqueSlug`, `MailService`, Swagger tại `/api-docs`.
+  - Module mẫu `languages`: `GET /api/v1/languages`.
+  - Test: unit test cho tiện ích, guard, service (độ phủ tầng service ≥ 70%, cấu hình trong Jest); e2e với helper `createTestApp`, `resetDatabase`, `tokenFor(role)`; `test/response-format.e2e-spec.ts`.
+  - Khung Postman `docs/postman/` (collection + environment), chạy được bằng `postman collection run`.
+  - `backend/README.md`: cách chạy, lệnh, cách viết module mới.
 - `docs/phase-3-backend.md`: kế hoạch phase 3 (backend NestJS, 26/10 - 11/11/2026) gồm
   - Công cụ, cấu trúc thư mục `backend/`, `docker-compose.yml` cho MySQL + Redis.
   - Khung backend (A1): format response và lỗi (thêm trường `code`), guard JWT + role, đọc `Accept-Language`, phân trang, bảng key Redis và quy tắc xóa cache, upload, lọc HTML, slug, Swagger.

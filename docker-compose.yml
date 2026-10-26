@@ -1,0 +1,50 @@
+# MySQL + Redis cho môi trường dev và test của backend (phase 3).
+# Máy đã cài sẵn MySQL/Redis trên 3306/6379 thì đổi cổng host, ví dụ:
+#   MYSQL_HOST_PORT=3307 REDIS_HOST_PORT=6380 docker compose up -d
+# hoặc ghi 2 biến này vào file .env cạnh docker-compose.yml.
+name: blog-management-system
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: blog-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: blog_dev
+      MYSQL_USER: blog
+      MYSQL_PASSWORD: blog
+      TZ: UTC
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      # FULLTEXT ngram: tách từ theo cụm 2 ký tự (mặc định), giữ rõ ở đây để không phụ thuộc bản image
+      - --ngram_token_size=2
+    ports:
+      - "${MYSQL_HOST_PORT:-3306}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7
+    container_name: blog-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_HOST_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  mysql-data:
+  redis-data:
