@@ -2,9 +2,10 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.0 (theo requirements 2.1) |
-| Ngày tạo | 23/10/2026 |
+| Phiên bản | 1.1 (theo requirements 2.1) |
+| Ngày tạo | 23/10/2026, cập nhật 27/10/2026 (chia lại việc, mục 8) |
 | Thời gian | ~2,5 tuần (13 ngày làm việc, 26/10 - 11/11/2026) |
+| Phân công | A ~50%, B ~35%, C ~15% (mục 8) |
 | Đầu vào | [requirements.md](requirements.md) (mục 1.5 - Phase 3, mục 3 - 7), [database.dbml](database.dbml), [sample-data.md](sample-data.md), các màn HTML của phase 2 (danh sách field, trạng thái lỗi, key `data-i18n`) |
 | Đầu ra | Thư mục `backend/`: API dưới `/api/v1`, Swagger tại `/api-docs`, test Jest + Supertest; Postman collection trong `docs/postman/` |
 
@@ -25,7 +26,7 @@
 Phase 2 còn B5 (`ui-translations`, `page-edit`), C3 (kiểm tra tổng) và A6 (sửa lỗi phần dùng chung). Để không mất thêm thời gian:
 
 - A bắt đầu A1 (khung backend) từ 26/10. A6 của phase 2 làm xen vào khi C3 báo lỗi.
-- B và C làm nốt B5 và C3 trong lúc chờ A1 merge. Đằng nào B và C cũng phải chờ A1 mới viết được API.
+- B và C làm nốt B5 và C3 trong lúc chờ A1 merge. Đằng nào B và C cũng phải chờ A1 mới viết được API. (Cập nhật 27/10: A1 và B5 đã xong ngày 26/10, B bắt đầu B1 từ 27/10.)
 - Phase 2 vẫn phải đạt hết điều kiện hoàn thành của nó. Phase 3 chỉ được tính là xong sau khi phase 2 đã xong.
 
 ### 1.3. Migrations và seeders của phase 1
@@ -278,7 +279,7 @@ Mọi route có prefix `/api/v1`. Cột "Quyền": `public` (không cần đăng
 | POST | `/post-translations/:id/comments` | auth | UC08 | Body `{ content, parentId? }`. `content` 1-1000 ký tự sau khi trim, không chứa thẻ HTML. `parentId` phải là bình luận gốc (`parent_id = NULL`) và cùng bản dịch, sai → 400. Bản dịch chưa đăng → 404. 201, trả bình luận vừa tạo |
 | DELETE | `/comments/:id` | auth | UC08 | Người viết, tác giả bài, Super Admin. Không có quyền → 403. Xóa luôn các trả lời (cascade) |
 
-### 4.4. Hồ sơ cá nhân (B)
+### 4.4. Hồ sơ cá nhân (A)
 
 | Method | Route | Quyền | UC | Ghi chú |
 | --- | --- | --- | --- | --- |
@@ -440,17 +441,30 @@ Seeder hiệu năng riêng `npm run db:seed:perf` (C viết ở C3): sinh 10.000
 
 Mỗi dòng là một nhánh và một PR. Cột "Chờ" ghi việc của người khác phải merge xong thì mới bắt đầu được. Đến lượt mà việc phải chờ chưa merge thì làm trước việc tiếp theo không phải chờ.
 
+### Tỉ lệ phân công
+
+| Người | Khối lượng | Phần việc |
+| --- | --- | --- |
+| A | ~50% | Khung backend, xác thực (UC01-UC04), quản lý bài viết (UC13), chi tiết bài (UC06), tìm kiếm (UC19), hồ sơ cá nhân (UC12), OAuth (UC20), hoàn thiện cuối phase |
+| B | ~35% | Seeders, ngôn ngữ (UC16), bản dịch giao diện (UC17), danh mục (UC15), bình luận (UC08), người dùng (UC14), trang tĩnh (UC11, UC18) |
+| C | ~15% | Chạy thử migrate/seed/rollback, trang chủ (UC05), bài theo danh mục (UC07), kiểm tra tổng và đo hiệu năng |
+
+So với bản 1.0 (A ~45%, B ~40%), hồ sơ cá nhân UC12 chuyển từ B sang A (việc A6). UC12 dùng lại nhiều phần của A: upload ảnh (A1), đổi mật khẩu theo ràng buộc UC01 (A2), `hasPassword` cho tài khoản OAuth (A7). A1, A2 đã merge ngày 26/10, sớm hơn lịch 3 ngày, nên A còn thời gian nhận thêm.
+
+Tỉ lệ này chỉ áp dụng cho phase 3. Requirements mục 1.4 (tỉ lệ chung của dự án) giữ nguyên.
+
 ### A
 
 | # | Việc | Chờ | Ghi chú |
 | --- | --- | --- | --- |
-| A1 | Khung backend: `docker-compose.yml`, project NestJS, config 3 môi trường, migrations đủ 12 bảng (gồm FULLTEXT `ngram`), model; mọi phần ở mục 3 (response, exception filter, guard, language middleware, phân trang, Redis + cache, throttler, upload, lọc HTML, slug, Swagger, helmet, CORS); Jest + helper test (`tokenFor(role)`); khung Postman collection. Module mẫu `languages` (chỉ `GET /languages`) để B, C copy | | **Merge sớm** (mục tiêu 28/10) vì mọi việc khác cần. Module mẫu có đủ controller, service, DTO, test unit và e2e |
-| A2 | Auth UC01-UC04: register, login + rate limit, refresh xoay vòng, logout, forgot/reset password + email, `/auth/me` | A1 | Merge sớm để Postman có token thật |
-| A3 | Quản lý bài viết UC13 (mục 4.5), xóa cache bài viết | A1, B1 | Phần lớn nhất của phase. Có thể tách 2 PR: bài + bản gốc, rồi bản dịch |
+| A1 (**đã xong**) | Khung backend: `docker-compose.yml`, project NestJS, config 3 môi trường, migrations đủ 12 bảng (gồm FULLTEXT `ngram`), model; mọi phần ở mục 3 (response, exception filter, guard, language middleware, phân trang, Redis + cache, throttler, upload, lọc HTML, slug, Swagger, helmet, CORS); Jest + helper test (`tokenFor(role)`); khung Postman collection. Module mẫu `languages` (chỉ `GET /languages`) để B, C copy | | **Merge sớm** (mục tiêu 28/10) vì mọi việc khác cần. Module mẫu có đủ controller, service, DTO, test unit và e2e |
+| A2 (**đã xong**) | Auth UC01-UC04: register, login + rate limit, refresh xoay vòng, logout, forgot/reset password + email, `/auth/me` | A1 | Merge sớm để Postman có token thật |
+| A3 | Quản lý bài viết UC13 (mục 4.5), xóa cache bài viết | A1 | Phần lớn nhất của phase. Tách 2 PR: bài + bản gốc, rồi bản dịch. Test e2e dùng dữ liệu riêng nên không phải chờ B1; B1 chỉ cần khi thử bằng Postman |
 | A4 | Chi tiết bài UC06: `/posts/:slug`, `/related`, tăng lượt xem | A3 | |
 | A5 | Tìm kiếm UC19 (Should) | A3 | Test với cả từ khóa tiếng Việt có dấu |
-| A6 | OAuth UC20 Google, Github (Should) | A2 | Cần đăng ký app OAuth (requirements mục 9) trước ngày làm |
-| A7 | Duyệt lỗi C báo ở C3 thuộc phần nền, hoàn thiện Swagger, kiểm tra độ phủ chung, merge `dev` → `master` | C3 | |
+| A6 | Hồ sơ cá nhân UC12 (Should, mục 4.4) | A2 | Chuyển từ B sang ở bản 1.1. Avatar dùng lại `UploadModule` |
+| A7 | OAuth UC20 Google, Github (Should) | A2 | Cần đăng ký app OAuth (requirements mục 9) trước ngày làm |
+| A8 | Duyệt lỗi C báo ở C3 thuộc phần nền, hoàn thiện Swagger, kiểm tra độ phủ chung, merge `dev` → `master` | C3 | |
 
 ### B
 
@@ -462,7 +476,6 @@ Mỗi dòng là một nhánh và một PR. Cột "Chờ" ghi việc của ngư�
 | B4 | Bình luận UC08 | A1, B1 | Quyền xóa cần biết tác giả bài qua `post_translations → posts.user_id` |
 | B5 | Người dùng UC14 | A2 | Thu hồi refresh token dùng hàm của A2 |
 | B6 | Trang tĩnh UC11 + UC18 | A1 | |
-| B7 | Hồ sơ cá nhân UC12 (Should) | A2 | |
 
 ### C
 
@@ -476,14 +489,16 @@ Mỗi dòng là một nhánh và một PR. Cột "Chờ" ghi việc của ngư�
 
 | Ngày | A | B | C |
 | --- | --- | --- | --- |
-| 26/10 - 28/10 | A1 | B5 phase 2, review A1 | C3 phase 2 |
-| 29/10 - 30/10 | A2 | B1, B2 | C1 (chạy thử migrate/seed) |
-| 02/11 - 04/11 | A3 | B3, B4 | C1 (`/posts`) |
-| 05/11 - 06/11 | A4 | B5, B6 | C2 |
-| 09/11 - 10/11 | A5, A6 | B7, sửa lỗi C3 | C3 |
-| 11/11 | A7 | Sửa lỗi C3 | Chạy lại Postman CLI sau khi sửa |
+| 26/10 | A1, A2 (đã merge) | B5 phase 2 (đã xong), review A2 | C3 phase 2 |
+| 27/10 - 28/10 | A3 (bài + bản gốc) | B1 | C3 phase 2 |
+| 29/10 - 30/10 | A3 (bản dịch) | B2 | C1 (chạy thử migrate/seed) |
+| 02/11 - 03/11 | A4 | B3 | C1 (`/posts`) |
+| 04/11 - 05/11 | A5, A6 | B4 | C1, C2 |
+| 06/11 | A7 | B5 | C2 |
+| 09/11 - 10/11 | Dự phòng, review, sửa lỗi C3 phần nền | B6, sửa lỗi C3 | C3 |
+| 11/11 | A8 | Sửa lỗi C3 | Chạy lại Postman CLI sau khi sửa |
 
-Nếu đến 06/11 mà A3 hoặc A4 chưa merge thì lùi A5, A6, B7 (Should) sang đầu phase 4 và dành thời gian cho Must.
+Nếu đến 05/11 mà A3 hoặc A4 chưa merge thì lùi A5, A6, A7 (Should) sang đầu phase 4 và dành thời gian cho Must. B6 là việc Must cuối của B: nếu đến 09/11 B còn chậm thì A nhận B6 trong 2 ngày dự phòng.
 
 ---
 

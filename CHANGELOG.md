@@ -6,6 +6,13 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Xem trước bài viết ở `admin/post-create.html` và `admin/post-edit.html` (UC13, theo góp ý của mentor):
+  - Nút "Xem trước" trên thanh trên (màn hẹp chỉ có icon), mở modal toàn màn hình. Bài hiện như trang chi tiết bài viết (tiêu đề, tóm tắt, tác giả, danh mục, thời gian đọc, thumbnail, nội dung), trạng thái bài ghi cạnh tiêu đề modal.
+  - Nút đổi cỡ Desktop / Mobile (từ màn `md`). Bản xem trước nằm trong iframe nạp cùng CSS và theme nên media query chạy theo khung: khung mobile rộng 390px có viền như điện thoại. Màn hẹp hơn `md` thì luôn hiện cỡ của màn đó.
+  - Trạng thái demo mới: "Xem trước (desktop)", "Xem trước (mobile)" (`?demo=preview`, `?demo=preview-mobile`), dùng dữ liệu của form đã điền (`post-create`) hoặc tab gốc (`post-edit`).
+  - `post-edit`: xem trước bản dịch của tab đang mở (tiêu đề, tóm tắt, trạng thái, nội dung lấy trong `.tab-pane.active`; danh mục, thumbnail lấy từ phần dùng chung). `post-preview.js` tìm ô theo `name="title"` hoặc `name="translations[xx][title]"`.
+  - `js/post-preview.js`, component `post-preview` (`scss/components/_post-preview.scss`). `html/README.md`: thêm vào bảng "Có sẵn để dùng". Phase 2 doc: cập nhật dòng `post-create`.
+
 - Màn bản dịch giao diện và sửa trang tĩnh (B5), khung admin, chỉ Super Admin (`data-demo-auths="super_admin"`):
   - `admin/ui-translations.html` (UC17): ô tìm theo key/giá trị, số key và số ô thiếu bản English; bảng cột key (font đơn cách), mỗi ngôn ngữ một cột, ô là nút bấm để sửa tại chỗ, ô thiếu giá trị nền nhạt + chữ xám "Chưa có, dùng: <giá trị mặc định>"; nút xóa key mở hộp xác nhận. Modal "Thêm key" (key, giá trị Tiếng Việt bắt buộc, English không bắt buộc). Trạng thái demo: bình thường, loading (skeleton), rỗng (không tìm thấy key), đang sửa ô, đang lưu, key trùng, đang xóa.
   - `admin/page-edit.html` (UC18): link về danh sách trang tĩnh; key và URL public chỉ đọc, switch "Hiển thị" áp dụng cho mọi ngôn ngữ; nút "Xem trên trang public" (mở `public/page.html?key=about` ở tab mới) và "Lưu"; tab ngôn ngữ dùng lại component `translation-tabs` của `post-edit`, mỗi tab có tiêu đề và rich text editor chép từ `admin/post-create.html`. Trạng thái demo: bình thường, lỗi tab mặc định (thiếu tiêu đề), lỗi điền thiếu ở tab English ("điền đủ cả hai hoặc để trống cả hai"), tab có lỗi có chấm đỏ và được chọn sẵn (`data-demo-tab`), đang lưu, đã lưu (toast).
@@ -108,6 +115,11 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Changed
 
+- Chia lại việc phase 3 (`docs/phase-3-backend.md` 1.0 → 1.1): A ~50%, B ~35%, C ~15%.
+  - Mục 8 thêm bảng tỉ lệ phân công. Hồ sơ cá nhân UC12 chuyển từ B (B7 cũ) sang A (A6 mới); OAuth thành A7, việc hoàn thiện cuối phase thành A8. Mục 4.4 ghi A phụ trách.
+  - A1, A2 đánh dấu đã xong. A3 bỏ chờ B1 (test e2e dùng dữ liệu riêng).
+  - Lịch theo ngày làm lại vì A1, A2 xong sớm 3 ngày và B5 phase 2 đã xong: B bắt đầu B1 từ 27/10; A có 2 ngày dự phòng (09/11 - 10/11), nhận B6 nếu B chậm. Mốc lùi việc Should sang phase 4 đổi từ 06/11 thành 05/11.
+  - Requirements mục 1.4 (tỉ lệ chung của dự án) giữ nguyên.
 - Gia hạn phase 2 thêm 1 tuần (đến 21/10/2026, ~10 ngày làm việc): requirements 2.0 → 2.1 (mục 1.5 phase 2 ~2 tuần, tổng thời gian 8 → 9 tuần); phase 2 doc 1.4 → 1.5 (thời gian ~2 tuần).
 - `html/index.html`: bảng mục lục thêm cột "Người làm" (A - Từ Minh Tuân, B - Ngô Đức, C - Cao Tiến Dũng, theo `SCREENS.md`); đầu trang thêm badge "Đã xong x / y màn", tự đếm từ badge "Đã xong" trong bảng.
 - `admin/users.html` (UC14) viết lại theo quy ước phase 2, sửa lỗi giao diện bảng (avatar nằm trên tên vì class `user-cell`, `role-badge`, `self-tag`, `min-w-0` không có CSS; ảnh avatar sai đường dẫn `../img/avatar-2.svg`): dùng component `user-table`, Bootstrap Icons thay SVG Lucide, modal Bootstrap thay `onclick`/script tự viết, `data-demo` thay `data-state-*`, skeleton bằng `placeholder-glow`; thêm `data-i18n`. Chỉ Super Admin (`data-demo-auths="super_admin"`). Hàng của chính mình có nút ⋯ bị vô hiệu kèm chú thích. Trạng thái demo: bình thường, loading, rỗng (tìm không ra), lỗi validate (email trùng, mật khẩu yếu), đang lưu, hộp xác nhận khóa tài khoản. `index.html`, `SCREENS.md`: đánh dấu màn đã xong.

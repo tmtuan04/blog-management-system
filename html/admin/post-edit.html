@@ -18,8 +18,9 @@
   Dữ liệu demo: bài "Hướng dẫn Angular" (sample-data post 1), gốc Tiếng Việt, đã có bản English.
   Hai trạng thái "Chưa có bản dịch" và "Bản dịch mới" giả sử bài chưa có bản English.
   Mỗi trạng thái tự chọn tab ngôn ngữ bằng data-demo-tab (xem js/demo-state.js).
+  Hai trạng thái "Xem trước" mở modal xem trước tab gốc; mở modal ở tab nào thì xem trước bản dịch của tab đó.
 -->
-<body data-demo-states="normal translation no-translation new-translation error loading deleting saved" data-demo-label-normal="Tab gốc" data-demo-label-translation="Tab bản dịch" data-demo-label-no-translation="Chưa có bản dịch" data-demo-label-new-translation="Bản dịch mới" data-demo-label-loading="Đang lưu" data-demo-label-deleting="Xóa bản dịch" data-demo-label-saved="Đã lưu" data-demo-auths="blog_owner super_admin">
+<body data-demo-states="normal translation no-translation new-translation error loading deleting saved preview preview-mobile" data-demo-label-normal="Tab gốc" data-demo-label-translation="Tab bản dịch" data-demo-label-no-translation="Chưa có bản dịch" data-demo-label-new-translation="Bản dịch mới" data-demo-label-loading="Đang lưu" data-demo-label-deleting="Xóa bản dịch" data-demo-label-saved="Đã lưu" data-demo-label-preview="Xem trước (desktop)" data-demo-label-preview-mobile="Xem trước (mobile)" data-demo-auths="blog_owner super_admin">
 
   <!-- component: editor-topbar -->
   <header class="editor-topbar">
@@ -27,7 +28,7 @@
       <i class="bi bi-arrow-left" aria-hidden="true"></i>
     </a>
     <a class="brand d-none d-sm-inline" href="../public/index.html" data-i18n="common.site_name">Inkwell</a>
-    <span class="editor-topbar__status" data-demo="normal translation no-translation new-translation error deleting"><span data-i18n="admin.post_form.saved_at">Đã lưu lúc</span> 14:32</span>
+    <span class="editor-topbar__status" data-demo="normal preview preview-mobile translation no-translation new-translation error deleting"><span data-i18n="admin.post_form.saved_at">Đã lưu lúc</span> 14:32</span>
     <span class="editor-topbar__status" data-demo="loading" data-i18n="common.saving">Đang lưu...</span>
     <span class="editor-topbar__status" data-demo="saved"><span data-i18n="admin.post_form.saved_at">Đã lưu lúc</span> 14:35</span>
 
@@ -51,6 +52,12 @@
         <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
       </button>
       <!-- /component: theme-toggle -->
+
+      <!-- Mở modal xem trước tab đang mở (component: post-preview, cuối trang). Màn hẹp chỉ hiện icon -->
+      <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#postPreview" aria-label="Xem trước" data-i18n-aria-label="admin.post_form.preview">
+        <i class="bi bi-eye" aria-hidden="true"></i>
+        <span class="d-none d-md-inline" data-i18n="admin.post_form.preview">Xem trước</span>
+      </button>
 
       <!-- Lưu: lưu phần dùng chung và tab đang mở -->
       <button type="submit" form="postForm" class="btn btn-primary btn-sm" data-demo-loading>
@@ -153,7 +160,7 @@
       <!-- component: translation-tabs -->
       <ul class="nav nav-tabs translation-tabs" role="tablist" aria-label="Bản dịch theo ngôn ngữ" data-i18n-aria-label="admin.post_form.translations">
         <li class="nav-item" role="presentation">
-          <button type="button" class="nav-link active" id="tabViBtn" data-bs-toggle="tab" data-bs-target="#tabVi" role="tab" aria-controls="tabVi" aria-selected="true" data-demo-tab="normal loading saved">
+          <button type="button" class="nav-link active" id="tabViBtn" data-bs-toggle="tab" data-bs-target="#tabVi" role="tab" aria-controls="tabVi" aria-selected="true" data-demo-tab="normal loading saved preview preview-mobile">
             <span class="translation-tabs__dot translation-tabs__dot--published" aria-hidden="true"></span>
             Tiếng Việt
             <span class="translation-tabs__origin" data-i18n="admin.posts.original_language">Gốc</span>
@@ -161,7 +168,7 @@
         </li>
         <li class="nav-item" role="presentation">
           <button type="button" class="nav-link" id="tabEnBtn" data-bs-toggle="tab" data-bs-target="#tabEn" role="tab" aria-controls="tabEn" aria-selected="false" data-demo-tab="translation no-translation new-translation error deleting">
-            <span class="translation-tabs__dot translation-tabs__dot--published" aria-hidden="true" data-demo="normal translation loading deleting saved"></span>
+            <span class="translation-tabs__dot translation-tabs__dot--published" aria-hidden="true" data-demo="normal preview preview-mobile translation loading deleting saved"></span>
             <span class="translation-tabs__dot translation-tabs__dot--none" aria-hidden="true" data-demo="no-translation"></span>
             <span class="translation-tabs__dot translation-tabs__dot--draft" aria-hidden="true" data-demo="new-translation"></span>
             <span class="translation-tabs__dot translation-tabs__dot--error" aria-hidden="true" data-demo="error"></span>
@@ -245,7 +252,7 @@
         <section class="tab-pane" id="tabEn" role="tabpanel" aria-labelledby="tabEnBtn" tabindex="0">
 
           <!-- Đã có bản dịch: thông tin bản dịch + nút xóa, form đã điền -->
-          <div data-demo="normal translation error loading deleting saved">
+          <div data-demo="normal preview preview-mobile translation error loading deleting saved">
             <!-- component: translation-meta -->
             <div class="translation-meta">
               <span class="translation-meta__item"><span data-i18n="admin.post_form.slug">Slug</span><span class="translation-meta__slug">angular-tutorial</span></span>
@@ -270,7 +277,7 @@
             </div>
 
             <label class="visually-hidden" for="postTitleEn" data-i18n="admin.post_form.title">Tiêu đề</label>
-            <textarea class="post-form__title text-post-title" id="postTitleEn" name="translations[en][title]" rows="1" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title" data-demo="normal translation loading deleting saved">Angular tutorial</textarea>
+            <textarea class="post-form__title text-post-title" id="postTitleEn" name="translations[en][title]" rows="1" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title" data-demo="normal preview preview-mobile translation loading deleting saved">Angular tutorial</textarea>
             <!-- Lỗi: tiêu đề quá ngắn (cần 5 đến 255 ký tự) -->
             <textarea class="post-form__title text-post-title" id="postTitleEnError" name="translations[en][title]" rows="1" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title" data-demo="error" data-demo-invalid aria-describedby="postTitleEnFeedback">Ng</textarea>
             <div class="invalid-feedback" id="postTitleEnFeedback" data-i18n="validation.post_title_length">Tiêu đề cần từ 5 đến 255 ký tự.</div>
@@ -409,6 +416,41 @@
   </div>
   <!-- /component: confirm-dialog -->
 
+  <!-- component: post-preview -->
+  <!-- Xem trước bài đang soạn như trên trang chi tiết bài viết. js/post-preview.js dựng nội dung iframe mỗi lần mở -->
+  <div class="modal fade post-preview" id="postPreview" tabindex="-1" aria-labelledby="postPreviewTitle" aria-hidden="true" data-preview-form="postForm" data-demo-modal="preview preview-mobile">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header post-preview__header">
+          <h2 class="post-preview__title" id="postPreviewTitle">
+            <span data-i18n="admin.post_form.preview">Xem trước</span>
+            <span class="post-preview__status" data-preview-status></span>
+          </h2>
+
+          <!-- Chỉ có từ md trở lên: màn hẹp thì bản xem trước đã là bản mobile -->
+          <div class="post-preview__devices" role="group" aria-label="Kích thước màn hình" data-i18n-aria-label="admin.post_preview.device">
+            <button type="button" class="post-preview__device" data-preview-device="desktop" aria-pressed="true">
+              <i class="bi bi-laptop" aria-hidden="true"></i>
+              <span data-i18n="admin.post_preview.desktop">Desktop</span>
+            </button>
+            <button type="button" class="post-preview__device" data-preview-device="mobile" aria-pressed="false">
+              <i class="bi bi-phone" aria-hidden="true"></i>
+              <span data-i18n="admin.post_preview.mobile">Mobile</span>
+            </button>
+          </div>
+
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body post-preview__body">
+          <div class="post-preview__frame" data-device="desktop">
+            <iframe class="post-preview__iframe" title="Bản xem trước bài viết" data-i18n-title="admin.post_preview.frame_title" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: post-preview -->
+
   <!-- component: toast -->
   <div class="toast-container position-fixed top-0 end-0 p-3">
     <div class="toast" id="saveSuccessToast" role="status" aria-live="polite" aria-atomic="true" data-demo-toast="saved">
@@ -423,6 +465,8 @@
   <!-- /component: toast -->
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- post-preview.js nạp trước demo-state.js để bắt được lần mở modal ở trạng thái demo preview -->
+  <script src="../js/post-preview.js"></script>
   <script src="../js/demo-state.js"></script>
 </body>
 </html>
