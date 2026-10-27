@@ -17,10 +17,10 @@
 <!--
   Trạng thái demo chia làm 2 nhóm dữ liệu:
   - Form trống (bài mới): normal, error, image-error
-  - Form đã điền:         filled, uploading, loading
+  - Form đã điền:         filled, uploading, loading, preview, preview-mobile (mở modal xem trước)
   Ô nào khác nhau giữa 2 nhóm thì có 2 bản, mỗi bản gắn data-demo của nhóm mình.
 -->
-<body data-demo-states="normal filled error image-error uploading loading" data-demo-label-normal="Bài mới" data-demo-label-filled="Đã điền" data-demo-label-image-error="Lỗi ảnh" data-demo-label-uploading="Đang tải ảnh" data-demo-label-loading="Đang lưu" data-demo-auths="blog_owner super_admin">
+<body data-demo-states="normal filled error image-error uploading loading preview preview-mobile" data-demo-label-normal="Bài mới" data-demo-label-filled="Đã điền" data-demo-label-image-error="Lỗi ảnh" data-demo-label-uploading="Đang tải ảnh" data-demo-label-loading="Đang lưu" data-demo-label-preview="Xem trước (desktop)" data-demo-label-preview-mobile="Xem trước (mobile)" data-demo-auths="blog_owner super_admin">
 
   <!-- component: editor-topbar -->
   <header class="editor-topbar">
@@ -50,6 +50,12 @@
         <i class="bi bi-sun theme-toggle__icon--sun" aria-hidden="true"></i>
       </button>
       <!-- /component: theme-toggle -->
+
+      <!-- Mở modal xem trước (component: post-preview, cuối trang). Màn hẹp chỉ hiện icon -->
+      <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#postPreview" aria-label="Xem trước" data-i18n-aria-label="admin.post_form.preview">
+        <i class="bi bi-eye" aria-hidden="true"></i>
+        <span class="d-none d-md-inline" data-i18n="admin.post_form.preview">Xem trước</span>
+      </button>
 
       <button type="submit" form="postForm" class="btn btn-primary btn-sm" data-demo-loading>
         <span data-i18n="common.save">Lưu</span>
@@ -130,7 +136,7 @@
           </select>
           <div class="invalid-feedback" data-i18n="validation.category_required">Chọn danh mục cho bài viết.</div>
         </div>
-        <div data-demo="filled uploading loading">
+        <div data-demo="filled uploading loading preview preview-mobile">
           <label class="form-label" for="postCategoryFilled" data-i18n="admin.post_form.category">Danh mục</label>
           <select class="form-select" id="postCategoryFilled" name="category_id">
             <option value="" data-i18n="admin.post_form.category_placeholder">Chọn danh mục</option>
@@ -159,7 +165,7 @@
             <div class="invalid-feedback" data-i18n="validation.image_too_large">Ảnh "ha-giang-4k.png" nặng 5,8MB. Chọn ảnh JPG, PNG hoặc WebP tối đa 2MB.</div>
           </div>
 
-          <div class="thumb-upload__preview" data-demo="filled uploading loading">
+          <div class="thumb-upload__preview" data-demo="filled uploading loading preview preview-mobile">
             <img src="../assets/img/posts/5.svg" alt="Xem trước ảnh thumbnail" data-i18n-alt="admin.post_form.thumbnail_preview">
             <div class="thumb-upload__actions">
               <label class="btn btn-outline-secondary btn-sm" for="postThumbnail" data-i18n="admin.post_form.thumbnail_change">Đổi ảnh</label>
@@ -196,7 +202,7 @@
           <label class="visually-hidden" for="postExcerpt" data-i18n="admin.post_form.excerpt">Tóm tắt</label>
           <textarea class="post-form__excerpt" id="postExcerpt" name="excerpt" rows="2" maxlength="500" placeholder="Tóm tắt ngắn hiện trên thẻ bài viết (không bắt buộc, tối đa 500 ký tự)" data-i18n-placeholder="admin.post_form.excerpt_placeholder"></textarea>
         </div>
-        <div data-demo="filled uploading loading">
+        <div data-demo="filled uploading loading preview preview-mobile">
           <label class="visually-hidden" for="postTitleFilled" data-i18n="admin.post_form.title">Tiêu đề</label>
           <textarea class="post-form__title text-post-title" id="postTitleFilled" name="title" rows="2" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title">Ghi chép từ chuyến đi Hà Giang mùa hoa tam giác mạch</textarea>
 
@@ -225,7 +231,7 @@
 
             <div class="editor__content prose" id="postContent" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder" data-demo="normal error image-error"></div>
 
-            <div class="editor__content prose" id="postContentFilled" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder" data-demo="filled uploading loading">
+            <div class="editor__content prose" id="postContentFilled" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder" data-demo="filled uploading loading preview preview-mobile">
               <p>Tháng mười, Hà Giang bắt đầu vào mùa hoa tam giác mạch. Chúng tôi xuất phát từ Hà Nội lúc 9 giờ tối, ngủ một giấc trên xe khách và tỉnh dậy giữa <strong>những con đèo phủ sương</strong>.</p>
               <h2>Ngày đầu: Quản Bạ và Yên Minh</h2>
               <p>Cổng trời Quản Bạ là điểm dừng đầu tiên. Từ đây nhìn xuống, <em>núi Đôi</em> hiện ra giữa thung lũng như hai bầu ngực khổng lồ của đất. Đường từ Quản Bạ đi Yên Minh <u>nhiều khúc cua tay áo</u>, nên đi chậm và bật đèn khi qua mây.</p>
@@ -266,7 +272,44 @@
     </form>
   </main>
 
+  <!-- component: post-preview -->
+  <!-- Xem trước bài đang soạn như trên trang chi tiết bài viết. js/post-preview.js dựng nội dung iframe mỗi lần mở -->
+  <div class="modal fade post-preview" id="postPreview" tabindex="-1" aria-labelledby="postPreviewTitle" aria-hidden="true" data-preview-form="postForm" data-demo-modal="preview preview-mobile">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+        <div class="modal-header post-preview__header">
+          <h2 class="post-preview__title" id="postPreviewTitle">
+            <span data-i18n="admin.post_form.preview">Xem trước</span>
+            <span class="post-preview__status" data-preview-status></span>
+          </h2>
+
+          <!-- Chỉ có từ md trở lên: màn hẹp thì bản xem trước đã là bản mobile -->
+          <div class="post-preview__devices" role="group" aria-label="Kích thước màn hình" data-i18n-aria-label="admin.post_preview.device">
+            <button type="button" class="post-preview__device" data-preview-device="desktop" aria-pressed="true">
+              <i class="bi bi-laptop" aria-hidden="true"></i>
+              <span data-i18n="admin.post_preview.desktop">Desktop</span>
+            </button>
+            <button type="button" class="post-preview__device" data-preview-device="mobile" aria-pressed="false">
+              <i class="bi bi-phone" aria-hidden="true"></i>
+              <span data-i18n="admin.post_preview.mobile">Mobile</span>
+            </button>
+          </div>
+
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng" data-i18n-aria-label="common.close"></button>
+        </div>
+        <div class="modal-body post-preview__body">
+          <div class="post-preview__frame" data-device="desktop">
+            <iframe class="post-preview__iframe" title="Bản xem trước bài viết" data-i18n-title="admin.post_preview.frame_title" sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /component: post-preview -->
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- post-preview.js nạp trước demo-state.js để bắt được lần mở modal ở trạng thái demo preview -->
+  <script src="../js/post-preview.js"></script>
   <script src="../js/demo-state.js"></script>
 </body>
 </html>
