@@ -6,6 +6,13 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Chọn ngôn ngữ đang soạn ở `admin/post-create.html` (UC13, theo góp ý của mentor: sửa bài dùng tab, tạo bài dùng select):
+  - Ô "Ngôn ngữ đang soạn" dưới phần dùng chung, mỗi ngôn ngữ một form bản dịch (tiêu đề, tóm tắt, trạng thái, editor), chỉ hiện form đang chọn. Chữ "Bản gốc" / "Bản dịch" trong ô chọn và ở đầu form đổi theo ô "Ngôn ngữ gốc"; form bản dịch có ghi chú "Bản dịch không bắt buộc".
+  - Tên ô nhập đổi thành `translations[vi][title]`, `translations[en][title]`... như `post-edit`.
+  - Xem trước theo ngôn ngữ: modal có ô chọn ngôn ngữ ngay sau tiêu đề, đồng bộ hai chiều với ô "Ngôn ngữ đang soạn"; đổi ngôn ngữ khi modal đang mở thì dựng lại bản xem trước. `<html lang>` của iframe theo ngôn ngữ đang xem.
+  - Trạng thái demo mới: "Soạn bản dịch", "Xem trước bản dịch" (`?demo=translation`, `?demo=preview-translation`), bản dịch English đã điền của bài Hà Giang.
+  - `js/post-language-select.js`, component `post-language-select`, class `.post-form__language`, `.post-preview__language`. `html/README.md`, phase 2 doc: cập nhật dòng `post-create`.
+- `demo-state.js`: `<option data-demo-select="<trạng thái>">` tự chọn option ở trạng thái đó và phát sự kiện `change` (chạy trước khi mở modal demo).
 - Xem trước bài viết ở `admin/post-create.html` và `admin/post-edit.html` (UC13, theo góp ý của mentor):
   - Nút "Xem trước" trên thanh trên (màn hẹp chỉ có icon), mở modal toàn màn hình. Bài hiện như trang chi tiết bài viết (tiêu đề, tóm tắt, tác giả, danh mục, thời gian đọc, thumbnail, nội dung), trạng thái bài ghi cạnh tiêu đề modal.
   - Nút đổi cỡ Desktop / Mobile (từ màn `md`). Bản xem trước nằm trong iframe nạp cùng CSS và theme nên media query chạy theo khung: khung mobile rộng 390px có viền như điện thoại. Màn hẹp hơn `md` thì luôn hiện cỡ của màn đó.

@@ -9,6 +9,8 @@
  *   <div class="modal post-preview" data-preview-form="postForm">  id của form bài viết
  *     [data-preview-status]                                         Chỗ ghi trạng thái bài (Nháp, Đã đăng...)
  *     [data-preview-device="desktop|mobile"]                       Nút đổi cỡ màn hình
+ *     select[data-preview-language="postEditingLanguage"]          Không bắt buộc: chọn ngôn ngữ xem trước,
+ *                                                                   đồng bộ với ô "Ngôn ngữ đang soạn" có id đó
  *     .post-preview__frame > iframe.post-preview__iframe            Bản xem trước
  *
  * Mỗi lần mở modal, nội dung form (tiêu đề, tóm tắt, danh mục, thumbnail, nội dung editor) được dựng
@@ -18,9 +20,11 @@
  *
  * Form có tab bản dịch (post-edit): tiêu đề, tóm tắt, trạng thái, nội dung lấy trong tab đang mở (.tab-pane.active);
  * danh mục và thumbnail dùng chung nên lấy trong cả form. Ô nhập tìm theo name: "title" hoặc "translations[vi][title]".
+ * Form chọn ngôn ngữ bằng ô select (post-create, js/post-language-select.js): lấy trong form [data-lang-pane] đang hiện.
+ * Đổi ngôn ngữ trong modal thì ô "Ngôn ngữ đang soạn" đổi theo và bản xem trước dựng lại.
  *
  * Trang dùng demo-state.js: ô nhập có thể có nhiều bản theo trạng thái demo, chỉ lấy bản đang hiện.
- * Trạng thái demo "preview-mobile" tự chọn cỡ mobile.
+ * Trạng thái demo "preview-mobile" tự chọn cỡ mobile; "preview", "preview-translation" chọn cỡ desktop.
  */
 (function () {
   'use strict';
@@ -33,6 +37,8 @@
   const frame = modal.querySelector('.post-preview__frame');
   const statusLabel = modal.querySelector('[data-preview-status]');
   const deviceButtons = modal.querySelectorAll('[data-preview-device]');
+  const languageSelect = modal.querySelector('[data-preview-language]');
+  const editingSelect = languageSelect && document.getElementById(languageSelect.dataset.previewLanguage);
 
   // Chữ khi form còn trống. Phase 4 lấy từ UI translation.
   const EMPTY_TITLE = 'Chưa có tiêu đề';
@@ -57,9 +63,9 @@
     return findShown(root, `[name="${field}"], [name$="[${field}]"]`);
   }
 
-  // Tab bản dịch đang mở; form không có tab thì là cả form
+  // Bản dịch đang soạn: tab đang mở (post-edit) hoặc form ngôn ngữ đang chọn (post-create); không có thì là cả form
   function translationRoot() {
-    return form.querySelector('.tab-pane.active') || form;
+    return form.querySelector('.tab-pane.active') || findShown(form, '[data-lang-pane]') || form;
   }
 
   function selectedText(select) {
@@ -153,9 +159,10 @@
       .map((link) => `<link rel="stylesheet" href="${escapeHtml(link.href)}">`)
       .join('\n');
     const theme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+    const lang = translationRoot().dataset.langPane || document.documentElement.lang;
 
     return `<!doctype html>
-<html lang="${document.documentElement.lang}" data-bs-theme="${theme}">
+<html lang="${lang}" data-bs-theme="${theme}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -179,17 +186,42 @@ ${styles}
     button.addEventListener('click', () => setDevice(button.dataset.previewDevice));
   });
 
-  modal.addEventListener('show.bs.modal', () => {
+  // Ô chọn ngôn ngữ trong modal: chép chữ option (đổi theo ngôn ngữ gốc) và giá trị từ ô "Ngôn ngữ đang soạn"
+  function syncLanguage() {
+    if (!editingSelect) return;
+    Array.from(languageSelect.options).forEach((option) => {
+      const source = editingSelect.querySelector(`option[value="${option.value}"]`);
+      if (source) option.text = source.text;
+    });
+    languageSelect.value = editingSelect.value;
+  }
+
+  function render() {
+    syncLanguage();
     const status = selectedText(findField(translationRoot(), 'status'));
     statusLabel.textContent = status ? `· ${status}` : '';
     iframe.srcdoc = buildDocument();
-  });
+  }
 
-  // Trạng thái demo preview / preview-mobile: chọn sẵn cỡ màn hình. Theo dõi data-demo-state trên <body>
-  // vì khi chuyển giữa hai trạng thái này modal đã mở sẵn, Bootstrap không phát lại sự kiện show.
+  modal.addEventListener('show.bs.modal', render);
+
+  if (editingSelect) {
+    // Đổi ngôn ngữ trong modal = đổi ngôn ngữ đang soạn; post-language-select.js hiện form tương ứng
+    languageSelect.addEventListener('change', () => {
+      editingSelect.value = languageSelect.value;
+      editingSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    // Ngôn ngữ đổi khi modal đang mở (đổi trong modal, hoặc chuyển trạng thái demo preview <-> preview-translation)
+    editingSelect.addEventListener('change', () => {
+      if (modal.classList.contains('show')) render();
+    });
+  }
+
+  // Trạng thái demo preview / preview-mobile / preview-translation: chọn sẵn cỡ màn hình. Theo dõi data-demo-state
+  // trên <body> vì khi chuyển giữa các trạng thái này modal đã mở sẵn, Bootstrap không phát lại sự kiện show.
   new MutationObserver(() => {
     const state = document.body.dataset.demoState;
-    if (state === 'preview') setDevice('desktop');
+    if (state === 'preview' || state === 'preview-translation') setDevice('desktop');
     if (state === 'preview-mobile') setDevice('mobile');
   }).observe(document.body, { attributes: true, attributeFilter: ['data-demo-state'] });
 })();
