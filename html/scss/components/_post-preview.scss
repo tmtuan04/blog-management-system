@@ -1,5 +1,5 @@
 // Xem trước bài viết đang soạn (UC13), mẫu ở admin/post-create.html, JS ở js/post-preview.js.
-// Modal toàn màn hình: thanh trên (tiêu đề · trạng thái, nút Desktop/Mobile, đóng), dưới là iframe.
+// Modal toàn màn hình: thanh trên (tiêu đề · trạng thái, chọn ngôn ngữ, nút Desktop/Mobile, đóng), dưới là iframe.
 //   .post-preview__frame[data-device="desktop"]  Khung rộng hết vùng xem trước
 //   .post-preview__frame[data-device="mobile"]   Khung 390px có viền như điện thoại (chỉ từ md trở lên;
 //                                                màn hẹp hơn thì khung luôn rộng hết màn hình)
@@ -37,6 +37,12 @@ $preview-bezel: .5rem;
   font-size: .8125rem;
   font-weight: 400;
   color: var(--bl-text-secondary);
+}
+
+// Ô chọn ngôn ngữ xem trước (chỉ có ở post-create), ngay sau tiêu đề
+.post-preview__language {
+  flex-shrink: 0;
+  width: auto;
 }
 
 // Nút chọn cỡ màn hình dạng segmented control, căn giữa thanh trên

@@ -1,6 +1,7 @@
 // Form bài viết (UC13), dùng ở post-create và post-edit. Tab ngôn ngữ của post-edit: components/_translation-tabs.scss.
 //   .post-form__shared        Phần dùng chung cho mọi ngôn ngữ (ngôn ngữ gốc, danh mục, thumbnail), kẻ dưới
 //   .post-form__shared-wide   Ô chiếm cả hàng trong lưới 2 cột (thumbnail)
+//   .post-form__language      Ô "Ngôn ngữ đang soạn" ở post-create (JS: js/post-language-select.js)
 //   .post-form__head          Dòng "Bản gốc · Tiếng Việt" + ô trạng thái của bản dịch
 //   .post-form__title         Ô tiêu đề kiểu Medium: không viền, dùng kèm .text-post-title
 //   .post-form__excerpt       Ô tóm tắt: chữ xám như subtitle trên trang chi tiết
@@ -44,6 +45,11 @@
   margin-bottom: 1.5rem;
 }
 
+.post-form__language {
+  margin-bottom: 1rem;
+}
+
+.post-form__language,
 .post-form__status {
   display: flex;
   gap: .5rem;

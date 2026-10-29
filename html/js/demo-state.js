@@ -25,6 +25,9 @@
  *   <div class="toast" data-demo-toast="deleted">   Tự hiện toast ở trạng thái đó, không tự ẩn (để chụp màn hình)
  *   <button data-bs-toggle="tab" data-demo-tab="error">  Tự chọn tab (.nav-tabs) đó ở các trạng thái này.
  *                                                    Trạng thái không gắn tab nào thì giữ tab đang chọn.
+ *   <option data-demo-select="translation">          Tự chọn option đó ở các trạng thái này và phát sự kiện change
+ *                                                    trên <select> để script của trang cập nhật theo.
+ *                                                    Trạng thái không gắn option nào thì giữ option đang chọn.
  *
  * 2. Vai trò người xem
  *   <body data-demo-auths="blog_owner super_admin"> Các vai trò trang có. Mặc định "guest user" nếu trang
@@ -176,6 +179,13 @@
     });
     document.querySelectorAll('[data-demo-loading]').forEach((button) => {
       setLoading(button, activeIn(button.dataset.demoLoading, 'loading'));
+    });
+    // Chọn option trước khi mở modal, để modal mở ra (VD: xem trước) đã thấy nội dung theo option mới.
+    // Chỉ phát change khi option thật sự đổi, để không chạy lại script của trang mỗi lần render.
+    document.querySelectorAll('option[data-demo-select]').forEach((option) => {
+      if (!activeIn(option.dataset.demoSelect) || option.selected) return;
+      option.selected = true;
+      option.closest('select').dispatchEvent(new Event('change', { bubbles: true }));
     });
     // Modal cần JS của Bootstrap; vì vậy file này phải nhúng SAU bootstrap.bundle.min.js.
     // data-demo-modal không có giá trị mặc định: activeIn() không có fallback nên thuộc tính rỗng không mở modal nào.
