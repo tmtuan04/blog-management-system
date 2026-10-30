@@ -6,6 +6,7 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- `docs/phase-3-huong-dan.md`: hướng dẫn từng bước cho phase 3 (cài Docker Desktop, Postman CLI; chạy MySQL/Redis, điền `.env`, migrate, chạy app, kiểm tra bằng Swagger; quy trình làm một module theo mẫu `languages` từ DTO đến e2e test và Postman; checklist PR; Git và cách gỡ conflict `app.module.ts`, Postman collection; lỗi hay gặp). Link từ phase 3 doc mục 8 và `backend/README.md`.
 - Chọn ngôn ngữ đang soạn ở `admin/post-create.html` (UC13, theo góp ý của mentor: sửa bài dùng tab, tạo bài dùng select):
   - Ô "Ngôn ngữ đang soạn" dưới phần dùng chung, mỗi ngôn ngữ một form bản dịch (tiêu đề, tóm tắt, trạng thái, editor), chỉ hiện form đang chọn. Chữ "Bản gốc" / "Bản dịch" trong ô chọn và ở đầu form đổi theo ô "Ngôn ngữ gốc"; form bản dịch có ghi chú "Bản dịch không bắt buộc".
   - Tên ô nhập đổi thành `translations[vi][title]`, `translations[en][title]`... như `post-edit`.

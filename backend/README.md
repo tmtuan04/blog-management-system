@@ -1,6 +1,6 @@
 # Backend - Blog Management System
 
-NestJS 11 + Sequelize (MySQL 8) + Redis. Kế hoạch và quy ước: [docs/phase-3-backend.md](../docs/phase-3-backend.md).
+NestJS 11 + Sequelize (MySQL 8) + Redis. Kế hoạch và quy ước: [docs/phase-3-backend.md](../docs/phase-3-backend.md). Mới tham gia thì đọc hướng dẫn từng bước: [docs/phase-3-huong-dan.md](../docs/phase-3-huong-dan.md).
 
 ## Chạy lần đầu
 

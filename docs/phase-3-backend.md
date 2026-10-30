@@ -485,6 +485,8 @@ Tỉ lệ này chỉ áp dụng cho phase 3. Requirements mục 1.4 (tỉ lệ c
 | C2 | `GET /categories`, `/categories/:slug`, `/categories/:slug/posts` (UC07) có cache | B3, C1 | Dùng lại hàm truy vấn thẻ bài của C1 |
 | C3 | Kiểm tra tổng: chạy cả Postman collection bằng Postman CLI trên dữ liệu vừa seed; đối chiếu từng API với format 6.4 và bảng mục 4; viết `db:seed:perf` và đo `GET /posts`, `/categories/:slug/posts`, `/search`, `/admin/posts` với 10.000 bài; ghi lỗi thành danh sách, lỗi trong một module chuyển người làm module đó, lỗi phần nền chuyển A | A4, B6 | Làm sau cùng. Ghi danh sách lỗi và số đo thời gian vào mô tả PR |
 
+Hướng dẫn từng bước (cài máy, chạy backend, quy trình làm một module, test, Postman, Git): [phase-3-huong-dan.md](phase-3-huong-dan.md).
+
 ### Lịch dự kiến
 
 | Ngày | A | B | C |
