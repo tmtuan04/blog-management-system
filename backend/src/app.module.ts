@@ -22,6 +22,7 @@ import { RedisModule } from './infra/redis/redis.module';
 import { UploadModule } from './infra/upload/upload.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { LanguagesModule } from './modules/languages/languages.module';
+import { PostsModule } from './modules/posts/posts.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { LanguagesModule } from './modules/languages/languages.module';
     UploadModule,
     AuthModule,
     LanguagesModule,
+    PostsModule,
   ],
   providers: [
     // Thứ tự guard: rate limit → xác thực → phân quyền

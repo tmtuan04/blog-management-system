@@ -6,6 +6,10 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Quản lý bài viết UC13 phần bài + bản gốc (A3, PR 1/2):
+  - `GET/POST /admin/posts`, `GET/PATCH/DELETE /admin/posts/:id` (Blog Owner / Super Admin, chỉ bài của chính mình). Lọc danh sách bằng EXISTS; tạo bài và bản gốc trong transaction; sanitize HTML, slug, xóa cache `posts` + `categories`; đổi/bỏ thumbnail thì xóa file cũ.
+  - Module `posts` (`AdminPostsController` / `AdminPostsService`), DTO, `escapeLike`, mã lỗi `ORIGINAL_TRANSLATION_REQUIRED` (dùng cho PR bản dịch).
+  - Unit test `admin-posts.service.spec.ts`, e2e `test/admin-posts.e2e-spec.ts`; Postman folder `03 - Admin Posts` (biến `categoryId`, `postId`). API bản dịch để PR sau.
 - `docs/phase-3-huong-dan.md`: hướng dẫn từng bước cho phase 3 (cài Docker Desktop, Postman CLI; chạy MySQL/Redis, điền `.env`, migrate, chạy app, kiểm tra bằng Swagger; quy trình làm một module theo mẫu `languages` từ DTO đến e2e test và Postman; checklist PR; Git và cách gỡ conflict `app.module.ts`, Postman collection; lỗi hay gặp). Link từ phase 3 doc mục 8 và `backend/README.md`.
 - Chọn ngôn ngữ đang soạn ở `admin/post-create.html` (UC13, theo góp ý của mentor: sửa bài dùng tab, tạo bài dùng select):
   - Ô "Ngôn ngữ đang soạn" dưới phần dùng chung, mỗi ngôn ngữ một form bản dịch (tiêu đề, tóm tắt, trạng thái, editor), chỉ hiện form đang chọn. Chữ "Bản gốc" / "Bản dịch" trong ô chọn và ở đầu form đổi theo ô "Ngôn ngữ gốc"; form bản dịch có ghi chú "Bản dịch không bắt buộc".
