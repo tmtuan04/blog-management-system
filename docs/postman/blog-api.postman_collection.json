@@ -760,6 +760,338 @@
           }
         }
       ]
+    },
+    {
+      "name": "03 - Admin Posts",
+      "description": "UC13 (A3, PR bài + bản gốc). Cần chạy 00 - Auth trước. Đặt {{categoryId}} theo danh mục đã seed (B1) trước khi tạo bài. API bản dịch thêm ở PR sau.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{ownerAccessToken}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "UC13 - Danh sách khi chưa đăng nhập (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 và success = false', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('UNAUTHORIZED');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 - Danh sách bài viết của tôi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test(\"Có meta phân trang\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.meta).to.include.keys(\"page\", \"limit\", \"total\", \"totalPages\");",
+                  "  pm.expect(body.data).to.be.an(\"array\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "language",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "categoryId",
+                  "value": "{{categoryId}}",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 - Tạo bài viết và bản gốc",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"201 và success = true\", () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.id) {",
+                  "  pm.environment.set(\"postId\", String(data.id));",
+                  "}",
+                  "pm.test(\"Có bản gốc\", () => {",
+                  "  pm.expect(data.translations[0].isOriginal).to.eql(true);",
+                  "  pm.expect(data.languageCode).to.eql(\"vi\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"languageCode\": \"vi\",\n  \"categoryId\": {{categoryId}},\n  \"translation\": {\n    \"title\": \"Bai viet Postman {{$timestamp}}\",\n    \"excerpt\": \"Tom tat thu nghiem\",\n    \"content\": \"<p>Noi dung bai viet tu Postman</p>\",\n    \"status\": \"draft\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 - Tạo bài viết tiêu đề ngắn (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"400 VALIDATION_ERROR\", () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.code).to.eql(\"VALIDATION_ERROR\");",
+                  "  pm.expect(body.errors.some((e) => e.field === \"translation.title\")).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"languageCode\": \"vi\",\n  \"categoryId\": {{categoryId}},\n  \"translation\": {\n    \"title\": \"abc\",\n    \"content\": \"<p>Noi dung</p>\",\n    \"status\": \"draft\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 - Chi tiết bài viết",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test(\"Đúng postId\", () => {",
+                  "  pm.expect(String(pm.response.json().data.id)).to.eql(pm.environment.get(\"postId\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts/{{postId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts",
+                "{{postId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 - Sửa phần dùng chung",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": {{categoryId}},\n  \"thumbnail\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts/{{postId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts",
+                "{{postId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 - Xóa bài viết",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test(\"data = null\", () => pm.expect(pm.response.json().data).to.eql(null));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts/{{postId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts",
+                "{{postId}}"
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

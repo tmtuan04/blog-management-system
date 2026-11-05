@@ -6,6 +6,10 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Quản lý bài viết UC13 phần bài + bản gốc (A3, PR 1/2):
+  - `GET/POST /admin/posts`, `GET/PATCH/DELETE /admin/posts/:id` (Blog Owner / Super Admin, chỉ bài của chính mình). Lọc danh sách bằng EXISTS; tạo bài và bản gốc trong transaction; sanitize HTML, slug, xóa cache `posts` + `categories`; đổi/bỏ thumbnail thì xóa file cũ.
+  - Module `posts` (`AdminPostsController` / `AdminPostsService`), DTO, `escapeLike`, mã lỗi `ORIGINAL_TRANSLATION_REQUIRED` (dùng cho PR bản dịch).
+  - Unit test `admin-posts.service.spec.ts`, e2e `test/admin-posts.e2e-spec.ts`; Postman folder `03 - Admin Posts` (biến `categoryId`, `postId`). API bản dịch để PR sau.
 - Seeders phase 3 (B1), `npm run db:seed` / `db:seed:undo`:
   - 8 seeder theo phase 3 doc mục 5: 3 role, 2 ngôn ngữ, 4 tài khoản (mật khẩu chung `Password123`, user Github không có mật khẩu), 5 danh mục ("Đời sống" chỉ có tên `vi`, "Tin tức" chưa có bài), 30 bài / 43 bản dịch (đủ `draft`, `published`, `archived`; bài "Hướng dẫn Angular" dùng đủ định dạng của editor), 11 bình luận, 369 key UI translation `vi` + `en`, 3 trang tĩnh song ngữ.
   - Ảnh mẫu: SVG ở `html/assets/img/` chuyển sang PNG trong `backend/database/seed-data/images/`, seeder copy vào `UPLOAD_DIR` với tên UUID cố định khớp quy tắc upload; rollback xóa file.
