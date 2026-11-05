@@ -84,7 +84,7 @@ npm run db:seed
 npm run start:dev
 ```
 
-- `npm run db:seed` chỉ nạp dữ liệu sau khi việc B1 (seeders) được merge. Trước đó lệnh này không làm gì; cần tài khoản thì gọi `POST /auth/register` ở Swagger.
+- `npm run db:seed` nạp dữ liệu mẫu: 4 tài khoản (mật khẩu chung `Password123`, danh sách ở `backend/README.md`), 5 danh mục, 30 bài viết kèm ảnh, bình luận, 369 chữ giao diện `vi`/`en` và 3 trang tĩnh. Xóa dữ liệu mẫu: `npm run db:seed:undo`.
 - Để nguyên terminal `start:dev` trong lúc làm. Lưu file `.ts` thì app tự khởi động lại.
 
 **Bước 5. Kiểm tra đã chạy được**
@@ -106,7 +106,7 @@ npm run start:dev
 
 ## 4. Thứ tự làm
 
-Việc của A, B và C nằm ở [phase-3-backend.md](phase-3-backend.md) mục 8. Mỗi người làm bảng của mình, lần lượt từ trên xuống. Mỗi dòng là **một nhánh và một PR riêng**, làm xong dòng nào thì tạo PR dòng đó.
+Việc của A, B và C nằm ở [phase-3-backend.md](phase-3-backend.md) mục 8.3. Mỗi người làm bảng của mình, lần lượt từ trên xuống. Muốn biết việc mình đang chờ ai, hoặc ai đang chờ mình, xem bảng thứ tự theo đợt ở mục 8.2. Mỗi dòng là **một nhánh và một PR riêng**, làm xong dòng nào thì tạo PR dòng đó.
 
 Việc có ghi ở cột "Chờ" thì đợi việc đó của người khác merge vào `dev` rồi mới bắt đầu (nhớ `git pull origin dev`). Chưa có thì làm trước việc tiếp theo không phải chờ.
 
