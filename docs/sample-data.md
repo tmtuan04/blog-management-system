@@ -26,7 +26,7 @@ Quy ước: `NULL` = không có giá trị; `true`/`false` = `TINYINT(1)` 1/0 tr
 | id | full_name     | email             | password_hash         | avatar                   | role_id         | is_active | created_at          | updated_at          |
 |----|---------------|-------------------|-----------------------|--------------------------|-----------------|-----------|---------------------|---------------------|
 | 1  | Super Admin   | admin@blog.local  | `$2b$10$Xk9...` (bcrypt) | NULL                     | 3 (super_admin) | true      | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
-| 2  | Nguyễn Văn An | owner1@blog.local | `$2b$10$Qa7...` (bcrypt) | uploads/avatars/2.jpg    | 2 (blog_owner)  | true      | 2026-08-10 10:15:00 | 2026-08-10 10:15:00 |
+| 2  | Nguyễn Văn An | owner1@blog.local | `$2b$10$Qa7...` (bcrypt) | uploads/avatars/5eed0002-0000-4000-8000-000000000002.png | 2 (blog_owner)  | true      | 2026-08-10 10:15:00 | 2026-08-10 10:15:00 |
 | 3  | Trần Thị Bình | owner2@blog.local | `$2b$10$Lm3...` (bcrypt) | NULL                     | 2 (blog_owner)  | true      | 2026-08-12 14:20:00 | 2026-08-12 14:20:00 |
 | 4  | Lê Minh Cường | user@blog.local   | NULL                  | NULL                     | 1 (user)        | true      | 2026-08-20 19:45:00 | 2026-08-20 19:45:00 |
 
@@ -59,8 +59,8 @@ Quy ước: `NULL` = không có giá trị; `true`/`false` = `TINYINT(1)` 1/0 tr
 
 | id | user_id | language_id (gốc) | category_id | thumbnail           | created_at          | updated_at          |
 |----|---------|-------------------|-------------|---------------------|---------------------|---------------------|
-| 1  | 2       | 1 (vi)            | 1           | uploads/posts/1.jpg | 2026-08-30 21:00:00 | 2026-09-03 10:00:00 |
-| 2  | 2       | 2 (en)            | 1           | uploads/posts/2.jpg | 2026-09-04 16:10:00 | 2026-09-06 08:00:00 |
+| 1  | 2       | 1 (vi)            | 1           | uploads/images/5eed0001-0000-4000-8000-000000000001.png | 2026-08-30 21:00:00 | 2026-09-03 10:00:00 |
+| 2  | 2       | 2 (en)            | 1           | uploads/images/5eed0001-0000-4000-8000-000000000002.png | 2026-09-04 16:10:00 | 2026-09-06 08:00:00 |
 | 3  | 3       | 1 (vi)            | 2           | NULL                | 2026-09-10 11:00:00 | 2026-09-10 11:00:00 |
 
 ## 8. `post_translations`
@@ -111,9 +111,11 @@ Quy ước: `NULL` = không có giá trị; `true`/`false` = `TINYINT(1)` 1/0 tr
 | 1  | 1       | 1 (vi)      | Giới thiệu         | `<p>Về blog của chúng tôi...</p>`  | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
 | 2  | 1       | 2 (en)      | About              | `<p>About our blog...</p>`         | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
 | 3  | 2       | 1 (vi)      | Liên hệ            | `<p>Email: contact@blog.local</p>` | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
-| 4  | 3       | 1 (vi)      | Chính sách bảo mật | `<p>...</p>`                       | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
+| 4  | 2       | 2 (en)      | Contact            | `<p>Email: contact@blog.local</p>` | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
+| 5  | 3       | 1 (vi)      | Chính sách bảo mật | `<p>...</p>`                       | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
+| 6  | 3       | 2 (en)      | Privacy policy     | `<p>...</p>`                       | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
 
-> Trang `contact` và `privacy` chưa có bản `en` → fallback về tiếng Việt.
+> Cả 3 trang có nội dung `vi` và `en` (requirements 6.6). Muốn xem fallback thì xóa nội dung `en` của một trang ở màn sửa trang (UC18).
 
 ---
 

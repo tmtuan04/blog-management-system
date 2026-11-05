@@ -1,125 +1,63 @@
+const { skipInProduction, assertIdsFree } = require('../seed-helpers');
+
+const SEEDER = '06-comments';
+
+// [id, post_translation_id, user_id, parent_id, content, created_at]
+// Trả lời chỉ 1 cấp. Người trả lời (user 2) là tác giả bài nên có huy hiệu "Tác giả".
 const COMMENTS = [
-    // 3 bình luận đầu: giữ nguyên theo bảng mẫu
-    {
-        id: 1,
-        post_translation_id: 1,
-        user_id: 4,
-        parent_id: null,
-        content: 'Bài viết rất hay!',
-        created_at: '2026-09-02 20:15:00',
-        updated_at: '2026-09-02 20:15:00',
-    },
-    {
-        id: 2,
-        post_translation_id: 1,
-        user_id: 2,
-        parent_id: 1,
-        content: 'Cảm ơn bạn đã đọc.',
-        created_at: '2026-09-02 21:00:00',
-        updated_at: '2026-09-02 21:00:00',
-    },
-    {
-        id: 3,
-        post_translation_id: 2,
-        user_id: 4,
-        parent_id: null,
-        content: 'Great tutorial!',
-        created_at: '2026-09-03 18:30:00',
-        updated_at: '2026-09-03 18:30:00',
-    },
-
-    // Bình luận bài viết Getting started with NestJS (translation ID 3)
-    {
-        id: 4,
-        post_translation_id: 3,
-        user_id: 4,
-        parent_id: null,
-        content: 'Bài viết giới thiệu khá dễ hiểu, rất hữu ích cho người mới bắt đầu.',
-        created_at: '2026-09-05 11:20:00',
-        updated_at: '2026-09-05 11:20:00',
-    },
-    {
-        id: 5,
-        post_translation_id: 3,
-        user_id: 2,
-        parent_id: 4,
-        content: 'Cảm ơn bạn! Mình sẽ bổ sung thêm các ví dụ trong những bài viết tiếp theo.',
-        created_at: '2026-09-05 12:00:00',
-        updated_at: '2026-09-05 12:00:00',
-    },
-
-    // Bình luận bài viết Các khái niệm cơ bản trong lập trình (translation ID 6)
-    {
-        id: 6,
-        post_translation_id: 6,
-        user_id: 4,
-        parent_id: null,
-        content: 'Phần giải thích về biến và kiểu dữ liệu rất dễ hiểu.',
-        created_at: '2026-09-14 19:00:00',
-        updated_at: '2026-09-14 19:00:00',
-    },
-    {
-        id: 7,
-        post_translation_id: 6,
-        user_id: 2,
-        parent_id: 6,
-        content: 'Cảm ơn bạn đã góp ý!',
-        created_at: '2026-09-14 20:00:00',
-        updated_at: '2026-09-14 20:00:00',
-    },
-
-    // Bình luận bài viết Understanding JavaScript Variables (translation ID 8)
-    {
-        id: 8,
-        post_translation_id: 8,
-        user_id: 4,
-        parent_id: null,
-        content: 'Ví dụ minh họa rất trực quan, giúp mình hiểu rõ hơn về JavaScript.',
-        created_at: '2026-09-16 15:00:00',
-        updated_at: '2026-09-16 15:00:00',
-    },
-
-    // Bình luận bài viết Cách quản lý thời gian hiệu quả (translation ID 10)
-    {
-        id: 9,
-        post_translation_id: 10,
-        user_id: 4,
-        parent_id: null,
-        content: 'Những phương pháp này khá thực tế, mình sẽ thử áp dụng.',
-        created_at: '2026-09-19 10:00:00',
-        updated_at: '2026-09-19 10:00:00',
-    },
-
-    // Bình luận bài viết A Beginner Guide to REST APIs (translation ID 14)
-    {
-        id: 10,
-        post_translation_id: 14,
-        user_id: 4,
-        parent_id: null,
-        content: 'This guide explains REST API concepts in a clear and simple way.',
-        created_at: '2026-09-25 17:00:00',
-        updated_at: '2026-09-25 17:00:00',
-    },
+  // 3 bình luận đầu theo docs/sample-data.md
+  [1, 1, 4, null, 'Bài viết rất hay!', '2026-09-02 20:15:00'],
+  [2, 1, 2, 1, 'Cảm ơn bạn đã đọc.', '2026-09-02 21:00:00'],
+  [3, 2, 4, null, 'Great tutorial!', '2026-09-03 18:30:00'],
+  // Getting started with NestJS (en)
+  [4, 3, 4, null, 'Clear introduction, very helpful for beginners.', '2026-09-05 11:20:00'],
+  [5, 3, 2, 4, 'Thanks! I will add more examples in the next posts.', '2026-09-05 12:00:00'],
+  [6, 3, 3, null, 'Looking forward to a post about modules and providers.', '2026-09-06 09:10:00'],
+  // Các khái niệm cơ bản trong lập trình (vi)
+  [7, 6, 4, null, 'Phần giải thích về biến và kiểu dữ liệu rất dễ hiểu.', '2026-09-14 19:00:00'],
+  [8, 6, 2, 7, 'Cảm ơn bạn đã góp ý!', '2026-09-14 20:00:00'],
+  // Understanding JavaScript Variables (en)
+  [9, 8, 4, null, 'The examples make the difference between let and const really clear.', '2026-09-16 15:00:00'],
+  // Cách quản lý thời gian hiệu quả (vi)
+  [10, 10, 4, null, 'Những phương pháp này khá thực tế, mình sẽ thử áp dụng.', '2026-09-19 10:00:00'],
+  // A Beginner Guide to REST APIs (en)
+  [11, 14, 4, null, 'This guide explains REST API concepts in a clear and simple way.', '2026-09-25 17:00:00'],
 ];
 
 module.exports = {
-    async up(queryInterface) {
-        await queryInterface.sequelize.transaction(async (transaction) => {
-            await queryInterface.bulkInsert('comments', COMMENTS, {
-                transaction,
-            });
-        });
-    },
+  async up(queryInterface) {
+    if (skipInProduction(SEEDER)) {
+      return;
+    }
+    await queryInterface.sequelize.transaction(async (transaction) => {
+      await assertIdsFree(
+        queryInterface,
+        'comments',
+        COMMENTS.map(([id]) => id),
+        transaction,
+        SEEDER,
+      );
+      await queryInterface.bulkInsert(
+        'comments',
+        COMMENTS.map(([id, postTranslationId, userId, parentId, content, createdAt]) => ({
+          id,
+          post_translation_id: postTranslationId,
+          user_id: userId,
+          parent_id: parentId,
+          content,
+          created_at: createdAt,
+          updated_at: createdAt,
+        })),
+        { transaction },
+      );
+    });
+  },
 
-    async down(queryInterface) {
-        await queryInterface.sequelize.transaction(async (transaction) => {
-            await queryInterface.bulkDelete(
-                'comments',
-                {
-                    id: COMMENTS.map((item) => item.id),
-                },
-                { transaction },
-            );
-        });
-    },
+  /** Trả lời xóa theo CASCADE cùng bình luận gốc */
+  async down(queryInterface) {
+    if (skipInProduction(SEEDER)) {
+      return;
+    }
+    await queryInterface.bulkDelete('comments', { id: COMMENTS.map(([id]) => id) });
+  },
 };
