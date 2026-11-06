@@ -28,6 +28,8 @@
  *   <option data-demo-select="translation">          Tự chọn option đó ở các trạng thái này và phát sự kiện change
  *                                                    trên <select> để script của trang cập nhật theo.
  *                                                    Trạng thái không gắn option nào thì giữ option đang chọn.
+ *   <input type="checkbox" data-demo-checked="translation">  Tick ở các trạng thái này, bỏ tick ở trạng thái khác.
+ *                                                    Phát sự kiện change khi đổi, như data-demo-select.
  *
  * 2. Vai trò người xem
  *   <body data-demo-auths="blog_owner super_admin"> Các vai trò trang có. Mặc định "guest user" nếu trang
@@ -180,8 +182,14 @@
     document.querySelectorAll('[data-demo-loading]').forEach((button) => {
       setLoading(button, activeIn(button.dataset.demoLoading, 'loading'));
     });
-    // Chọn option trước khi mở modal, để modal mở ra (VD: xem trước) đã thấy nội dung theo option mới.
-    // Chỉ phát change khi option thật sự đổi, để không chạy lại script của trang mỗi lần render.
+    // Tick checkbox, chọn option và chọn tab trước khi mở modal, để modal mở ra (VD: xem trước) đã thấy
+    // nội dung theo lựa chọn mới. Chỉ phát change khi thật sự đổi, để không chạy lại script của trang mỗi lần render.
+    document.querySelectorAll('input[data-demo-checked]').forEach((input) => {
+      const checked = activeIn(input.dataset.demoChecked);
+      if (input.checked === checked) return;
+      input.checked = checked;
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
     document.querySelectorAll('option[data-demo-select]').forEach((option) => {
       if (!activeIn(option.dataset.demoSelect) || option.selected) return;
       option.selected = true;
@@ -190,6 +198,10 @@
     // Modal cần JS của Bootstrap; vì vậy file này phải nhúng SAU bootstrap.bundle.min.js.
     // data-demo-modal không có giá trị mặc định: activeIn() không có fallback nên thuộc tính rỗng không mở modal nào.
     if (window.bootstrap) {
+      // Tab chỉ cần chọn, không cần bỏ chọn: Bootstrap tự bỏ tab cũ trong cùng nhóm
+      document.querySelectorAll('[data-demo-tab]').forEach((el) => {
+        if (activeIn(el.dataset.demoTab)) window.bootstrap.Tab.getOrCreateInstance(el).show();
+      });
       document.querySelectorAll('[data-demo-modal]').forEach((el) => {
         const modal = window.bootstrap.Modal.getOrCreateInstance(el);
         if (activeIn(el.dataset.demoModal)) modal.show();
@@ -200,10 +212,6 @@
         const toast = window.bootstrap.Toast.getOrCreateInstance(el, { autohide: false });
         if (activeIn(el.dataset.demoToast)) toast.show();
         else toast.hide();
-      });
-      // Tab chỉ cần chọn, không cần bỏ chọn: Bootstrap tự bỏ tab cũ trong cùng nhóm
-      document.querySelectorAll('[data-demo-tab]').forEach((el) => {
-        if (activeIn(el.dataset.demoTab)) window.bootstrap.Tab.getOrCreateInstance(el).show();
       });
     }
     // Đánh dấu nút đang chọn (aria-pressed) cho cả nhóm trạng thái lẫn nhóm vai trò
