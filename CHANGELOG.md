@@ -6,6 +6,13 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Ô "Bản dịch" ở `admin/post-create.html` đổi từ nhóm checkbox sang dropdown chọn nhiều (UC13, theo góp ý của mentor: nhóm checkbox chiếm chỗ, nhiều ngôn ngữ thì các hàng không thẳng cột):
+  - Component `multi-select` (`scss/components/_multi-select.scss`, `js/multi-select.js`): khung giống `.form-select`, ngôn ngữ đã chọn hiện thành chip có nút bỏ chọn; khung luôn cao một dòng: hiện tối đa 3 chip (ít hơn nếu khung hẹp, tính lại khi đổi cỡ màn hình), còn lại gộp vào chip "+N" (rê chuột vào để xem tên); chọn hết thì hiện "Tất cả (N ngôn ngữ)". Menu có ô tìm (không phân biệt hoa/thường và dấu), "Chọn tất cả" (theo kết quả đang lọc, có trạng thái chọn một phần), danh sách cuộn, dòng "Không tìm thấy ngôn ngữ".
+  - Thêm 5 ngôn ngữ demo (Français, Deutsch, 日本語, 한국어, 中文) vào ô "Ngôn ngữ gốc" và ô "Bản dịch" để thấy được ô tìm, chip "+N" và "Tất cả". Tab + form của các ngôn ngữ này dựng từ `<template id="postTranslationTemplate">` (`post-language-select.js`), không chép tay từng bản.
+  - Checkbox của ngôn ngữ gốc bị disabled và bỏ chọn thay vì chỉ ẩn. Bỏ class `.post-form__translations`, thuộc tính `data-lang-option`.
+  - Trạng thái demo mới "Nhiều bản dịch" (`?demo=translations`): chọn 4 bản dịch và mở sẵn menu. `demo-state.js`: `data-demo-dropdown="<trạng thái>"` trên nút `data-bs-toggle="dropdown"` tự mở dropdown ở trạng thái đó.
+  - UI translation mới: `admin.post_form.translation_placeholder`, `translation_search`, `translation_count`, `translation_no_match`, `common.select_all`, `common.deselect`. `html/README.md`, phase 2 doc: cập nhật dòng `post-create` và bảng "Có sẵn để dùng".
+- `README.md` ở gốc repo: giới thiệu ngắn, bảng link tới các tài liệu trong `docs/` và README của `html/`, `backend/`, link bản deploy, địa chỉ local (API, Swagger, Adminer, RedisInsight), lệnh chạy nhanh, cấu trúc thư mục.
 - Quản lý bài viết UC13 phần bài + bản gốc (A3, PR 1/2):
   - `GET/POST /admin/posts`, `GET/PATCH/DELETE /admin/posts/:id` (Blog Owner / Super Admin, chỉ bài của chính mình). Lọc danh sách bằng EXISTS; tạo bài và bản gốc trong transaction; sanitize HTML, slug, xóa cache `posts` + `categories`; đổi/bỏ thumbnail thì xóa file cũ.
   - Module `posts` (`AdminPostsController` / `AdminPostsService`), DTO, `escapeLike`, mã lỗi `ORIGINAL_TRANSLATION_REQUIRED` (dùng cho PR bản dịch).
