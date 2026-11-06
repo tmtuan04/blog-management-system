@@ -1,0 +1,1493 @@
+{
+  "admin.categories.add": {
+    "vi": "Thêm danh mục",
+    "en": "Add category"
+  },
+  "admin.categories.add_first": {
+    "vi": "Thêm danh mục đầu tiên",
+    "en": "Add your first category"
+  },
+  "admin.categories.add_title": {
+    "vi": "Thêm danh mục",
+    "en": "Add category"
+  },
+  "admin.categories.col_posts": {
+    "vi": "Số bài",
+    "en": "Posts"
+  },
+  "admin.categories.default_suffix": {
+    "vi": "(mặc định)",
+    "en": "(default)"
+  },
+  "admin.categories.delete_title": {
+    "vi": "Xóa danh mục?",
+    "en": "Delete category?"
+  },
+  "admin.categories.delete_warning": {
+    "vi": "Tên danh mục ở mọi ngôn ngữ sẽ bị xóa. Không thể hoàn tác.",
+    "en": "The category name in every language will be deleted. This cannot be undone."
+  },
+  "admin.categories.edit_title": {
+    "vi": "Sửa danh mục",
+    "en": "Edit category"
+  },
+  "admin.categories.empty_text": {
+    "vi": "Tạo danh mục để tác giả chọn khi viết bài và người đọc lọc bài theo chủ đề.",
+    "en": "Create categories so authors can pick one when writing and readers can filter posts by topic."
+  },
+  "admin.categories.empty_title": {
+    "vi": "Chưa có danh mục nào",
+    "en": "No categories yet"
+  },
+  "admin.categories.fallback": {
+    "vi": "Chưa có, dùng:",
+    "en": "Not set, using:"
+  },
+  "admin.categories.in_use_text": {
+    "vi": "Danh mục đang có {{count}} bài viết. Chuyển các bài viết sang danh mục khác rồi thử xóa lại.",
+    "en": "This category has {{count}} posts. Move them to another category, then try again.",
+    "sample": "Danh mục đang có 6 bài viết. Chuyển các bài viết sang danh mục khác rồi thử xóa lại."
+  },
+  "admin.categories.in_use_title": {
+    "vi": "Không thể xóa danh mục",
+    "en": "Cannot delete category"
+  },
+  "admin.categories.name_placeholder": {
+    "vi": "Ví dụ: Du lịch",
+    "en": "e.g. Travel"
+  },
+  "admin.categories.optional_hint": {
+    "vi": "Không bắt buộc. Để trống thì hiện tên ở ngôn ngữ mặc định.",
+    "en": "Optional. Leave empty to show the name in the default language."
+  },
+  "admin.categories.search_label": {
+    "vi": "Tìm danh mục",
+    "en": "Search categories"
+  },
+  "admin.categories.search_placeholder": {
+    "vi": "Tìm theo tên ở mọi ngôn ngữ...",
+    "en": "Search by name in any language..."
+  },
+  "admin.categories.slug": {
+    "vi": "Slug",
+    "en": "Slug"
+  },
+  "admin.categories.slug_hint": {
+    "vi": "Slug được tạo tự động từ tên của từng ngôn ngữ.",
+    "en": "The slug is generated automatically from the name in each language."
+  },
+  "admin.categories.subtitle": {
+    "vi": "Tên ở ngôn ngữ mặc định là bắt buộc. Ngôn ngữ chưa có tên sẽ hiện tên ở ngôn ngữ mặc định.",
+    "en": "The name in the default language is required. Languages without a name show the default-language name."
+  },
+  "admin.categories.title": {
+    "vi": "Danh mục",
+    "en": "Categories"
+  },
+  "admin.categories.view_posts": {
+    "vi": "Xem bài viết",
+    "en": "View posts"
+  },
+  "admin.editor.bold": {
+    "vi": "In đậm",
+    "en": "Bold"
+  },
+  "admin.editor.bullet_list": {
+    "vi": "Danh sách",
+    "en": "Bulleted list"
+  },
+  "admin.editor.content": {
+    "vi": "Nội dung",
+    "en": "Content"
+  },
+  "admin.editor.heading_2": {
+    "vi": "Tiêu đề lớn",
+    "en": "Large heading"
+  },
+  "admin.editor.heading_3": {
+    "vi": "Tiêu đề nhỏ",
+    "en": "Small heading"
+  },
+  "admin.editor.image": {
+    "vi": "Chèn ảnh",
+    "en": "Insert image"
+  },
+  "admin.editor.italic": {
+    "vi": "In nghiêng",
+    "en": "Italic"
+  },
+  "admin.editor.link": {
+    "vi": "Chèn link",
+    "en": "Insert link"
+  },
+  "admin.editor.ordered_list": {
+    "vi": "Danh sách đánh số",
+    "en": "Numbered list"
+  },
+  "admin.editor.placeholder": {
+    "vi": "Kể câu chuyện của bạn...",
+    "en": "Tell your story..."
+  },
+  "admin.editor.quote": {
+    "vi": "Trích dẫn",
+    "en": "Quote"
+  },
+  "admin.editor.toolbar": {
+    "vi": "Định dạng",
+    "en": "Formatting"
+  },
+  "admin.editor.underline": {
+    "vi": "Gạch chân",
+    "en": "Underline"
+  },
+  "admin.editor.upload_progress": {
+    "vi": "Tiến độ tải ảnh",
+    "en": "Image upload progress"
+  },
+  "admin.editor.uploading": {
+    "vi": "Đang tải ảnh lên...",
+    "en": "Uploading image..."
+  },
+  "admin.languages.add": {
+    "vi": "Thêm ngôn ngữ",
+    "en": "Add language"
+  },
+  "admin.languages.add_title": {
+    "vi": "Thêm ngôn ngữ",
+    "en": "Add language"
+  },
+  "admin.languages.cannot_delete_default": {
+    "vi": "Không thể xóa ngôn ngữ mặc định",
+    "en": "The default language cannot be deleted"
+  },
+  "admin.languages.cannot_disable_default": {
+    "vi": "Không thể tắt ngôn ngữ mặc định",
+    "en": "The default language cannot be deactivated"
+  },
+  "admin.languages.code": {
+    "vi": "Mã ngôn ngữ",
+    "en": "Language code"
+  },
+  "admin.languages.code_hint": {
+    "vi": "2 chữ cái thường theo ISO 639-1, ví dụ: fr, ja, ko.",
+    "en": "2 lowercase letters following ISO 639-1, e.g. fr, ja, ko."
+  },
+  "admin.languages.col_active": {
+    "vi": "Hoạt động",
+    "en": "Active"
+  },
+  "admin.languages.col_code": {
+    "vi": "Mã",
+    "en": "Code"
+  },
+  "admin.languages.col_default": {
+    "vi": "Mặc định",
+    "en": "Default"
+  },
+  "admin.languages.col_name": {
+    "vi": "Tên hiển thị",
+    "en": "Display name"
+  },
+  "admin.languages.col_translations": {
+    "vi": "Bản dịch bài",
+    "en": "Post translations"
+  },
+  "admin.languages.copy_note": {
+    "vi": "Toàn bộ bản dịch giao diện của {{language}} sẽ được sao chép sang ngôn ngữ mới để bạn dịch dần.",
+    "en": "All interface translations from {{language}} will be copied to the new language so you can translate them gradually.",
+    "sample": "Toàn bộ bản dịch giao diện của Tiếng Việt sẽ được sao chép sang ngôn ngữ mới để bạn dịch dần."
+  },
+  "admin.languages.default": {
+    "vi": "Mặc định",
+    "en": "Default"
+  },
+  "admin.languages.delete_title": {
+    "vi": "Xóa ngôn ngữ?",
+    "en": "Delete language?"
+  },
+  "admin.languages.delete_warning": {
+    "vi": "Bản dịch giao diện của ngôn ngữ này cũng bị xóa. Không thể hoàn tác.",
+    "en": "The interface translations of this language will also be deleted. This cannot be undone."
+  },
+  "admin.languages.edit_title": {
+    "vi": "Sửa ngôn ngữ",
+    "en": "Edit language"
+  },
+  "admin.languages.enable_first": {
+    "vi": "Bật ngôn ngữ trước khi đặt làm mặc định",
+    "en": "Activate the language before making it the default"
+  },
+  "admin.languages.in_use_text": {
+    "vi": "Ngôn ngữ đang có {{count}} bản dịch bài viết. Bạn có thể tắt ngôn ngữ để ẩn khỏi trang public.",
+    "en": "This language has {{count}} post translations. You can deactivate it to hide it from the public site.",
+    "sample": "Ngôn ngữ đang có 6 bản dịch bài viết. Bạn có thể tắt ngôn ngữ để ẩn khỏi trang public."
+  },
+  "admin.languages.in_use_title": {
+    "vi": "Không thể xóa ngôn ngữ",
+    "en": "Cannot delete language"
+  },
+  "admin.languages.name": {
+    "vi": "Tên hiển thị",
+    "en": "Display name"
+  },
+  "admin.languages.name_hint": {
+    "vi": "Viết bằng chính ngôn ngữ đó, đây là chữ hiện trong bộ chọn ngôn ngữ.",
+    "en": "Write it in the language itself. This is the text shown in the language switcher."
+  },
+  "admin.languages.set_default": {
+    "vi": "Đặt làm mặc định",
+    "en": "Set as default"
+  },
+  "admin.languages.subtitle": {
+    "vi": "Luôn có đúng 1 ngôn ngữ mặc định. Ngôn ngữ đã tắt bị ẩn khỏi bộ chọn ngôn ngữ và trang public.",
+    "en": "There is always exactly one default language. Inactive languages are hidden from the language switcher and the public site."
+  },
+  "admin.languages.title": {
+    "vi": "Ngôn ngữ",
+    "en": "Languages"
+  },
+  "admin.nav.back_to_blog": {
+    "vi": "Về trang blog",
+    "en": "Back to blog"
+  },
+  "admin.nav.categories": {
+    "vi": "Danh mục",
+    "en": "Categories"
+  },
+  "admin.nav.label": {
+    "vi": "Menu quản trị",
+    "en": "Admin menu"
+  },
+  "admin.nav.languages": {
+    "vi": "Ngôn ngữ",
+    "en": "Languages"
+  },
+  "admin.nav.pages": {
+    "vi": "Trang tĩnh",
+    "en": "Static pages"
+  },
+  "admin.nav.posts": {
+    "vi": "Bài viết",
+    "en": "Posts"
+  },
+  "admin.nav.ui_translations": {
+    "vi": "Bản dịch giao diện",
+    "en": "Interface translations"
+  },
+  "admin.nav.users": {
+    "vi": "Người dùng",
+    "en": "Users"
+  },
+  "admin.page_edit.content_placeholder": {
+    "vi": "Nhập nội dung trang...",
+    "en": "Enter page content..."
+  },
+  "admin.page_edit.default_language": {
+    "vi": "Mặc định",
+    "en": "Default"
+  },
+  "admin.page_edit.error_summary": {
+    "vi": "Chưa lưu được. Sửa các tab có chấm đỏ rồi bấm Lưu lại.",
+    "en": "Not saved yet. Fix the tabs marked with a red dot, then click Save again."
+  },
+  "admin.page_edit.optional_hint": {
+    "vi": "Không bắt buộc. Điền đủ cả tiêu đề và nội dung, hoặc để trống cả hai thì trang {{language}} hiện bản {{default_language}}.",
+    "en": "Optional. Fill in both title and content, or leave both empty to show the {{default_language}} version on the {{language}} page.",
+    "sample": "Không bắt buộc. Điền đủ cả tiêu đề và nội dung, hoặc để trống cả hai thì trang English hiện bản Tiếng Việt."
+  },
+  "admin.page_edit.page_title": {
+    "vi": "Tiêu đề",
+    "en": "Title"
+  },
+  "admin.page_edit.public_url": {
+    "vi": "URL public",
+    "en": "Public URL"
+  },
+  "admin.page_edit.save_success": {
+    "vi": "Đã lưu trang {{page}}.",
+    "en": "Page {{page}} saved.",
+    "sample": "Đã lưu trang Giới thiệu."
+  },
+  "admin.page_edit.subtitle": {
+    "vi": "Chỉ sửa nội dung. Chữ trên menu và footer sửa ở Bản dịch giao diện.",
+    "en": "Edit the content only. Menu and footer labels are edited in Interface translations."
+  },
+  "admin.page_edit.tab_has_error": {
+    "vi": "Có lỗi",
+    "en": "Has errors"
+  },
+  "admin.page_edit.tabs_label": {
+    "vi": "Nội dung theo ngôn ngữ",
+    "en": "Content by language"
+  },
+  "admin.page_edit.title": {
+    "vi": "Sửa trang:",
+    "en": "Edit page:"
+  },
+  "admin.page_edit.view_public": {
+    "vi": "Xem trên trang public",
+    "en": "View on public site"
+  },
+  "admin.page_edit.visibility_hint": {
+    "vi": "· áp dụng cho mọi ngôn ngữ",
+    "en": "· applies to all languages"
+  },
+  "admin.pages.col_key": {
+    "vi": "Key",
+    "en": "Key"
+  },
+  "admin.pages.col_languages": {
+    "vi": "Nội dung có ở",
+    "en": "Content available in"
+  },
+  "admin.pages.col_page": {
+    "vi": "Trang",
+    "en": "Page"
+  },
+  "admin.pages.col_updated": {
+    "vi": "Cập nhật",
+    "en": "Updated"
+  },
+  "admin.pages.col_visibility": {
+    "vi": "Hiển thị",
+    "en": "Visibility"
+  },
+  "admin.pages.fallback_note": {
+    "vi": "Ngôn ngữ chưa có nội dung sẽ hiện bản của ngôn ngữ mặc định. Trang đang ẩn không hiện trên footer, menu và trả về trang 404.",
+    "en": "Languages without content show the default-language version. Hidden pages are removed from the footer and menu and return a 404 page."
+  },
+  "admin.pages.hidden": {
+    "vi": "Đang ẩn",
+    "en": "Hidden"
+  },
+  "admin.pages.subtitle": {
+    "vi": "Các trang có sẵn trong hệ thống. Bạn sửa nội dung và bật/tắt hiển thị, không thêm hay xóa trang.",
+    "en": "These pages are built into the system. You can edit their content and toggle visibility, but not add or delete pages."
+  },
+  "admin.pages.title": {
+    "vi": "Trang tĩnh",
+    "en": "Static pages"
+  },
+  "admin.pages.visible": {
+    "vi": "Đang hiển thị",
+    "en": "Visible"
+  },
+  "admin.post_form.add_translation": {
+    "vi": "Thêm bản dịch",
+    "en": "Add translation"
+  },
+  "admin.post_form.back": {
+    "vi": "Về danh sách bài viết",
+    "en": "Back to posts"
+  },
+  "admin.post_form.category": {
+    "vi": "Danh mục",
+    "en": "Category"
+  },
+  "admin.post_form.category_placeholder": {
+    "vi": "Chọn danh mục",
+    "en": "Choose a category"
+  },
+  "admin.post_form.create_title": {
+    "vi": "Viết bài mới",
+    "en": "New post"
+  },
+  "admin.post_form.delete_translation": {
+    "vi": "Xóa bản dịch",
+    "en": "Delete translation"
+  },
+  "admin.post_form.delete_translation_title": {
+    "vi": "Xóa bản dịch",
+    "en": "Delete translation"
+  },
+  "admin.post_form.delete_translation_warning": {
+    "vi": "Bản dịch này cùng lượt xem và bình luận của nó sẽ bị xóa vĩnh viễn. Bản gốc và các bản dịch khác không bị ảnh hưởng. Không thể hoàn tác.",
+    "en": "This translation, along with its views and comments, will be permanently deleted. The original and other translations are not affected. This cannot be undone."
+  },
+  "admin.post_form.edit_title": {
+    "vi": "Sửa bài viết",
+    "en": "Edit post"
+  },
+  "admin.post_form.editing_language": {
+    "vi": "Ngôn ngữ đang soạn",
+    "en": "Editing language"
+  },
+  "admin.post_form.excerpt": {
+    "vi": "Tóm tắt",
+    "en": "Excerpt"
+  },
+  "admin.post_form.excerpt_placeholder": {
+    "vi": "Tóm tắt ngắn hiện trên thẻ bài viết (không bắt buộc, tối đa 500 ký tự)",
+    "en": "Short summary shown on the post card (optional, up to 500 characters)"
+  },
+  "admin.post_form.new_translation": {
+    "vi": "Bản dịch mới",
+    "en": "New translation"
+  },
+  "admin.post_form.no_translation_short": {
+    "vi": "· Chưa có",
+    "en": "· Not yet"
+  },
+  "admin.post_form.no_translation_text": {
+    "vi": "Thêm bản dịch để bài viết hiện khi người đọc chọn ngôn ngữ này. Form sẽ điền sẵn nội dung bản gốc để bạn dịch lại.",
+    "en": "Add a translation so the post appears when readers choose this language. The form will be prefilled with the original content for you to translate."
+  },
+  "admin.post_form.no_translation_title": {
+    "vi": "Chưa có bản dịch",
+    "en": "No translation yet"
+  },
+  "admin.post_form.original": {
+    "vi": "Bản gốc",
+    "en": "Original"
+  },
+  "admin.post_form.original_language": {
+    "vi": "Ngôn ngữ gốc",
+    "en": "Original language"
+  },
+  "admin.post_form.original_language_hint": {
+    "vi": "Không đổi được sau khi tạo bài.",
+    "en": "Cannot be changed after the post is created."
+  },
+  "admin.post_form.original_not_deletable": {
+    "vi": "Bản gốc không xóa riêng được",
+    "en": "The original cannot be deleted on its own"
+  },
+  "admin.post_form.prefilled_hint": {
+    "vi": "Đã điền sẵn nội dung bản gốc ({{language}}). Dịch lại các ô rồi bấm Lưu. Slug sẽ tự tạo từ tiêu đề mới.",
+    "en": "The original ({{language}}) content has been prefilled. Translate each field, then click Save. The slug will be generated from the new title.",
+    "sample": "Đã điền sẵn nội dung bản gốc (Tiếng Việt). Dịch lại các ô rồi bấm Lưu. Slug sẽ tự tạo từ tiêu đề mới."
+  },
+  "admin.post_form.preview": {
+    "vi": "Xem trước",
+    "en": "Preview"
+  },
+  "admin.post_form.published_on": {
+    "vi": "Đăng ngày",
+    "en": "Published on"
+  },
+  "admin.post_form.save_error": {
+    "vi": "Chưa lưu được bài viết. Kiểm tra các ô báo đỏ bên dưới.",
+    "en": "The post could not be saved. Check the fields marked in red below."
+  },
+  "admin.post_form.save_error_tab": {
+    "vi": "Chưa lưu được bài viết. Kiểm tra các ô báo đỏ trong tab có chấm đỏ.",
+    "en": "The post could not be saved. Check the fields marked in red in the tabs with a red dot."
+  },
+  "admin.post_form.save_success": {
+    "vi": "Đã lưu bài viết.",
+    "en": "Post saved."
+  },
+  "admin.post_form.saved_at": {
+    "vi": "Đã lưu lúc",
+    "en": "Saved at"
+  },
+  "admin.post_form.shared": {
+    "vi": "Thông tin chung",
+    "en": "Shared details"
+  },
+  "admin.post_form.slug": {
+    "vi": "Slug",
+    "en": "Slug"
+  },
+  "admin.post_form.status": {
+    "vi": "Trạng thái",
+    "en": "Status"
+  },
+  "admin.post_form.tab_has_error": {
+    "vi": "(có lỗi)",
+    "en": "(has errors)"
+  },
+  "admin.post_form.thumbnail": {
+    "vi": "Ảnh thumbnail",
+    "en": "Thumbnail"
+  },
+  "admin.post_form.thumbnail_change": {
+    "vi": "Đổi ảnh",
+    "en": "Change image"
+  },
+  "admin.post_form.thumbnail_drop": {
+    "vi": "Kéo ảnh vào đây hoặc bấm để chọn",
+    "en": "Drag an image here or click to choose"
+  },
+  "admin.post_form.thumbnail_hint": {
+    "vi": "JPG, PNG hoặc WebP, tối đa 2MB",
+    "en": "JPG, PNG or WebP, up to 2MB"
+  },
+  "admin.post_form.thumbnail_preview": {
+    "vi": "Xem trước ảnh thumbnail",
+    "en": "Thumbnail preview"
+  },
+  "admin.post_form.thumbnail_remove": {
+    "vi": "Xóa ảnh",
+    "en": "Remove image"
+  },
+  "admin.post_form.thumbnail_shared": {
+    "vi": "(dùng chung mọi ngôn ngữ)",
+    "en": "(shared by all languages)"
+  },
+  "admin.post_form.title": {
+    "vi": "Tiêu đề",
+    "en": "Title"
+  },
+  "admin.post_form.translation": {
+    "vi": "Bản dịch",
+    "en": "Translation"
+  },
+  "admin.post_form.translation_optional_hint": {
+    "vi": "Bản dịch không bắt buộc. Để trống cả tiêu đề và nội dung thì bài chỉ có bản gốc, có thể thêm bản dịch sau ở trang sửa bài.",
+    "en": "Translations are optional. Leave both title and content empty to keep only the original; you can add translations later on the edit page."
+  },
+  "admin.post_form.translations": {
+    "vi": "Bản dịch theo ngôn ngữ",
+    "en": "Translations by language"
+  },
+  "admin.post_preview.desktop": {
+    "vi": "Desktop",
+    "en": "Desktop"
+  },
+  "admin.post_preview.device": {
+    "vi": "Kích thước màn hình",
+    "en": "Screen size"
+  },
+  "admin.post_preview.frame_title": {
+    "vi": "Bản xem trước bài viết",
+    "en": "Post preview"
+  },
+  "admin.post_preview.language": {
+    "vi": "Ngôn ngữ xem trước",
+    "en": "Preview language"
+  },
+  "admin.post_preview.mobile": {
+    "vi": "Mobile",
+    "en": "Mobile"
+  },
+  "admin.posts.all_categories": {
+    "vi": "Tất cả danh mục",
+    "en": "All categories"
+  },
+  "admin.posts.all_languages": {
+    "vi": "Tất cả ngôn ngữ",
+    "en": "All languages"
+  },
+  "admin.posts.category_label": {
+    "vi": "Danh mục",
+    "en": "Category"
+  },
+  "admin.posts.col_post": {
+    "vi": "Bài viết",
+    "en": "Post"
+  },
+  "admin.posts.col_thumbnail": {
+    "vi": "Ảnh",
+    "en": "Image"
+  },
+  "admin.posts.col_translations": {
+    "vi": "Bản dịch",
+    "en": "Translations"
+  },
+  "admin.posts.col_updated": {
+    "vi": "Cập nhật",
+    "en": "Updated"
+  },
+  "admin.posts.delete_success": {
+    "vi": "Đã xóa bài viết.",
+    "en": "Post deleted."
+  },
+  "admin.posts.delete_title": {
+    "vi": "Xóa bài viết?",
+    "en": "Delete post?"
+  },
+  "admin.posts.delete_warning": {
+    "vi": "Bài viết cùng toàn bộ bản dịch, bình luận và ảnh thumbnail sẽ bị xóa vĩnh viễn. Không thể hoàn tác.",
+    "en": "The post and all its translations, comments and thumbnail will be permanently deleted. This cannot be undone."
+  },
+  "admin.posts.empty_text": {
+    "vi": "Bài viết bạn tạo sẽ hiện ở đây. Hãy bắt đầu với bài viết đầu tiên.",
+    "en": "Posts you create will appear here. Start with your first post."
+  },
+  "admin.posts.empty_title": {
+    "vi": "Bạn chưa có bài viết nào",
+    "en": "You haven't written any posts yet"
+  },
+  "admin.posts.filter": {
+    "vi": "Lọc bài viết",
+    "en": "Filter posts"
+  },
+  "admin.posts.filter_status": {
+    "vi": "Lọc theo trạng thái",
+    "en": "Filter by status"
+  },
+  "admin.posts.language_label": {
+    "vi": "Ngôn ngữ",
+    "en": "Language"
+  },
+  "admin.posts.original_language": {
+    "vi": "Gốc",
+    "en": "Original"
+  },
+  "admin.posts.search_label": {
+    "vi": "Tìm theo tiêu đề",
+    "en": "Search by title"
+  },
+  "admin.posts.search_placeholder": {
+    "vi": "Tìm theo tiêu đề ở mọi bản dịch...",
+    "en": "Search titles in all translations..."
+  },
+  "admin.posts.tab_all": {
+    "vi": "Tất cả",
+    "en": "All"
+  },
+  "admin.posts.title": {
+    "vi": "Bài viết của bạn",
+    "en": "Your posts"
+  },
+  "admin.posts.view_on_blog": {
+    "vi": "Xem trên blog",
+    "en": "View on blog"
+  },
+  "admin.posts.write_first": {
+    "vi": "Viết bài đầu tiên",
+    "en": "Write your first post"
+  },
+  "admin.ui_translations.add": {
+    "vi": "Thêm key",
+    "en": "Add key"
+  },
+  "admin.ui_translations.clear_search": {
+    "vi": "Xóa từ khóa",
+    "en": "Clear search"
+  },
+  "admin.ui_translations.col_key": {
+    "vi": "Key",
+    "en": "Key"
+  },
+  "admin.ui_translations.delete_key": {
+    "vi": "Xóa key",
+    "en": "Delete key"
+  },
+  "admin.ui_translations.delete_title": {
+    "vi": "Xóa key?",
+    "en": "Delete key?"
+  },
+  "admin.ui_translations.delete_warning": {
+    "vi": "Giá trị của key ở mọi ngôn ngữ sẽ bị xóa. Chỗ nào trên giao diện còn dùng key này sẽ hiện tên key thay cho chữ. Không thể hoàn tác.",
+    "en": "The values of this key in every language will be deleted. Places in the interface that still use it will show the key name instead. This cannot be undone."
+  },
+  "admin.ui_translations.edit_hint": {
+    "vi": "Enter để lưu · Esc để hủy",
+    "en": "Enter to save · Esc to cancel"
+  },
+  "admin.ui_translations.empty_text": {
+    "vi": "Không có key hoặc giá trị nào khớp với “{{query}}”. Thử từ khóa khác, hoặc thêm key mới.",
+    "en": "No key or value matches “{{query}}”. Try another keyword or add a new key.",
+    "sample": "Không có key hoặc giá trị nào khớp với “dashbord”. Thử từ khóa khác, hoặc thêm key mới."
+  },
+  "admin.ui_translations.empty_title": {
+    "vi": "Không tìm thấy key nào",
+    "en": "No keys found"
+  },
+  "admin.ui_translations.fallback": {
+    "vi": "Chưa có, dùng:",
+    "en": "Not set, using:"
+  },
+  "admin.ui_translations.key_hint": {
+    "vi": "Chữ thường, số, dấu chấm và gạch dưới, dạng nhóm.tên. Ví dụ: menu.blog, post.read_more.",
+    "en": "Lowercase letters, digits, dots and underscores, in the form group.name. e.g. menu.blog, post.read_more."
+  },
+  "admin.ui_translations.optional_hint": {
+    "vi": "Không bắt buộc. Để trống thì hiện giá trị ở ngôn ngữ mặc định.",
+    "en": "Optional. Leave empty to show the value in the default language."
+  },
+  "admin.ui_translations.search_label": {
+    "vi": "Tìm bản dịch",
+    "en": "Search translations"
+  },
+  "admin.ui_translations.search_placeholder": {
+    "vi": "Tìm theo key hoặc giá trị...",
+    "en": "Search by key or value..."
+  },
+  "admin.ui_translations.subtitle": {
+    "vi": "Chữ ngắn trên menu, nút, footer và thông báo. Ô để trống thì giao diện hiện giá trị ở ngôn ngữ mặc định.",
+    "en": "Short text on menus, buttons, the footer and messages. Empty cells show the value in the default language."
+  },
+  "admin.ui_translations.title": {
+    "vi": "Bản dịch giao diện",
+    "en": "Interface translations"
+  },
+  "admin.users.all_roles": {
+    "vi": "Tất cả vai trò",
+    "en": "All roles"
+  },
+  "admin.users.all_statuses": {
+    "vi": "Tất cả trạng thái",
+    "en": "All statuses"
+  },
+  "admin.users.change_role": {
+    "vi": "Đổi vai trò",
+    "en": "Change role"
+  },
+  "admin.users.clear_filters": {
+    "vi": "Xóa bộ lọc",
+    "en": "Clear filters"
+  },
+  "admin.users.col_created": {
+    "vi": "Ngày tạo",
+    "en": "Created"
+  },
+  "admin.users.col_role": {
+    "vi": "Vai trò",
+    "en": "Role"
+  },
+  "admin.users.col_status": {
+    "vi": "Trạng thái",
+    "en": "Status"
+  },
+  "admin.users.col_user": {
+    "vi": "Người dùng",
+    "en": "User"
+  },
+  "admin.users.create": {
+    "vi": "Tạo tài khoản",
+    "en": "Create account"
+  },
+  "admin.users.email": {
+    "vi": "Email",
+    "en": "Email"
+  },
+  "admin.users.empty_text": {
+    "vi": "Không có tài khoản nào khớp với từ khóa và bộ lọc. Thử từ khóa khác hoặc bỏ bộ lọc.",
+    "en": "No accounts match the keyword and filters. Try another keyword or clear the filters."
+  },
+  "admin.users.empty_title": {
+    "vi": "Không tìm thấy người dùng",
+    "en": "No users found"
+  },
+  "admin.users.lock": {
+    "vi": "Khóa tài khoản",
+    "en": "Lock account"
+  },
+  "admin.users.lock_title": {
+    "vi": "Khóa tài khoản?",
+    "en": "Lock account?"
+  },
+  "admin.users.lock_warning": {
+    "vi": "Người dùng sẽ bị đăng xuất và không đăng nhập được cho tới khi được mở khóa. Bài viết và bình luận vẫn giữ nguyên.",
+    "en": "The user will be signed out and cannot sign in until the account is unlocked. Their posts and comments are kept."
+  },
+  "admin.users.name": {
+    "vi": "Họ tên",
+    "en": "Full name"
+  },
+  "admin.users.search_label": {
+    "vi": "Tìm người dùng",
+    "en": "Search users"
+  },
+  "admin.users.search_placeholder": {
+    "vi": "Tìm theo tên hoặc email...",
+    "en": "Search by name or email..."
+  },
+  "admin.users.self_disabled": {
+    "vi": "Không thể tự khóa hoặc đổi vai trò của chính mình",
+    "en": "You cannot lock your own account or change your own role"
+  },
+  "admin.users.temp_password": {
+    "vi": "Mật khẩu tạm",
+    "en": "Temporary password"
+  },
+  "admin.users.temp_password_hint": {
+    "vi": "Ít nhất 8 ký tự, có cả chữ và số. Người dùng nên đổi sau lần đăng nhập đầu.",
+    "en": "At least 8 characters, including letters and numbers. The user should change it after the first sign-in."
+  },
+  "admin.users.title": {
+    "vi": "Người dùng",
+    "en": "Users"
+  },
+  "admin.users.unlock": {
+    "vi": "Mở khóa",
+    "en": "Unlock"
+  },
+  "admin.users.you": {
+    "vi": "(Bạn)",
+    "en": "(You)"
+  },
+  "auth.back_to_login": {
+    "vi": "Quay lại đăng nhập",
+    "en": "Back to sign in"
+  },
+  "auth.check_inbox": {
+    "vi": "Kiểm tra hộp thư",
+    "en": "Check your inbox"
+  },
+  "auth.email": {
+    "vi": "Email",
+    "en": "Email"
+  },
+  "auth.error.account_locked": {
+    "vi": "Tài khoản của bạn đã bị khóa. Liên hệ quản trị viên để được hỗ trợ.",
+    "en": "Your account has been locked. Contact an administrator for help."
+  },
+  "auth.error.invalid_credentials": {
+    "vi": "Email hoặc mật khẩu không đúng.",
+    "en": "Incorrect email or password."
+  },
+  "auth.error.oauth_no_email": {
+    "vi": "Tài khoản Github của bạn không công khai email. Hãy đăng nhập bằng cách khác.",
+    "en": "Your Github account doesn't have a public email. Please sign in another way."
+  },
+  "auth.error.reset_token_invalid": {
+    "vi": "Link đặt lại mật khẩu đã hết hạn hoặc không hợp lệ. Gửi lại yêu cầu để nhận link mới.",
+    "en": "The password reset link has expired or is invalid. Request a new link."
+  },
+  "auth.error.too_many_attempts": {
+    "vi": "Bạn đã thử quá nhiều lần. Vui lòng thử lại sau 15 phút.",
+    "en": "Too many attempts. Please try again in 15 minutes."
+  },
+  "auth.forgot_desc": {
+    "vi": "Nhập email bạn đã đăng ký. Chúng tôi sẽ gửi link để đặt mật khẩu mới.",
+    "en": "Enter the email you registered with. We'll send you a link to set a new password."
+  },
+  "auth.forgot_password": {
+    "vi": "Quên mật khẩu?",
+    "en": "Forgot password?"
+  },
+  "auth.forgot_title": {
+    "vi": "Quên mật khẩu?",
+    "en": "Forgot password?"
+  },
+  "auth.full_name": {
+    "vi": "Họ tên",
+    "en": "Full name"
+  },
+  "auth.get_started": {
+    "vi": "Bắt đầu",
+    "en": "Get started"
+  },
+  "auth.have_account": {
+    "vi": "Đã có tài khoản?",
+    "en": "Already have an account?"
+  },
+  "auth.legal_prefix": {
+    "vi": "Khi đăng ký, bạn đồng ý với",
+    "en": "By signing up, you agree to the"
+  },
+  "auth.legal_suffix": {
+    "vi": "của Inkwell.",
+    "en": "of Inkwell."
+  },
+  "auth.logging_in": {
+    "vi": "Đang đăng nhập...",
+    "en": "Signing in..."
+  },
+  "auth.login": {
+    "vi": "Đăng nhập",
+    "en": "Sign in"
+  },
+  "auth.login_github": {
+    "vi": "Đăng nhập bằng Github",
+    "en": "Sign in with Github"
+  },
+  "auth.login_google": {
+    "vi": "Đăng nhập bằng Google",
+    "en": "Sign in with Google"
+  },
+  "auth.login_question": {
+    "vi": "Đăng nhập?",
+    "en": "Sign in?"
+  },
+  "auth.login_title": {
+    "vi": "Chào mừng trở lại",
+    "en": "Welcome back"
+  },
+  "auth.new_password": {
+    "vi": "Mật khẩu mới",
+    "en": "New password"
+  },
+  "auth.new_password_confirm": {
+    "vi": "Xác nhận mật khẩu mới",
+    "en": "Confirm new password"
+  },
+  "auth.no_account": {
+    "vi": "Chưa có tài khoản?",
+    "en": "Don't have an account?"
+  },
+  "auth.not_received": {
+    "vi": "Không thấy email? Xem trong thư mục Spam hoặc",
+    "en": "Didn't get the email? Check your Spam folder or"
+  },
+  "auth.password": {
+    "vi": "Mật khẩu",
+    "en": "Password"
+  },
+  "auth.password_confirm": {
+    "vi": "Xác nhận mật khẩu",
+    "en": "Confirm password"
+  },
+  "auth.password_hint": {
+    "vi": "Ít nhất 8 ký tự, có cả chữ và số.",
+    "en": "At least 8 characters, including letters and numbers."
+  },
+  "auth.register": {
+    "vi": "Đăng ký",
+    "en": "Sign up"
+  },
+  "auth.register_github": {
+    "vi": "Đăng ký bằng Github",
+    "en": "Sign up with Github"
+  },
+  "auth.register_google": {
+    "vi": "Đăng ký bằng Google",
+    "en": "Sign up with Google"
+  },
+  "auth.register_success": {
+    "vi": "Đăng ký thành công. Đăng nhập để bắt đầu.",
+    "en": "Sign-up successful. Sign in to get started."
+  },
+  "auth.register_title": {
+    "vi": "Đăng ký Inkwell",
+    "en": "Join Inkwell"
+  },
+  "auth.registering": {
+    "vi": "Đang đăng ký...",
+    "en": "Signing up..."
+  },
+  "auth.resend": {
+    "vi": "gửi lại",
+    "en": "resend"
+  },
+  "auth.resend_link": {
+    "vi": "Gửi lại link",
+    "en": "Resend link"
+  },
+  "auth.reset_sent_prefix": {
+    "vi": "Nếu email",
+    "en": "If the email"
+  },
+  "auth.reset_sent_suffix": {
+    "vi": "tồn tại, chúng tôi đã gửi hướng dẫn đặt lại mật khẩu. Link có hiệu lực trong 30 phút.",
+    "en": "exists, we have sent password reset instructions. The link is valid for 30 minutes."
+  },
+  "auth.reset_title": {
+    "vi": "Đặt mật khẩu mới",
+    "en": "Set a new password"
+  },
+  "auth.save_password": {
+    "vi": "Lưu mật khẩu",
+    "en": "Save password"
+  },
+  "auth.saving_password": {
+    "vi": "Đang lưu mật khẩu...",
+    "en": "Saving password..."
+  },
+  "auth.send_reset_link": {
+    "vi": "Gửi link đặt lại mật khẩu",
+    "en": "Send reset link"
+  },
+  "auth.sending_link": {
+    "vi": "Đang gửi link...",
+    "en": "Sending link..."
+  },
+  "category.empty_text": {
+    "vi": "Chưa có bài viết {{language}} nào trong danh mục này. Hãy đổi ngôn ngữ ở đầu trang hoặc xem danh mục khác.",
+    "en": "There are no {{language}} posts in this category yet. Switch the language at the top of the page or browse another category.",
+    "sample": "Chưa có bài viết Tiếng Việt nào trong danh mục này. Hãy đổi ngôn ngữ ở đầu trang hoặc xem danh mục khác."
+  },
+  "category.empty_title": {
+    "vi": "Danh mục này chưa có bài viết",
+    "en": "No posts in this category yet"
+  },
+  "comment.author_badge": {
+    "vi": "Tác giả",
+    "en": "Author"
+  },
+  "comment.count": {
+    "vi": "bình luận",
+    "en": "comments"
+  },
+  "comment.delete_title": {
+    "vi": "Xóa bình luận?",
+    "en": "Delete comment?"
+  },
+  "comment.delete_warning": {
+    "vi": "Bình luận này và các câu trả lời của nó sẽ bị xóa vĩnh viễn. Không thể hoàn tác.",
+    "en": "This comment and its replies will be permanently deleted. This cannot be undone."
+  },
+  "comment.empty_text": {
+    "vi": "Hãy là người đầu tiên chia sẻ suy nghĩ về bài viết này.",
+    "en": "Be the first to share your thoughts on this post."
+  },
+  "comment.empty_title": {
+    "vi": "Chưa có bình luận nào",
+    "en": "No comments yet"
+  },
+  "comment.label": {
+    "vi": "Nội dung bình luận",
+    "en": "Comment"
+  },
+  "comment.login_prompt": {
+    "vi": "Đăng nhập để tham gia thảo luận cùng tác giả và người đọc khác.",
+    "en": "Sign in to join the discussion with the author and other readers."
+  },
+  "comment.login_to_comment": {
+    "vi": "Đăng nhập để bình luận",
+    "en": "Sign in to comment"
+  },
+  "comment.placeholder": {
+    "vi": "Bạn nghĩ gì về bài viết này?",
+    "en": "What do you think about this post?"
+  },
+  "comment.reply": {
+    "vi": "Trả lời",
+    "en": "Reply"
+  },
+  "comment.reply_label": {
+    "vi": "Nội dung trả lời",
+    "en": "Reply"
+  },
+  "comment.reply_placeholder": {
+    "vi": "Trả lời {{name}}...",
+    "en": "Reply to {{name}}...",
+    "sample": "Trả lời Lê Minh Cường..."
+  },
+  "comment.sending": {
+    "vi": "Đang gửi...",
+    "en": "Sending..."
+  },
+  "comment.submit": {
+    "vi": "Gửi",
+    "en": "Send"
+  },
+  "comment.title": {
+    "vi": "Bình luận",
+    "en": "Comments"
+  },
+  "common.actions": {
+    "vi": "Thao tác",
+    "en": "Actions"
+  },
+  "common.all": {
+    "vi": "Tất cả",
+    "en": "All"
+  },
+  "common.back_home": {
+    "vi": "Về trang chủ",
+    "en": "Back to home"
+  },
+  "common.cancel": {
+    "vi": "Hủy",
+    "en": "Cancel"
+  },
+  "common.close": {
+    "vi": "Đóng",
+    "en": "Close"
+  },
+  "common.close_menu": {
+    "vi": "Đóng menu",
+    "en": "Close menu"
+  },
+  "common.close_search": {
+    "vi": "Đóng tìm kiếm",
+    "en": "Close search"
+  },
+  "common.dark_mode": {
+    "vi": "Giao diện tối",
+    "en": "Dark mode"
+  },
+  "common.delete": {
+    "vi": "Xóa",
+    "en": "Delete"
+  },
+  "common.deleting": {
+    "vi": "Đang xóa...",
+    "en": "Deleting..."
+  },
+  "common.edit": {
+    "vi": "Sửa",
+    "en": "Edit"
+  },
+  "common.language": {
+    "vi": "Ngôn ngữ",
+    "en": "Language"
+  },
+  "common.loading": {
+    "vi": "Đang tải...",
+    "en": "Loading..."
+  },
+  "common.open_menu": {
+    "vi": "Mở menu",
+    "en": "Open menu"
+  },
+  "common.optional": {
+    "vi": "(không bắt buộc)",
+    "en": "(optional)"
+  },
+  "common.or": {
+    "vi": "hoặc",
+    "en": "or"
+  },
+  "common.pagination.label": {
+    "vi": "Phân trang",
+    "en": "Pagination"
+  },
+  "common.pagination.next": {
+    "vi": "Trang sau",
+    "en": "Next page"
+  },
+  "common.pagination.previous": {
+    "vi": "Trang trước",
+    "en": "Previous page"
+  },
+  "common.pagination.showing": {
+    "vi": "Hiển thị",
+    "en": "Showing"
+  },
+  "common.required_suffix": {
+    "vi": "· bắt buộc",
+    "en": "· required"
+  },
+  "common.save": {
+    "vi": "Lưu",
+    "en": "Save"
+  },
+  "common.save_changes": {
+    "vi": "Lưu thay đổi",
+    "en": "Save changes"
+  },
+  "common.saving": {
+    "vi": "Đang lưu...",
+    "en": "Saving..."
+  },
+  "common.search": {
+    "vi": "Tìm kiếm",
+    "en": "Search"
+  },
+  "common.search_posts": {
+    "vi": "Tìm bài viết...",
+    "en": "Search posts..."
+  },
+  "common.site_name": {
+    "vi": "Inkwell",
+    "en": "Inkwell"
+  },
+  "common.success": {
+    "vi": "Thành công",
+    "en": "Success"
+  },
+  "common.understood": {
+    "vi": "Đã hiểu",
+    "en": "Got it"
+  },
+  "error.not_found_text": {
+    "vi": "Trang bạn tìm có thể đã bị xóa, đổi địa chỉ, hoặc chưa có ở ngôn ngữ đang chọn.",
+    "en": "The page you are looking for may have been deleted, moved, or is not available in the selected language."
+  },
+  "error.not_found_title": {
+    "vi": "Không tìm thấy trang",
+    "en": "Page not found"
+  },
+  "footer.about": {
+    "vi": "Giới thiệu",
+    "en": "About"
+  },
+  "footer.contact": {
+    "vi": "Liên hệ",
+    "en": "Contact"
+  },
+  "footer.label": {
+    "vi": "Liên kết",
+    "en": "Links"
+  },
+  "footer.privacy": {
+    "vi": "Chính sách bảo mật",
+    "en": "Privacy policy"
+  },
+  "menu.about": {
+    "vi": "Giới thiệu",
+    "en": "About"
+  },
+  "menu.account": {
+    "vi": "Tài khoản",
+    "en": "Account"
+  },
+  "menu.admin": {
+    "vi": "Trang quản trị",
+    "en": "Admin"
+  },
+  "menu.home": {
+    "vi": "Trang chủ",
+    "en": "Home"
+  },
+  "menu.label": {
+    "vi": "Menu chính",
+    "en": "Main menu"
+  },
+  "menu.logout": {
+    "vi": "Đăng xuất",
+    "en": "Sign out"
+  },
+  "menu.manage_posts": {
+    "vi": "Quản lý bài viết",
+    "en": "Manage posts"
+  },
+  "menu.profile": {
+    "vi": "Hồ sơ",
+    "en": "Profile"
+  },
+  "menu.write": {
+    "vi": "Viết bài",
+    "en": "Write"
+  },
+  "page.updated_at": {
+    "vi": "Cập nhật",
+    "en": "Updated"
+  },
+  "post.available_in": {
+    "vi": "Bài viết này có ở các ngôn ngữ:",
+    "en": "This post is available in:"
+  },
+  "post.categories": {
+    "vi": "Danh mục",
+    "en": "Categories"
+  },
+  "post.category": {
+    "vi": "Danh mục",
+    "en": "Category"
+  },
+  "post.empty_language_text": {
+    "vi": "Hãy chọn ngôn ngữ khác ở đầu trang hoặc quay lại sau.",
+    "en": "Choose another language at the top of the page or come back later."
+  },
+  "post.empty_language_title": {
+    "vi": "Chưa có bài viết ở ngôn ngữ này",
+    "en": "No posts in this language yet"
+  },
+  "post.latest": {
+    "vi": "Bài viết mới nhất",
+    "en": "Latest posts"
+  },
+  "post.min_read": {
+    "vi": "phút đọc",
+    "en": "min read"
+  },
+  "post.most_read": {
+    "vi": "Đọc nhiều nhất",
+    "en": "Most read"
+  },
+  "post.posts_count": {
+    "vi": "bài viết",
+    "en": "posts"
+  },
+  "post.related": {
+    "vi": "Bài viết cùng danh mục",
+    "en": "More in this category"
+  },
+  "post.status.archived": {
+    "vi": "Lưu trữ",
+    "en": "Archived"
+  },
+  "post.status.draft": {
+    "vi": "Nháp",
+    "en": "Draft"
+  },
+  "post.status.published": {
+    "vi": "Đã đăng",
+    "en": "Published"
+  },
+  "post.views": {
+    "vi": "lượt xem",
+    "en": "views"
+  },
+  "post.write": {
+    "vi": "Viết bài",
+    "en": "Write"
+  },
+  "profile.avatar_hint": {
+    "vi": "JPG, PNG hoặc WebP, tối đa 2MB.",
+    "en": "JPG, PNG or WebP, up to 2MB."
+  },
+  "profile.change_avatar": {
+    "vi": "Đổi ảnh",
+    "en": "Change photo"
+  },
+  "profile.change_password": {
+    "vi": "Đổi mật khẩu",
+    "en": "Change password"
+  },
+  "profile.current_password": {
+    "vi": "Mật khẩu hiện tại",
+    "en": "Current password"
+  },
+  "profile.info_desc": {
+    "vi": "Tên và ảnh hiện trên bài viết và bình luận của bạn.",
+    "en": "Your name and photo appear on your posts and comments."
+  },
+  "profile.info_title": {
+    "vi": "Thông tin cá nhân",
+    "en": "Personal information"
+  },
+  "profile.oauth_no_password": {
+    "vi": "Bạn đang đăng nhập bằng Github và chưa có mật khẩu. Đặt mật khẩu để đăng nhập được cả bằng email",
+    "en": "You're signed in with Github and don't have a password yet. Set a password to also sign in with your email"
+  },
+  "profile.password_desc": {
+    "vi": "Đổi mật khẩu dùng để đăng nhập bằng email.",
+    "en": "Change the password used to sign in with your email."
+  },
+  "profile.readonly_hint": {
+    "vi": "Email và vai trò không tự đổi được. Liên hệ quản trị viên nếu cần.",
+    "en": "Email and role cannot be changed by yourself. Contact an administrator if needed."
+  },
+  "profile.role": {
+    "vi": "Vai trò",
+    "en": "Role"
+  },
+  "profile.saved": {
+    "vi": "Đã lưu thay đổi.",
+    "en": "Changes saved."
+  },
+  "profile.set_password": {
+    "vi": "Đặt mật khẩu",
+    "en": "Set password"
+  },
+  "profile.title": {
+    "vi": "Hồ sơ",
+    "en": "Profile"
+  },
+  "role.blog_owner": {
+    "vi": "Blog Owner",
+    "en": "Blog Owner"
+  },
+  "role.super_admin": {
+    "vi": "Super Admin",
+    "en": "Super Admin"
+  },
+  "role.user": {
+    "vi": "Người dùng",
+    "en": "User"
+  },
+  "search.empty_text": {
+    "vi": "Không có bài viết {{language}} nào khớp với từ khóa này. Bạn có thể:",
+    "en": "No {{language}} posts match this keyword. You can:",
+    "sample": "Không có bài viết Tiếng Việt nào khớp với từ khóa này. Bạn có thể:"
+  },
+  "search.empty_title": {
+    "vi": "Không tìm thấy bài viết nào",
+    "en": "No posts found"
+  },
+  "search.results_count": {
+    "vi": "bài viết, xếp theo độ liên quan",
+    "en": "posts, sorted by relevance"
+  },
+  "search.results_for": {
+    "vi": "Kết quả cho",
+    "en": "Results for"
+  },
+  "search.tip_category": {
+    "vi": "Xem bài theo danh mục ở trang chủ",
+    "en": "Browse posts by category on the home page"
+  },
+  "search.tip_language": {
+    "vi": "Đổi ngôn ngữ trên header để tìm trong bài ở ngôn ngữ khác",
+    "en": "Switch the language in the header to search posts in another language"
+  },
+  "search.tip_spelling": {
+    "vi": "Kiểm tra lại chính tả, hoặc thử từ khóa ngắn hơn",
+    "en": "Check the spelling, or try a shorter keyword"
+  },
+  "user.status.active": {
+    "vi": "Hoạt động",
+    "en": "Active"
+  },
+  "user.status.locked": {
+    "vi": "Đã khóa",
+    "en": "Locked"
+  },
+  "validation.avatar_invalid": {
+    "vi": "Ảnh “{{file}}” không đúng định dạng. Chọn ảnh JPG, PNG hoặc WebP, tối đa 2MB.",
+    "en": "The image “{{file}}” has an unsupported format. Choose a JPG, PNG or WebP image up to 2MB.",
+    "sample": "Ảnh “avatar.gif” không đúng định dạng. Chọn ảnh JPG, PNG hoặc WebP, tối đa 2MB."
+  },
+  "validation.category_name_default_required": {
+    "vi": "Nhập tên danh mục ở ngôn ngữ mặc định ({{language}}).",
+    "en": "Enter the category name in the default language ({{language}}).",
+    "sample": "Nhập tên danh mục ở ngôn ngữ mặc định (Tiếng Việt)."
+  },
+  "validation.category_required": {
+    "vi": "Chọn danh mục cho bài viết.",
+    "en": "Choose a category for the post."
+  },
+  "validation.comment_length": {
+    "vi": "Bình luận phải có từ 1 đến 1000 ký tự.",
+    "en": "Comments must be between 1 and 1000 characters."
+  },
+  "validation.content_required": {
+    "vi": "Nhập nội dung bài viết.",
+    "en": "Enter the post content."
+  },
+  "validation.current_password_wrong": {
+    "vi": "Mật khẩu hiện tại không đúng.",
+    "en": "The current password is incorrect."
+  },
+  "validation.email": {
+    "vi": "Email không hợp lệ.",
+    "en": "Invalid email."
+  },
+  "validation.email_taken": {
+    "vi": "Email này đã được đăng ký.",
+    "en": "This email is already registered."
+  },
+  "validation.full_name": {
+    "vi": "Nhập họ tên, tối đa 100 ký tự.",
+    "en": "Enter your full name, up to 100 characters."
+  },
+  "validation.image_too_large": {
+    "vi": "Ảnh “{{file}}” nặng {{size}}. Chọn ảnh JPG, PNG hoặc WebP tối đa 2MB.",
+    "en": "The image “{{file}}” is {{size}}. Choose a JPG, PNG or WebP image up to 2MB.",
+    "sample": "Ảnh \"ha-giang-4k.png\" nặng 5,8MB. Chọn ảnh JPG, PNG hoặc WebP tối đa 2MB."
+  },
+  "validation.language_code_taken": {
+    "vi": "Mã “{{code}}” đã có trong danh sách.",
+    "en": "The code “{{code}}” already exists.",
+    "sample": "Mã “en” đã có trong danh sách."
+  },
+  "validation.name_required": {
+    "vi": "Nhập họ tên.",
+    "en": "Enter your full name."
+  },
+  "validation.page_content_required": {
+    "vi": "Nhập nội dung ở ngôn ngữ mặc định.",
+    "en": "Enter the content in the default language."
+  },
+  "validation.page_title_length": {
+    "vi": "Tiêu đề của ngôn ngữ mặc định cần từ 2 đến 255 ký tự.",
+    "en": "The title in the default language must be between 2 and 255 characters."
+  },
+  "validation.page_translation_pair": {
+    "vi": "Điền đủ cả tiêu đề và nội dung, hoặc để trống cả hai.",
+    "en": "Fill in both title and content, or leave both empty."
+  },
+  "validation.password_mismatch": {
+    "vi": "Mật khẩu xác nhận không khớp.",
+    "en": "The passwords do not match."
+  },
+  "validation.password_weak": {
+    "vi": "Mật khẩu cần ít nhất 8 ký tự, có cả chữ và số.",
+    "en": "Password must be at least 8 characters and include letters and numbers."
+  },
+  "validation.post_title_length": {
+    "vi": "Tiêu đề cần từ 5 đến 255 ký tự.",
+    "en": "The title must be between 5 and 255 characters."
+  },
+  "validation.required": {
+    "vi": "Vui lòng nhập trường này.",
+    "en": "Please fill in this field."
+  },
+  "validation.search_length": {
+    "vi": "Từ khóa cần từ 2 đến 100 ký tự.",
+    "en": "Keywords must be between 2 and 100 characters."
+  },
+  "validation.ui_key_taken": {
+    "vi": "Key “{{key}}” đã có. Tìm key đó trong bảng để sửa giá trị.",
+    "en": "The key “{{key}}” already exists. Find it in the table to edit its values.",
+    "sample": "Key “menu.home” đã có. Tìm key đó trong bảng để sửa giá trị."
+  }
+}

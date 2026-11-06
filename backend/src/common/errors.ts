@@ -23,6 +23,7 @@ export const ErrorCode = {
   LANGUAGE_IN_USE: 'LANGUAGE_IN_USE',
   CATEGORY_IN_USE: 'CATEGORY_IN_USE',
   LAST_SUPER_ADMIN: 'LAST_SUPER_ADMIN',
+  ORIGINAL_TRANSLATION_REQUIRED: 'ORIGINAL_TRANSLATION_REQUIRED',
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

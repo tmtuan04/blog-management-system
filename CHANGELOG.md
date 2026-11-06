@@ -6,6 +6,18 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Quản lý bài viết UC13 phần bài + bản gốc (A3, PR 1/2):
+  - `GET/POST /admin/posts`, `GET/PATCH/DELETE /admin/posts/:id` (Blog Owner / Super Admin, chỉ bài của chính mình). Lọc danh sách bằng EXISTS; tạo bài và bản gốc trong transaction; sanitize HTML, slug, xóa cache `posts` + `categories`; đổi/bỏ thumbnail thì xóa file cũ.
+  - Module `posts` (`AdminPostsController` / `AdminPostsService`), DTO, `escapeLike`, mã lỗi `ORIGINAL_TRANSLATION_REQUIRED` (dùng cho PR bản dịch).
+  - Unit test `admin-posts.service.spec.ts`, e2e `test/admin-posts.e2e-spec.ts`; Postman folder `03 - Admin Posts` (biến `categoryId`, `postId`). API bản dịch để PR sau.
+- Seeders phase 3 (B1), `npm run db:seed` / `db:seed:undo`:
+  - 8 seeder theo phase 3 doc mục 5: 3 role, 2 ngôn ngữ, 4 tài khoản (mật khẩu chung `Password123`, user Github không có mật khẩu), 5 danh mục ("Đời sống" chỉ có tên `vi`, "Tin tức" chưa có bài), 30 bài / 43 bản dịch (đủ `draft`, `published`, `archived`; bài "Hướng dẫn Angular" dùng đủ định dạng của editor), 11 bình luận, 369 key UI translation `vi` + `en`, 3 trang tĩnh song ngữ.
+  - Ảnh mẫu: SVG ở `html/assets/img/` chuyển sang PNG trong `backend/database/seed-data/images/`, seeder copy vào `UPLOAD_DIR` với tên UUID cố định khớp quy tắc upload; rollback xóa file.
+  - `backend/database/seed-helpers.js`: tra ngôn ngữ theo mã, chặn id trùng, copy/xóa ảnh mẫu. Khi `NODE_ENV=production` bỏ qua dữ liệu demo (tài khoản, danh mục, bài, bình luận), chỉ nạp dữ liệu hệ thống.
+  - Rollback kiểm tra dữ liệu phụ thuộc trước khi xóa (ví dụ không xóa ngôn ngữ khi trang tĩnh còn dùng).
+- `backend/scripts/extract-i18n.mjs` (`npm run i18n:extract`, `npm run i18n:check`): quét `data-i18n`, `data-i18n-<thuộc tính>`, `data-loading-i18n` trong `html/` và key gán trong `html/js/`, ghi `backend/database/seed-data/ui-translations.json` (giữ bản dịch `en` khi chạy lại); báo key trùng mà khác chữ, key thiếu `en`. Chữ có dữ liệu động dùng mẫu `{{ten}}` kèm trường `sample`.
+- `docs/phase-3-backend.md` mục 8: cách đọc bảng, trạng thái từng việc, bảng thứ tự chung theo đợt (8.2).
+- `docs/phase-3-huong-dan.md`: hướng dẫn từng bước cho phase 3 (cài Docker Desktop, Postman CLI; chạy MySQL/Redis, điền `.env`, migrate, chạy app, kiểm tra bằng Swagger; quy trình làm một module theo mẫu `languages` từ DTO đến e2e test và Postman; checklist PR; Git và cách gỡ conflict `app.module.ts`, Postman collection; lỗi hay gặp). Link từ phase 3 doc mục 8 và `backend/README.md`.
 - Chọn ngôn ngữ đang soạn ở `admin/post-create.html` (UC13, theo góp ý của mentor: sửa bài dùng tab, tạo bài dùng select):
   - Ô "Ngôn ngữ đang soạn" dưới phần dùng chung, mỗi ngôn ngữ một form bản dịch (tiêu đề, tóm tắt, trạng thái, editor), chỉ hiện form đang chọn. Chữ "Bản gốc" / "Bản dịch" trong ô chọn và ở đầu form đổi theo ô "Ngôn ngữ gốc"; form bản dịch có ghi chú "Bản dịch không bắt buộc".
   - Tên ô nhập đổi thành `translations[vi][title]`, `translations[en][title]`... như `post-edit`.
@@ -122,6 +134,8 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Changed
 
+- HTML phát hiện nhờ `extract-i18n.mjs`: nút xóa key ở `admin/ui-translations.html` dùng aria-label chung "Xóa key" (trước đây chứa tên key nên mỗi dòng một chữ khác nhau); `validation.email_taken` ở `admin/users.html` dùng cùng câu với `public/register.html`.
+- `docs/sample-data.md`: đường dẫn ảnh mẫu theo quy tắc upload (`uploads/images/<uuid>.png`); trang `contact`, `privacy` có thêm bản `en`.
 - Chia lại việc phase 3 (`docs/phase-3-backend.md` 1.0 → 1.1): A ~50%, B ~35%, C ~15%.
   - Mục 8 thêm bảng tỉ lệ phân công. Hồ sơ cá nhân UC12 chuyển từ B (B7 cũ) sang A (A6 mới); OAuth thành A7, việc hoàn thiện cuối phase thành A8. Mục 4.4 ghi A phụ trách.
   - A1, A2 đánh dấu đã xong. A3 bỏ chờ B1 (test e2e dùng dữ liệu riêng).
