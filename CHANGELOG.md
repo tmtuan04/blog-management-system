@@ -17,6 +17,11 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
   - Rollback kiểm tra dữ liệu phụ thuộc trước khi xóa (ví dụ không xóa ngôn ngữ khi trang tĩnh còn dùng).
 - `backend/scripts/extract-i18n.mjs` (`npm run i18n:extract`, `npm run i18n:check`): quét `data-i18n`, `data-i18n-<thuộc tính>`, `data-loading-i18n` trong `html/` và key gán trong `html/js/`, ghi `backend/database/seed-data/ui-translations.json` (giữ bản dịch `en` khi chạy lại); báo key trùng mà khác chữ, key thiếu `en`. Chữ có dữ liệu động dùng mẫu `{{ten}}` kèm trường `sample`.
 - `docs/phase-3-backend.md` mục 8: cách đọc bảng, trạng thái từng việc, bảng thứ tự chung theo đợt (8.2).
+- Ô "Bản dịch" dạng checkbox ở `admin/post-create.html` (UC13, theo góp ý của mentor), thay cho ô select "Ngôn ngữ đang soạn":
+  - Nằm cạnh ô "Ngôn ngữ gốc", mỗi ngôn ngữ một checkbox (ẩn ngôn ngữ gốc). Tick ngôn ngữ nào thì có tab soạn ngôn ngữ đó (dùng lại `.translation-tabs` của `post-edit`) và mở luôn tab đó; bỏ tick thì ẩn tab, khóa ô nhập của bản dịch đó, đang mở thì về tab gốc.
+  - Ô chọn ngôn ngữ trong modal xem trước dựng từ các tab đang hiện, chỉ một tab thì ẩn.
+  - `demo-state.js`: `<input type="checkbox" data-demo-checked="<trạng thái>">`; chọn tab (`data-demo-tab`) chạy trước khi mở modal demo.
+  - UI translation: bỏ `admin.post_form.editing_language`.
 - `docs/phase-3-huong-dan.md`: hướng dẫn từng bước cho phase 3 (cài Docker Desktop, Postman CLI; chạy MySQL/Redis, điền `.env`, migrate, chạy app, kiểm tra bằng Swagger; quy trình làm một module theo mẫu `languages` từ DTO đến e2e test và Postman; checklist PR; Git và cách gỡ conflict `app.module.ts`, Postman collection; lỗi hay gặp). Link từ phase 3 doc mục 8 và `backend/README.md`.
 - Chọn ngôn ngữ đang soạn ở `admin/post-create.html` (UC13, theo góp ý của mentor: sửa bài dùng tab, tạo bài dùng select):
   - Ô "Ngôn ngữ đang soạn" dưới phần dùng chung, mỗi ngôn ngữ một form bản dịch (tiêu đề, tóm tắt, trạng thái, editor), chỉ hiện form đang chọn. Chữ "Bản gốc" / "Bản dịch" trong ô chọn và ở đầu form đổi theo ô "Ngôn ngữ gốc"; form bản dịch có ghi chú "Bản dịch không bắt buộc".
