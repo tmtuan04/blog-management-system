@@ -18,11 +18,12 @@
   Trạng thái demo chia làm 2 nhóm dữ liệu:
   - Form trống (bài mới): normal, error, image-error
   - Form đã điền:         filled, uploading, loading, preview, preview-mobile (mở modal xem trước),
-                          translation, preview-translation (đang soạn / xem trước bản dịch English)
+                          translation, preview-translation (đang soạn / xem trước bản dịch English),
+                          translations (chọn 4 bản dịch: khung hiện 3 chip và "+1", mở sẵn menu chọn)
   Ô nào khác nhau giữa 2 nhóm thì có 2 bản, mỗi bản gắn data-demo của nhóm mình.
-  translation, preview-translation tự tick English ở ô "Bản dịch" (data-demo-checked) và mở tab English (data-demo-tab).
+  translation, preview-translation, translations tự chọn English ở ô "Bản dịch" (data-demo-checked) và mở tab English (data-demo-tab).
 -->
-<body data-demo-states="normal filled error image-error uploading loading preview preview-mobile translation preview-translation" data-demo-label-normal="Bài mới" data-demo-label-filled="Đã điền" data-demo-label-image-error="Lỗi ảnh" data-demo-label-uploading="Đang tải ảnh" data-demo-label-loading="Đang lưu" data-demo-label-preview="Xem trước (desktop)" data-demo-label-preview-mobile="Xem trước (mobile)" data-demo-label-translation="Soạn bản dịch" data-demo-label-preview-translation="Xem trước bản dịch" data-demo-auths="blog_owner super_admin">
+<body data-demo-states="normal filled error image-error uploading loading preview preview-mobile translation preview-translation translations" data-demo-label-normal="Bài mới" data-demo-label-filled="Đã điền" data-demo-label-image-error="Lỗi ảnh" data-demo-label-uploading="Đang tải ảnh" data-demo-label-loading="Đang lưu" data-demo-label-preview="Xem trước (desktop)" data-demo-label-preview-mobile="Xem trước (mobile)" data-demo-label-translation="Soạn bản dịch" data-demo-label-preview-translation="Xem trước bản dịch" data-demo-label-translations="Nhiều bản dịch" data-demo-auths="blog_owner super_admin">
 
   <!-- component: editor-topbar -->
   <header class="editor-topbar">
@@ -122,30 +123,92 @@
           <select class="form-select" id="postLanguage" name="language_id" aria-describedby="postLanguageHint">
             <option value="1" data-lang="vi" selected>Tiếng Việt</option>
             <option value="2" data-lang="en">English</option>
+            <option value="3" data-lang="fr">Français</option>
+            <option value="4" data-lang="de">Deutsch</option>
+            <option value="5" data-lang="ja">日本語</option>
+            <option value="6" data-lang="ko">한국어</option>
+            <option value="7" data-lang="zh">中文</option>
           </select>
           <div class="form-text" id="postLanguageHint" data-i18n="admin.post_form.original_language_hint">Không đổi được sau khi tạo bài.</div>
         </div>
 
-        <!-- component: post-translation-languages -->
-        <!-- Chọn các ngôn ngữ sẽ dịch: mỗi ngôn ngữ được tick có một tab soạn bên dưới.
-             Ô của ngôn ngữ gốc bị ẩn. JS: js/post-language-select.js -->
+        <!-- component: multi-select -->
+        <!-- Ô "Bản dịch": chọn các ngôn ngữ sẽ dịch, mỗi ngôn ngữ được chọn có một tab soạn bên dưới. Ngôn ngữ gốc không có
+             trong danh sách. Chọn quá 3 ngôn ngữ thì khung hiện 3 chip đầu và "+N", chọn hết thì hiện "Tất cả (N ngôn ngữ)".
+             JS: js/multi-select.js (ô chọn), js/post-language-select.js (tab theo lựa chọn) -->
         <div>
           <span class="form-label d-block" id="postTranslationsLabel">
             <span data-i18n="admin.post_form.translation">Bản dịch</span>
             <span class="text-body-secondary fw-normal" data-i18n="common.optional">(không bắt buộc)</span>
           </span>
-          <div class="post-form__translations" role="group" aria-labelledby="postTranslationsLabel" data-translation-languages data-original-select="postLanguage" data-tabs="postLanguageTabs">
-            <div class="form-check" data-lang-option="vi">
-              <input class="form-check-input" type="checkbox" id="postTranslateVi" value="vi">
-              <label class="form-check-label" for="postTranslateVi">Tiếng Việt</label>
+          <div class="multi-select dropdown" data-multi-select data-max-chips="3" data-translation-languages data-original-select="postLanguage" data-tabs="postLanguageTabs" data-pane-template="postTranslationTemplate">
+            <div class="multi-select__field form-select">
+              <span class="multi-select__value" id="postTranslationsValue">
+                <span class="multi-select__placeholder" data-multi-select-placeholder data-i18n="admin.post_form.translation_placeholder">Chọn ngôn ngữ</span>
+                <span class="multi-select__chips" data-multi-select-chips hidden>
+                  <span class="multi-select__more" data-multi-select-more hidden>+<span data-multi-select-rest>0</span></span>
+                </span>
+                <span class="multi-select__summary" data-multi-select-summary hidden><span data-i18n="common.all">Tất cả</span> (<span data-multi-select-total>0</span> <span data-i18n="admin.post_form.translation_count">ngôn ngữ</span>)</span>
+              </span>
+              <button type="button" class="multi-select__toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-reference="parent" aria-expanded="false" aria-labelledby="postTranslationsLabel postTranslationsValue" data-demo-dropdown="translations"></button>
+
+              <div class="dropdown-menu multi-select__menu">
+                <div class="multi-select__search">
+                  <div class="search-input">
+                    <i class="bi bi-search search-input__icon" aria-hidden="true"></i>
+                    <input type="search" class="form-control form-control-sm search-input__control" placeholder="Tìm ngôn ngữ" aria-label="Tìm ngôn ngữ" data-i18n-placeholder="admin.post_form.translation_search" data-i18n-aria-label="admin.post_form.translation_search" data-multi-select-search>
+                  </div>
+                </div>
+                <div class="form-check multi-select__all">
+                  <input class="form-check-input" type="checkbox" id="postTranslateAll" data-multi-select-all>
+                  <label class="form-check-label" for="postTranslateAll" data-i18n="common.select_all">Chọn tất cả</label>
+                </div>
+                <div class="multi-select__options" role="group" aria-labelledby="postTranslationsLabel">
+                  <div class="form-check multi-select__option" data-multi-select-option>
+                    <input class="form-check-input" type="checkbox" id="postTranslateVi" value="vi">
+                    <label class="form-check-label" for="postTranslateVi">Tiếng Việt</label>
+                  </div>
+                  <div class="form-check multi-select__option" data-multi-select-option>
+                    <input class="form-check-input" type="checkbox" id="postTranslateEn" value="en" data-demo-checked="translation preview-translation translations">
+                    <label class="form-check-label" for="postTranslateEn">English</label>
+                  </div>
+                  <div class="form-check multi-select__option" data-multi-select-option>
+                    <input class="form-check-input" type="checkbox" id="postTranslateFr" value="fr" data-demo-checked="translations">
+                    <label class="form-check-label" for="postTranslateFr">Français</label>
+                  </div>
+                  <div class="form-check multi-select__option" data-multi-select-option>
+                    <input class="form-check-input" type="checkbox" id="postTranslateDe" value="de" data-demo-checked="translations">
+                    <label class="form-check-label" for="postTranslateDe">Deutsch</label>
+                  </div>
+                  <div class="form-check multi-select__option" data-multi-select-option>
+                    <input class="form-check-input" type="checkbox" id="postTranslateJa" value="ja" data-demo-checked="translations">
+                    <label class="form-check-label" for="postTranslateJa">日本語</label>
+                  </div>
+                  <div class="form-check multi-select__option" data-multi-select-option>
+                    <input class="form-check-input" type="checkbox" id="postTranslateKo" value="ko">
+                    <label class="form-check-label" for="postTranslateKo">한국어</label>
+                  </div>
+                  <div class="form-check multi-select__option" data-multi-select-option>
+                    <input class="form-check-input" type="checkbox" id="postTranslateZh" value="zh">
+                    <label class="form-check-label" for="postTranslateZh">中文</label>
+                  </div>
+                </div>
+                <p class="multi-select__empty" data-multi-select-empty data-i18n="admin.post_form.translation_no_match" hidden>Không tìm thấy ngôn ngữ</p>
+              </div>
             </div>
-            <div class="form-check" data-lang-option="en">
-              <input class="form-check-input" type="checkbox" id="postTranslateEn" value="en" data-demo-checked="translation preview-translation">
-              <label class="form-check-label" for="postTranslateEn">English</label>
-            </div>
+
+            <template data-multi-select-chip>
+              <span class="multi-select__chip">
+                <span data-chip-label></span>
+                <button type="button" class="multi-select__chip-remove">
+                  <i class="bi bi-x" aria-hidden="true"></i>
+                  <span class="visually-hidden"><span data-i18n="common.deselect">Bỏ chọn</span> <span data-chip-label></span></span>
+                </button>
+              </span>
+            </template>
           </div>
         </div>
-        <!-- /component: post-translation-languages -->
+        <!-- /component: multi-select -->
 
         <div data-demo="normal error image-error">
           <label class="form-label" for="postCategory" data-i18n="admin.post_form.category">Danh mục</label>
@@ -159,7 +222,7 @@
           </select>
           <div class="invalid-feedback" data-i18n="validation.category_required">Chọn danh mục cho bài viết.</div>
         </div>
-        <div data-demo="filled uploading loading preview preview-mobile translation preview-translation">
+        <div data-demo="filled uploading loading preview preview-mobile translation preview-translation translations">
           <label class="form-label" for="postCategoryFilled" data-i18n="admin.post_form.category">Danh mục</label>
           <select class="form-select" id="postCategoryFilled" name="category_id">
             <option value="" data-i18n="admin.post_form.category_placeholder">Chọn danh mục</option>
@@ -188,7 +251,7 @@
             <div class="invalid-feedback" data-i18n="validation.image_too_large">Ảnh "ha-giang-4k.png" nặng 5,8MB. Chọn ảnh JPG, PNG hoặc WebP tối đa 2MB.</div>
           </div>
 
-          <div class="thumb-upload__preview" data-demo="filled uploading loading preview preview-mobile translation preview-translation">
+          <div class="thumb-upload__preview" data-demo="filled uploading loading preview preview-mobile translation preview-translation translations">
             <img src="../assets/img/posts/5.svg" alt="Xem trước ảnh thumbnail" data-i18n-alt="admin.post_form.thumbnail_preview">
             <div class="thumb-upload__actions">
               <label class="btn btn-outline-secondary btn-sm" for="postThumbnail" data-i18n="admin.post_form.thumbnail_change">Đổi ảnh</label>
@@ -203,7 +266,7 @@
       <!-- /component: post-shared-fields -->
 
       <!-- component: translation-tabs -->
-      <!-- Tab ngôn ngữ gốc luôn hiện; tab bản dịch chỉ hiện khi ngôn ngữ đó được tick ở ô "Bản dịch".
+      <!-- Tab ngôn ngữ gốc luôn hiện; tab bản dịch chỉ hiện khi ngôn ngữ đó được chọn ở ô "Bản dịch".
            Nhãn "Gốc" theo ô "Ngôn ngữ gốc". JS: js/post-language-select.js -->
       <ul class="nav nav-tabs translation-tabs" id="postLanguageTabs" role="tablist" aria-label="Bản dịch theo ngôn ngữ" data-i18n-aria-label="admin.post_form.translations">
         <li class="nav-item" role="presentation" data-lang-tab="vi">
@@ -213,7 +276,7 @@
           </button>
         </li>
         <li class="nav-item" role="presentation" data-lang-tab="en" hidden>
-          <button type="button" class="nav-link" id="postTabEn" data-bs-toggle="tab" data-bs-target="#postTranslationEn" role="tab" aria-controls="postTranslationEn" aria-selected="false" data-lang="en" data-demo-tab="translation preview-translation">
+          <button type="button" class="nav-link" id="postTabEn" data-bs-toggle="tab" data-bs-target="#postTranslationEn" role="tab" aria-controls="postTranslationEn" aria-selected="false" data-lang="en" data-demo-tab="translation preview-translation translations">
             English
             <span class="translation-tabs__origin" data-tab-origin data-i18n="admin.posts.original_language" hidden>Gốc</span>
           </button>
@@ -252,7 +315,7 @@
           <label class="visually-hidden" for="postExcerpt" data-i18n="admin.post_form.excerpt">Tóm tắt</label>
           <textarea class="post-form__excerpt" id="postExcerpt" name="translations[vi][excerpt]" rows="2" maxlength="500" placeholder="Tóm tắt ngắn hiện trên thẻ bài viết (không bắt buộc, tối đa 500 ký tự)" data-i18n-placeholder="admin.post_form.excerpt_placeholder"></textarea>
         </div>
-        <div data-demo="filled uploading loading preview preview-mobile translation preview-translation">
+        <div data-demo="filled uploading loading preview preview-mobile translation preview-translation translations">
           <label class="visually-hidden" for="postTitleFilled" data-i18n="admin.post_form.title">Tiêu đề</label>
           <textarea class="post-form__title text-post-title" id="postTitleFilled" name="translations[vi][title]" rows="2" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title">Ghi chép từ chuyến đi Hà Giang mùa hoa tam giác mạch</textarea>
 
@@ -281,7 +344,7 @@
 
             <div class="editor__content prose" id="postContent" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder" data-demo="normal error image-error"></div>
 
-            <div class="editor__content prose" id="postContentFilled" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder" data-demo="filled uploading loading preview preview-mobile translation preview-translation">
+            <div class="editor__content prose" id="postContentFilled" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder" data-demo="filled uploading loading preview preview-mobile translation preview-translation translations">
               <p>Tháng mười, Hà Giang bắt đầu vào mùa hoa tam giác mạch. Chúng tôi xuất phát từ Hà Nội lúc 9 giờ tối, ngủ một giấc trên xe khách và tỉnh dậy giữa <strong>những con đèo phủ sương</strong>.</p>
               <h2>Ngày đầu: Quản Bạ và Yên Minh</h2>
               <p>Cổng trời Quản Bạ là điểm dừng đầu tiên. Từ đây nhìn xuống, <em>núi Đôi</em> hiện ra giữa thung lũng như hai bầu ngực khổng lồ của đất. Đường từ Quản Bạ đi Yên Minh <u>nhiều khúc cua tay áo</u>, nên đi chậm và bật đèn khi qua mây.</p>
@@ -319,7 +382,7 @@
       </section>
       <!-- /component: post-translation-form -->
 
-      <!-- Bản dịch English: cùng markup post-translation-form, chỉ có tab khi English được tick ở ô "Bản dịch" -->
+      <!-- Bản dịch English: cùng markup post-translation-form, chỉ có tab khi English được chọn ở ô "Bản dịch" -->
       <section class="tab-pane" id="postTranslationEn" data-lang-pane="en" role="tabpanel" aria-labelledby="postTabEn" tabindex="0">
         <div class="post-form__head">
           <p class="text-meta mb-0" id="postTranslationEnLabel"><span data-pane-role data-i18n="admin.post_form.translation">Bản dịch</span> · English</p>
@@ -345,7 +408,7 @@
           <label class="visually-hidden" for="postExcerptEn" data-i18n="admin.post_form.excerpt">Tóm tắt</label>
           <textarea class="post-form__excerpt" id="postExcerptEn" name="translations[en][excerpt]" rows="2" maxlength="500" placeholder="Tóm tắt ngắn hiện trên thẻ bài viết (không bắt buộc, tối đa 500 ký tự)" data-i18n-placeholder="admin.post_form.excerpt_placeholder"></textarea>
         </div>
-        <div data-demo="translation preview-translation">
+        <div data-demo="translation preview-translation translations">
           <label class="visually-hidden" for="postTitleEnFilled" data-i18n="admin.post_form.title">Tiêu đề</label>
           <textarea class="post-form__title text-post-title" id="postTitleEnFilled" name="translations[en][title]" rows="2" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title">Notes from Ha Giang in buckwheat flower season</textarea>
 
@@ -374,7 +437,7 @@
 
             <div class="editor__content prose" id="postContentEn" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder" data-demo="normal filled error image-error uploading loading preview preview-mobile"></div>
 
-            <div class="editor__content prose" id="postContentEnFilled" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder" data-demo="translation preview-translation">
+            <div class="editor__content prose" id="postContentEnFilled" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder" data-demo="translation preview-translation translations">
               <p>In October, Ha Giang enters buckwheat flower season. We left Hanoi at 9 p.m., slept on the night bus and woke up among <strong>mist-covered mountain passes</strong>.</p>
               <h2>Day one: Quan Ba and Yen Minh</h2>
               <p>Quan Ba Heaven Gate was our first stop. From here, the <em>Twin Mountains</em> rise from the valley below. The road from Quan Ba to Yen Minh has <u>many hairpin bends</u>, so ride slowly and turn on your lights in the clouds.</p>
@@ -394,6 +457,65 @@
           <!-- /component: rich-text-editor -->
         </div>
       </section>
+
+      <!-- Tab + form của các ngôn ngữ còn lại (Français, Deutsch...): cùng markup bản English, js/post-language-select.js dựng
+           từ mẫu này cho mỗi option của ô "Ngôn ngữ gốc" chưa có form. {lang} = mã ngôn ngữ, {Lang} = mã viết hoa chữ đầu
+           (dùng trong id), {name} = tên ngôn ngữ -->
+      <template id="postTranslationTemplate">
+        <li class="nav-item" role="presentation" data-lang-tab="{lang}" hidden>
+          <button type="button" class="nav-link" id="postTab{Lang}" data-bs-toggle="tab" data-bs-target="#postTranslation{Lang}" role="tab" aria-controls="postTranslation{Lang}" aria-selected="false" data-lang="{lang}">
+            {name}
+            <span class="translation-tabs__origin" data-tab-origin data-i18n="admin.posts.original_language" hidden>Gốc</span>
+          </button>
+        </li>
+
+        <section class="tab-pane" id="postTranslation{Lang}" data-lang-pane="{lang}" role="tabpanel" aria-labelledby="postTab{Lang}" tabindex="0">
+          <div class="post-form__head">
+            <p class="text-meta mb-0"><span data-pane-role data-i18n="admin.post_form.translation">Bản dịch</span> · {name}</p>
+            <div class="post-form__status">
+              <label class="text-meta" for="postStatus{Lang}" data-i18n="admin.post_form.status">Trạng thái</label>
+              <select class="form-select form-select-sm" id="postStatus{Lang}" name="translations[{lang}][status]">
+                <option value="draft" selected data-i18n="post.status.draft">Nháp</option>
+                <option value="published" data-i18n="post.status.published">Đã đăng</option>
+                <option value="archived" data-i18n="post.status.archived">Lưu trữ</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="alert-inline alert-inline--success mb-4" role="note" data-translation-hint>
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            <div data-i18n="admin.post_form.translation_optional_hint">Bản dịch không bắt buộc. Để trống cả tiêu đề và nội dung thì bài chỉ có bản gốc, có thể thêm bản dịch sau ở trang sửa bài.</div>
+          </div>
+
+          <label class="visually-hidden" for="postTitle{Lang}" data-i18n="admin.post_form.title">Tiêu đề</label>
+          <textarea class="post-form__title text-post-title" id="postTitle{Lang}" name="translations[{lang}][title]" rows="1" placeholder="Tiêu đề" data-i18n-placeholder="admin.post_form.title"></textarea>
+
+          <label class="visually-hidden" for="postExcerpt{Lang}" data-i18n="admin.post_form.excerpt">Tóm tắt</label>
+          <textarea class="post-form__excerpt" id="postExcerpt{Lang}" name="translations[{lang}][excerpt]" rows="2" maxlength="500" placeholder="Tóm tắt ngắn hiện trên thẻ bài viết (không bắt buộc, tối đa 500 ký tự)" data-i18n-placeholder="admin.post_form.excerpt_placeholder"></textarea>
+
+          <div class="post-form__body">
+            <div class="editor">
+              <div class="editor__toolbar" role="toolbar" aria-label="Định dạng" data-i18n-aria-label="admin.editor.toolbar" aria-controls="postContent{Lang}">
+                <button type="button" class="editor__tool" aria-label="Tiêu đề lớn" data-i18n-aria-label="admin.editor.heading_2"><i class="bi bi-type-h2" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-label="Tiêu đề nhỏ" data-i18n-aria-label="admin.editor.heading_3"><i class="bi bi-type-h3" aria-hidden="true"></i></button>
+                <span class="editor__sep" aria-hidden="true"></span>
+                <button type="button" class="editor__tool" aria-pressed="false" aria-label="In đậm" data-i18n-aria-label="admin.editor.bold"><i class="bi bi-type-bold" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-pressed="false" aria-label="In nghiêng" data-i18n-aria-label="admin.editor.italic"><i class="bi bi-type-italic" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-pressed="false" aria-label="Gạch chân" data-i18n-aria-label="admin.editor.underline"><i class="bi bi-type-underline" aria-hidden="true"></i></button>
+                <span class="editor__sep" aria-hidden="true"></span>
+                <button type="button" class="editor__tool" aria-label="Danh sách" data-i18n-aria-label="admin.editor.bullet_list"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-label="Danh sách đánh số" data-i18n-aria-label="admin.editor.ordered_list"><i class="bi bi-list-ol" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-label="Trích dẫn" data-i18n-aria-label="admin.editor.quote"><i class="bi bi-quote" aria-hidden="true"></i></button>
+                <span class="editor__sep" aria-hidden="true"></span>
+                <button type="button" class="editor__tool" aria-label="Chèn link" data-i18n-aria-label="admin.editor.link"><i class="bi bi-link-45deg" aria-hidden="true"></i></button>
+                <button type="button" class="editor__tool" aria-label="Chèn ảnh" data-i18n-aria-label="admin.editor.image"><i class="bi bi-image" aria-hidden="true"></i></button>
+              </div>
+
+              <div class="editor__content prose" id="postContent{Lang}" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Nội dung" data-i18n-aria-label="admin.editor.content" aria-placeholder="Kể câu chuyện của bạn..." data-i18n-aria-placeholder="admin.editor.placeholder"></div>
+            </div>
+          </div>
+        </section>
+      </template>
 
       </div>
     </form>
@@ -441,7 +563,8 @@
   <!-- /component: post-preview -->
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Hai file này nạp trước demo-state.js để bắt được lần đổi ngôn ngữ và lần mở modal ở trạng thái demo -->
+  <!-- Các file này nạp trước demo-state.js để bắt được lần chọn ngôn ngữ và lần mở modal ở trạng thái demo -->
+  <script src="../js/multi-select.js"></script>
   <script src="../js/post-language-select.js"></script>
   <script src="../js/post-preview.js"></script>
   <script src="../js/demo-state.js"></script>
