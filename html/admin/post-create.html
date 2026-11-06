@@ -20,7 +20,7 @@
   - Form đã điền:         filled, uploading, loading, preview, preview-mobile (mở modal xem trước),
                           translation, preview-translation (đang soạn / xem trước bản dịch English)
   Ô nào khác nhau giữa 2 nhóm thì có 2 bản, mỗi bản gắn data-demo của nhóm mình.
-  Mỗi trạng thái tự chọn "Ngôn ngữ đang soạn" bằng data-demo-select trên option (xem js/demo-state.js).
+  translation, preview-translation tự tick English ở ô "Bản dịch" (data-demo-checked) và mở tab English (data-demo-tab).
 -->
 <body data-demo-states="normal filled error image-error uploading loading preview preview-mobile translation preview-translation" data-demo-label-normal="Bài mới" data-demo-label-filled="Đã điền" data-demo-label-image-error="Lỗi ảnh" data-demo-label-uploading="Đang tải ảnh" data-demo-label-loading="Đang lưu" data-demo-label-preview="Xem trước (desktop)" data-demo-label-preview-mobile="Xem trước (mobile)" data-demo-label-translation="Soạn bản dịch" data-demo-label-preview-translation="Xem trước bản dịch" data-demo-auths="blog_owner super_admin">
 
@@ -126,6 +126,27 @@
           <div class="form-text" id="postLanguageHint" data-i18n="admin.post_form.original_language_hint">Không đổi được sau khi tạo bài.</div>
         </div>
 
+        <!-- component: post-translation-languages -->
+        <!-- Chọn các ngôn ngữ sẽ dịch: mỗi ngôn ngữ được tick có một tab soạn bên dưới.
+             Ô của ngôn ngữ gốc bị ẩn. JS: js/post-language-select.js -->
+        <div>
+          <span class="form-label d-block" id="postTranslationsLabel">
+            <span data-i18n="admin.post_form.translation">Bản dịch</span>
+            <span class="text-body-secondary fw-normal" data-i18n="common.optional">(không bắt buộc)</span>
+          </span>
+          <div class="post-form__translations" role="group" aria-labelledby="postTranslationsLabel" data-translation-languages data-original-select="postLanguage" data-tabs="postLanguageTabs">
+            <div class="form-check" data-lang-option="vi">
+              <input class="form-check-input" type="checkbox" id="postTranslateVi" value="vi">
+              <label class="form-check-label" for="postTranslateVi">Tiếng Việt</label>
+            </div>
+            <div class="form-check" data-lang-option="en">
+              <input class="form-check-input" type="checkbox" id="postTranslateEn" value="en" data-demo-checked="translation preview-translation">
+              <label class="form-check-label" for="postTranslateEn">English</label>
+            </div>
+          </div>
+        </div>
+        <!-- /component: post-translation-languages -->
+
         <div data-demo="normal error image-error">
           <label class="form-label" for="postCategory" data-i18n="admin.post_form.category">Danh mục</label>
           <select class="form-select" id="postCategory" name="category_id" data-demo-invalid>
@@ -181,21 +202,30 @@
       </section>
       <!-- /component: post-shared-fields -->
 
-      <!-- component: post-language-select -->
-      <!-- Chọn ngôn ngữ đang soạn: mỗi ngôn ngữ một form bản dịch (data-lang-pane), chỉ hiện form đang chọn.
-           Chữ "Bản gốc" / "Bản dịch" theo ô "Ngôn ngữ gốc" ở trên. JS: js/post-language-select.js -->
-      <div class="post-form__language">
-        <label class="text-meta" for="postEditingLanguage" data-i18n="admin.post_form.editing_language">Ngôn ngữ đang soạn</label>
-        <select class="form-select form-select-sm" id="postEditingLanguage" data-editing-language data-original-select="postLanguage" aria-controls="postTranslationVi postTranslationEn">
-          <option value="vi" selected data-demo-select="normal filled error image-error uploading loading preview preview-mobile">Tiếng Việt · Bản gốc</option>
-          <option value="en" data-demo-select="translation preview-translation">English · Bản dịch</option>
-        </select>
-      </div>
-      <!-- /component: post-language-select -->
+      <!-- component: translation-tabs -->
+      <!-- Tab ngôn ngữ gốc luôn hiện; tab bản dịch chỉ hiện khi ngôn ngữ đó được tick ở ô "Bản dịch".
+           Nhãn "Gốc" theo ô "Ngôn ngữ gốc". JS: js/post-language-select.js -->
+      <ul class="nav nav-tabs translation-tabs" id="postLanguageTabs" role="tablist" aria-label="Bản dịch theo ngôn ngữ" data-i18n-aria-label="admin.post_form.translations">
+        <li class="nav-item" role="presentation" data-lang-tab="vi">
+          <button type="button" class="nav-link active" id="postTabVi" data-bs-toggle="tab" data-bs-target="#postTranslationVi" role="tab" aria-controls="postTranslationVi" aria-selected="true" data-lang="vi" data-demo-tab="normal filled error image-error uploading loading preview preview-mobile">
+            Tiếng Việt
+            <span class="translation-tabs__origin" data-tab-origin data-i18n="admin.posts.original_language">Gốc</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation" data-lang-tab="en" hidden>
+          <button type="button" class="nav-link" id="postTabEn" data-bs-toggle="tab" data-bs-target="#postTranslationEn" role="tab" aria-controls="postTranslationEn" aria-selected="false" data-lang="en" data-demo-tab="translation preview-translation">
+            English
+            <span class="translation-tabs__origin" data-tab-origin data-i18n="admin.posts.original_language" hidden>Gốc</span>
+          </button>
+        </li>
+      </ul>
+      <!-- /component: translation-tabs -->
+
+      <div class="tab-content">
 
       <!-- component: post-translation-form -->
       <!-- Bản gốc = bản dịch ở ngôn ngữ gốc (bảng post_translations) -->
-      <section id="postTranslationVi" data-lang-pane="vi" aria-labelledby="postTranslationViLabel">
+      <section class="tab-pane show active" id="postTranslationVi" data-lang-pane="vi" role="tabpanel" aria-labelledby="postTabVi" tabindex="0">
         <div class="post-form__head">
           <p class="text-meta mb-0" id="postTranslationViLabel"><span data-pane-role data-i18n="admin.post_form.original">Bản gốc</span> · Tiếng Việt</p>
           <div class="post-form__status">
@@ -289,8 +319,8 @@
       </section>
       <!-- /component: post-translation-form -->
 
-      <!-- Bản dịch English: cùng markup post-translation-form, ẩn cho tới khi chọn English ở "Ngôn ngữ đang soạn" -->
-      <section id="postTranslationEn" data-lang-pane="en" aria-labelledby="postTranslationEnLabel" hidden>
+      <!-- Bản dịch English: cùng markup post-translation-form, chỉ có tab khi English được tick ở ô "Bản dịch" -->
+      <section class="tab-pane" id="postTranslationEn" data-lang-pane="en" role="tabpanel" aria-labelledby="postTabEn" tabindex="0">
         <div class="post-form__head">
           <p class="text-meta mb-0" id="postTranslationEnLabel"><span data-pane-role data-i18n="admin.post_form.translation">Bản dịch</span> · English</p>
           <div class="post-form__status">
@@ -365,6 +395,7 @@
         </div>
       </section>
 
+      </div>
     </form>
   </main>
 
@@ -379,11 +410,10 @@
             <span class="post-preview__status" data-preview-status></span>
           </h2>
 
-          <!-- Ngôn ngữ xem trước: đổi ở đây thì "Ngôn ngữ đang soạn" trên form đổi theo. Chữ option chép từ select đó mỗi lần mở -->
+          <!-- Ngôn ngữ xem trước: đổi ở đây thì tab ngôn ngữ trên form đổi theo. Option dựng lại từ các tab đang hiện mỗi lần mở -->
           <label class="visually-hidden" for="postPreviewLanguage" data-i18n="admin.post_preview.language">Ngôn ngữ xem trước</label>
-          <select class="form-select form-select-sm post-preview__language" id="postPreviewLanguage" data-preview-language="postEditingLanguage">
+          <select class="form-select form-select-sm post-preview__language" id="postPreviewLanguage" data-preview-language="postLanguageTabs">
             <option value="vi">Tiếng Việt · Bản gốc</option>
-            <option value="en">English · Bản dịch</option>
           </select>
 
           <!-- Chỉ có từ md trở lên: màn hẹp thì bản xem trước đã là bản mobile -->

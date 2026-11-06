@@ -408,10 +408,6 @@
     "vi": "Sửa bài viết",
     "en": "Edit post"
   },
-  "admin.post_form.editing_language": {
-    "vi": "Ngôn ngữ đang soạn",
-    "en": "Editing language"
-  },
   "admin.post_form.excerpt": {
     "vi": "Tóm tắt",
     "en": "Excerpt"

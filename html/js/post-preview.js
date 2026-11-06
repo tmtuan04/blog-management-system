@@ -9,8 +9,8 @@
  *   <div class="modal post-preview" data-preview-form="postForm">  id của form bài viết
  *     [data-preview-status]                                         Chỗ ghi trạng thái bài (Nháp, Đã đăng...)
  *     [data-preview-device="desktop|mobile"]                       Nút đổi cỡ màn hình
- *     select[data-preview-language="postEditingLanguage"]          Không bắt buộc: chọn ngôn ngữ xem trước,
- *                                                                   đồng bộ với ô "Ngôn ngữ đang soạn" có id đó
+ *     select[data-preview-language="postLanguageTabs"]             Không bắt buộc: chọn ngôn ngữ xem trước,
+ *                                                                   đồng bộ với thanh tab ngôn ngữ có id đó
  *     .post-preview__frame > iframe.post-preview__iframe            Bản xem trước
  *
  * Mỗi lần mở modal, nội dung form (tiêu đề, tóm tắt, danh mục, thumbnail, nội dung editor) được dựng
@@ -18,10 +18,11 @@
  * để media query chạy theo chiều rộng khung: khung mobile rộng 390px thì chữ và khoảng cách đúng như
  * trên điện thoại thật.
  *
- * Form có tab bản dịch (post-edit): tiêu đề, tóm tắt, trạng thái, nội dung lấy trong tab đang mở (.tab-pane.active);
- * danh mục và thumbnail dùng chung nên lấy trong cả form. Ô nhập tìm theo name: "title" hoặc "translations[vi][title]".
- * Form chọn ngôn ngữ bằng ô select (post-create, js/post-language-select.js): lấy trong form [data-lang-pane] đang hiện.
- * Đổi ngôn ngữ trong modal thì ô "Ngôn ngữ đang soạn" đổi theo và bản xem trước dựng lại.
+ * Form có tab bản dịch (post-edit, post-create): tiêu đề, tóm tắt, trạng thái, nội dung lấy trong tab đang mở
+ * (.tab-pane.active); danh mục và thumbnail dùng chung nên lấy trong cả form. Ô nhập tìm theo name: "title" hoặc
+ * "translations[vi][title]".
+ * Có ô chọn ngôn ngữ xem trước: option là các tab đang hiện (chữ lấy ở data-tab-label của tab, do
+ * js/post-language-select.js gán). Đổi ngôn ngữ trong modal thì tab trên form đổi theo và bản xem trước dựng lại.
  *
  * Trang dùng demo-state.js: ô nhập có thể có nhiều bản theo trạng thái demo, chỉ lấy bản đang hiện.
  * Trạng thái demo "preview-mobile" tự chọn cỡ mobile; "preview", "preview-translation" chọn cỡ desktop.
@@ -38,7 +39,7 @@
   const statusLabel = modal.querySelector('[data-preview-status]');
   const deviceButtons = modal.querySelectorAll('[data-preview-device]');
   const languageSelect = modal.querySelector('[data-preview-language]');
-  const editingSelect = languageSelect && document.getElementById(languageSelect.dataset.previewLanguage);
+  const languageTabs = languageSelect && document.getElementById(languageSelect.dataset.previewLanguage);
 
   // Chữ khi form còn trống. Phase 4 lấy từ UI translation.
   const EMPTY_TITLE = 'Chưa có tiêu đề';
@@ -63,9 +64,9 @@
     return findShown(root, `[name="${field}"], [name$="[${field}]"]`);
   }
 
-  // Bản dịch đang soạn: tab đang mở (post-edit) hoặc form ngôn ngữ đang chọn (post-create); không có thì là cả form
+  // Bản dịch đang soạn: tab đang mở; form không có tab thì là cả form
   function translationRoot() {
-    return form.querySelector('.tab-pane.active') || findShown(form, '[data-lang-pane]') || form;
+    return form.querySelector('.tab-pane.active') || form;
   }
 
   function selectedText(select) {
@@ -186,14 +187,21 @@ ${styles}
     button.addEventListener('click', () => setDevice(button.dataset.previewDevice));
   });
 
-  // Ô chọn ngôn ngữ trong modal: chép chữ option (đổi theo ngôn ngữ gốc) và giá trị từ ô "Ngôn ngữ đang soạn"
+  // Tab ngôn ngữ đang hiện (tab của ngôn ngữ chưa tick bị ẩn)
+  function visibleTabs() {
+    return Array.from(languageTabs.querySelectorAll('[data-bs-toggle="tab"]')).filter(isShown);
+  }
+
+  // Ô chọn ngôn ngữ trong modal: mỗi tab đang hiện một option, chọn sẵn tab đang mở. Chỉ một tab thì ẩn ô.
   function syncLanguage() {
-    if (!editingSelect) return;
-    Array.from(languageSelect.options).forEach((option) => {
-      const source = editingSelect.querySelector(`option[value="${option.value}"]`);
-      if (source) option.text = source.text;
-    });
-    languageSelect.value = editingSelect.value;
+    if (!languageTabs) return;
+    const tabs = visibleTabs();
+    languageSelect.replaceChildren(...tabs.map((tab) => {
+      const option = new Option(tab.dataset.tabLabel || tab.textContent.trim(), tab.dataset.lang);
+      option.selected = tab.classList.contains('active');
+      return option;
+    }));
+    languageSelect.hidden = tabs.length < 2;
   }
 
   function render() {
@@ -205,14 +213,14 @@ ${styles}
 
   modal.addEventListener('show.bs.modal', render);
 
-  if (editingSelect) {
-    // Đổi ngôn ngữ trong modal = đổi ngôn ngữ đang soạn; post-language-select.js hiện form tương ứng
+  if (languageTabs) {
+    // Đổi ngôn ngữ trong modal = mở tab ngôn ngữ đó trên form
     languageSelect.addEventListener('change', () => {
-      editingSelect.value = languageSelect.value;
-      editingSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      const tab = visibleTabs().find((el) => el.dataset.lang === languageSelect.value);
+      if (tab) window.bootstrap.Tab.getOrCreateInstance(tab).show();
     });
-    // Ngôn ngữ đổi khi modal đang mở (đổi trong modal, hoặc chuyển trạng thái demo preview <-> preview-translation)
-    editingSelect.addEventListener('change', () => {
+    // Tab đổi khi modal đang mở (đổi trong modal, hoặc chuyển trạng thái demo preview <-> preview-translation)
+    languageTabs.addEventListener('shown.bs.tab', () => {
       if (modal.classList.contains('show')) render();
     });
   }
