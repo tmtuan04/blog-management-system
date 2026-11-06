@@ -6,6 +6,7 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- `README.md` ở gốc repo: giới thiệu ngắn, bảng link tới các tài liệu trong `docs/` và README của `html/`, `backend/`, link bản deploy, địa chỉ local (API, Swagger, Adminer, RedisInsight), lệnh chạy nhanh, cấu trúc thư mục.
 - Quản lý bài viết UC13 phần bài + bản gốc (A3, PR 1/2):
   - `GET/POST /admin/posts`, `GET/PATCH/DELETE /admin/posts/:id` (Blog Owner / Super Admin, chỉ bài của chính mình). Lọc danh sách bằng EXISTS; tạo bài và bản gốc trong transaction; sanitize HTML, slug, xóa cache `posts` + `categories`; đổi/bỏ thumbnail thì xóa file cũ.
   - Module `posts` (`AdminPostsController` / `AdminPostsService`), DTO, `escapeLike`, mã lỗi `ORIGINAL_TRANSLATION_REQUIRED` (dùng cho PR bản dịch).
