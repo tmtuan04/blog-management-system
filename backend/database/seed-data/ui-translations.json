@@ -529,9 +529,25 @@
     "vi": "Bản dịch",
     "en": "Translation"
   },
+  "admin.post_form.translation_count": {
+    "vi": "ngôn ngữ",
+    "en": "languages"
+  },
+  "admin.post_form.translation_no_match": {
+    "vi": "Không tìm thấy ngôn ngữ",
+    "en": "No languages found"
+  },
   "admin.post_form.translation_optional_hint": {
     "vi": "Bản dịch không bắt buộc. Để trống cả tiêu đề và nội dung thì bài chỉ có bản gốc, có thể thêm bản dịch sau ở trang sửa bài.",
     "en": "Translations are optional. Leave both title and content empty to keep only the original; you can add translations later on the edit page."
+  },
+  "admin.post_form.translation_placeholder": {
+    "vi": "Chọn ngôn ngữ",
+    "en": "Select languages"
+  },
+  "admin.post_form.translation_search": {
+    "vi": "Tìm ngôn ngữ",
+    "en": "Search languages"
   },
   "admin.post_form.translations": {
     "vi": "Bản dịch theo ngôn ngữ",
@@ -1096,6 +1112,10 @@
     "vi": "Đang xóa...",
     "en": "Deleting..."
   },
+  "common.deselect": {
+    "vi": "Bỏ chọn",
+    "en": "Remove"
+  },
   "common.edit": {
     "vi": "Sửa",
     "en": "Edit"
@@ -1159,6 +1179,10 @@
   "common.search_posts": {
     "vi": "Tìm bài viết...",
     "en": "Search posts..."
+  },
+  "common.select_all": {
+    "vi": "Chọn tất cả",
+    "en": "Select all"
   },
   "common.site_name": {
     "vi": "Inkwell",

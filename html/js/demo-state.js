@@ -30,6 +30,8 @@
  *                                                    Trạng thái không gắn option nào thì giữ option đang chọn.
  *   <input type="checkbox" data-demo-checked="translation">  Tick ở các trạng thái này, bỏ tick ở trạng thái khác.
  *                                                    Phát sự kiện change khi đổi, như data-demo-select.
+ *   <button data-bs-toggle="dropdown" data-demo-dropdown="translations">  Tự mở dropdown ở các trạng thái này
+ *                                                    (để chụp màn hình), đóng ở trạng thái khác.
  *
  * 2. Vai trò người xem
  *   <body data-demo-auths="blog_owner super_admin"> Các vai trò trang có. Mặc định "guest user" nếu trang
@@ -201,6 +203,12 @@
       // Tab chỉ cần chọn, không cần bỏ chọn: Bootstrap tự bỏ tab cũ trong cùng nhóm
       document.querySelectorAll('[data-demo-tab]').forEach((el) => {
         if (activeIn(el.dataset.demoTab)) window.bootstrap.Tab.getOrCreateInstance(el).show();
+      });
+      // Mở sau khi cú click trên thanh demo nổi xong lên document: Bootstrap đóng dropdown khi click ra ngoài menu
+      document.querySelectorAll('[data-demo-dropdown]').forEach((el) => {
+        const dropdown = window.bootstrap.Dropdown.getOrCreateInstance(el);
+        if (activeIn(el.dataset.demoDropdown)) setTimeout(() => dropdown.show());
+        else dropdown.hide();
       });
       document.querySelectorAll('[data-demo-modal]').forEach((el) => {
         const modal = window.bootstrap.Modal.getOrCreateInstance(el);
