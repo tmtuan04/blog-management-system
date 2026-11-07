@@ -25,6 +25,7 @@ describe('AdminPostsService', () => {
   const translationModel = {
     create: jest.fn(),
     findAll: jest.fn(),
+    findOne: jest.fn(),
   };
   const languageModel = { findOne: jest.fn() };
   const categoryModel = { findByPk: jest.fn() };
@@ -104,6 +105,30 @@ describe('AdminPostsService', () => {
       content: '<p>Noi dung hop le</p>',
       status: 'draft',
     },
+    ...overrides,
+  });
+
+  const activeLanguages: Record<string, { id: number; code: string }> = {
+    vi: { id: 1, code: 'vi' },
+    en: { id: 2, code: 'en' },
+    ja: { id: 3, code: 'ja' },
+  };
+  const findActiveLanguage = ({ where }: { where: { code: string } }) =>
+    Promise.resolve(activeLanguages[where.code] ?? null);
+
+  /** Bản dịch English (không phải bản gốc) của ownedPost */
+  const englishTranslation = (overrides: Record<string, unknown> = {}) => ({
+    id: 20,
+    postId: 10,
+    languageId: 2,
+    title: 'English post',
+    slug: 'english-post',
+    excerpt: null as string | null,
+    content: '<p>Content</p>',
+    status: 'draft',
+    publishedAt: null as Date | null,
+    save: jest.fn().mockResolvedValue(undefined),
+    destroy: jest.fn().mockResolvedValue(undefined),
     ...overrides,
   });
 
@@ -348,6 +373,294 @@ describe('AdminPostsService', () => {
       expect(cache.invalidate).toHaveBeenCalledWith(CachePrefix.categories);
       expect(detail.id).toBe(10);
     });
+
+    it('tạo luôn translations[] trong cùng transaction', async () => {
+      languageModel.findOne.mockImplementation(findActiveLanguage);
+
+      await service.create(
+        1,
+        createDto({
+          translations: [
+            {
+              languageCode: 'en',
+              title: 'English version',
+              content: '<p>Content</p>',
+              status: 'published',
+            },
+            {
+              languageCode: 'ja',
+              title: 'Japanese version',
+              content: '<p>Naiyou</p>',
+              status: 'draft',
+            },
+          ],
+        }),
+      );
+
+      expect(sequelize.transaction).toHaveBeenCalledTimes(1);
+      expect(translationModel.create).toHaveBeenCalledTimes(3);
+      expect(translationModel.create).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          postId: 10,
+          languageId: 2,
+          slug: 'english-version',
+          status: 'published',
+          publishedAt: expect.any(Date),
+        }),
+        { transaction: {} },
+      );
+      expect(translationModel.create).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({
+          languageId: 3,
+          status: 'draft',
+          publishedAt: null,
+        }),
+        { transaction: {} },
+      );
+    });
+
+    it('bản dịch trùng ngôn ngữ gốc → 400, không mở transaction', async () => {
+      languageModel.findOne.mockImplementation(findActiveLanguage);
+      const error = await errorOf(
+        service.create(
+          1,
+          createDto({
+            translations: [
+              {
+                languageCode: 'vi',
+                title: 'Ban dich trung',
+                content: '<p>x</p>',
+                status: 'draft',
+              },
+            ],
+          }),
+        ),
+      );
+      expect(error.getStatus()).toBe(400);
+      expect(error.errors).toEqual([
+        {
+          field: 'translations.0.languageCode',
+          message: 'Bản dịch phải khác ngôn ngữ gốc.',
+        },
+      ]);
+      expect(sequelize.transaction).not.toHaveBeenCalled();
+    });
+
+    it('hai bản dịch cùng ngôn ngữ → 400 ở phần tử sau', async () => {
+      languageModel.findOne.mockImplementation(findActiveLanguage);
+      const translation = {
+        languageCode: 'en',
+        title: 'English version',
+        content: '<p>x</p>',
+        status: 'draft' as const,
+      };
+      const error = await errorOf(
+        service.create(
+          1,
+          createDto({ translations: [translation, translation] }),
+        ),
+      );
+      expect(error.errors).toEqual([
+        {
+          field: 'translations.1.languageCode',
+          message: 'Mỗi ngôn ngữ chỉ có một bản dịch.',
+        },
+      ]);
+    });
+
+    it('nội dung bản dịch rỗng → 400 field translations.0.content', async () => {
+      languageModel.findOne.mockImplementation(findActiveLanguage);
+      const error = await errorOf(
+        service.create(
+          1,
+          createDto({
+            translations: [
+              {
+                languageCode: 'en',
+                title: 'English version',
+                content: '<p> </p>',
+                status: 'draft',
+              },
+            ],
+          }),
+        ),
+      );
+      expect(error.errors).toEqual([
+        {
+          field: 'translations.0.content',
+          message: 'Nhập nội dung bài viết.',
+        },
+      ]);
+    });
+  });
+
+  describe('addTranslation', () => {
+    beforeEach(() => {
+      languageModel.findOne.mockImplementation(findActiveLanguage);
+      postModel.findByPk.mockResolvedValue(ownedPost());
+      translationModel.findOne.mockResolvedValue(null);
+      translationModel.create.mockResolvedValue({});
+    });
+
+    const body = {
+      languageCode: 'ja',
+      title: 'Japanese version',
+      content: '<p>Naiyou</p>',
+      status: 'draft' as const,
+    };
+
+    it('409 khi bài đã có bản dịch ở ngôn ngữ đó', async () => {
+      translationModel.findOne.mockResolvedValue({ id: 20 });
+      const error = await errorOf(service.addTranslation(1, 10, body));
+      expect(error.getStatus()).toBe(409);
+      expect(error.errors).toEqual([
+        {
+          field: 'languageCode',
+          message: 'Bài viết đã có bản dịch ở ngôn ngữ này.',
+        },
+      ]);
+      expect(translationModel.create).not.toHaveBeenCalled();
+    });
+
+    it('400 khi ngôn ngữ đã tắt', async () => {
+      const error = await errorOf(
+        service.addTranslation(1, 10, { ...body, languageCode: 'fr' }),
+      );
+      expect(error.getStatus()).toBe(400);
+      expect(error.errors?.[0].field).toBe('languageCode');
+    });
+
+    it('403 khi bài của người khác', async () => {
+      postModel.findByPk.mockResolvedValue(ownedPost({ userId: 2 }));
+      const error = await errorOf(service.addTranslation(1, 10, body));
+      expect(error.getStatus()).toBe(403);
+    });
+
+    it('tạo bản dịch, xóa cache', async () => {
+      await service.addTranslation(1, 10, body);
+      expect(translationModel.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          postId: 10,
+          languageId: 3,
+          title: 'Japanese version',
+          slug: 'japanese-version',
+          publishedAt: null,
+        }),
+      );
+      expect(cache.invalidate).toHaveBeenCalledWith(CachePrefix.posts);
+      expect(cache.invalidate).toHaveBeenCalledWith(CachePrefix.categories);
+    });
+  });
+
+  describe('updateTranslation', () => {
+    beforeEach(() => {
+      postModel.findByPk.mockResolvedValue(ownedPost());
+    });
+
+    it('404 khi bài chưa có bản dịch ở ngôn ngữ đó', async () => {
+      translationModel.findOne.mockResolvedValue(null);
+      const error = await errorOf(
+        service.updateTranslation(1, 10, 'ja', { title: 'Tieu de moi' }),
+      );
+      expect(error.getStatus()).toBe(404);
+    });
+
+    it('đổi tiêu đề thì sinh lại slug, bỏ qua chính bản dịch', async () => {
+      const translation = englishTranslation();
+      translationModel.findOne.mockResolvedValue(translation);
+
+      await service.updateTranslation(1, 10, 'en', {
+        title: 'Updated English title',
+      });
+
+      expect(translation.title).toBe('Updated English title');
+      expect(translation.slug).toBe('updated-english-title');
+      const [{ where }] = translationModel.findAll.mock.calls[0] as [
+        { where: Record<string, unknown> },
+      ];
+      expect(where).toMatchObject({ languageId: 2, id: expect.anything() });
+      expect(translation.save).toHaveBeenCalled();
+      expect(cache.invalidate).toHaveBeenCalledWith(CachePrefix.posts);
+    });
+
+    it('giữ slug khi tiêu đề không đổi, excerpt rỗng thì bỏ tóm tắt', async () => {
+      const translation = englishTranslation({ excerpt: 'Tom tat cu' });
+      translationModel.findOne.mockResolvedValue(translation);
+
+      await service.updateTranslation(1, 10, 'en', {
+        title: 'English post',
+        excerpt: '',
+      });
+
+      expect(translationModel.findAll).not.toHaveBeenCalled();
+      expect(translation.slug).toBe('english-post');
+      expect(translation.excerpt).toBeNull();
+    });
+
+    it('ghi publishedAt lần đầu chuyển sang published', async () => {
+      const translation = englishTranslation();
+      translationModel.findOne.mockResolvedValue(translation);
+
+      await service.updateTranslation(1, 10, 'en', { status: 'published' });
+
+      expect(translation.status).toBe('published');
+      expect(translation.publishedAt).toBeInstanceOf(Date);
+    });
+
+    it('các lần sau giữ nguyên publishedAt', async () => {
+      const translation = englishTranslation({
+        status: 'archived',
+        publishedAt: now,
+      });
+      translationModel.findOne.mockResolvedValue(translation);
+
+      await service.updateTranslation(1, 10, 'en', { status: 'published' });
+
+      expect(translation.publishedAt).toBe(now);
+    });
+
+    it('nội dung rỗng sau sanitize → 400 field content', async () => {
+      translationModel.findOne.mockResolvedValue(englishTranslation());
+      const error = await errorOf(
+        service.updateTranslation(1, 10, 'en', {
+          content: '<script></script>',
+        }),
+      );
+      expect(error.errors).toEqual([
+        { field: 'content', message: 'Nhập nội dung bài viết.' },
+      ]);
+    });
+  });
+
+  describe('removeTranslation', () => {
+    beforeEach(() => {
+      postModel.findByPk.mockResolvedValue(ownedPost());
+    });
+
+    it('không xóa được bản gốc → 400 ORIGINAL_TRANSLATION_REQUIRED', async () => {
+      const original = englishTranslation({ id: 19, languageId: 1 });
+      translationModel.findOne.mockResolvedValue(original);
+
+      const error = await errorOf(service.removeTranslation(1, 10, 'vi'));
+
+      expect(error.getStatus()).toBe(400);
+      expect(error.code).toBe('ORIGINAL_TRANSLATION_REQUIRED');
+      expect(original.destroy).not.toHaveBeenCalled();
+      expect(cache.invalidate).not.toHaveBeenCalled();
+    });
+
+    it('xóa bản dịch và cache', async () => {
+      const translation = englishTranslation();
+      translationModel.findOne.mockResolvedValue(translation);
+
+      await service.removeTranslation(1, 10, 'en');
+
+      expect(translation.destroy).toHaveBeenCalled();
+      expect(cache.invalidate).toHaveBeenCalledWith(CachePrefix.posts);
+      expect(cache.invalidate).toHaveBeenCalledWith(CachePrefix.categories);
+    });
   });
 
   describe('update', () => {
@@ -355,15 +668,12 @@ describe('AdminPostsService', () => {
       const post = ownedPost({
         thumbnail: 'uploads/images/oldddddd-bbbb-cccc-dddd-eeeeeeeeeeee.jpg',
       });
-      postModel.findByPk
-        .mockResolvedValueOnce(post)
-        .mockResolvedValueOnce(
-          ownedPost({
-            categoryId: 8,
-            thumbnail:
-              'uploads/images/newwwwww-bbbb-cccc-dddd-eeeeeeeeeeee.jpg',
-          }),
-        );
+      postModel.findByPk.mockResolvedValueOnce(post).mockResolvedValueOnce(
+        ownedPost({
+          categoryId: 8,
+          thumbnail: 'uploads/images/newwwwww-bbbb-cccc-dddd-eeeeeeeeeeee.jpg',
+        }),
+      );
       categoryModel.findByPk.mockResolvedValue({ id: 8 });
 
       await service.update(1, 10, {

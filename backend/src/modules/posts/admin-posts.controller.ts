@@ -26,12 +26,11 @@ import {
   AdminPostListItemDto,
 } from './dto/admin-post-response.dto';
 import { CreatePostDto } from './dto/create-post.dto';
+import { CreateTranslationDto } from './dto/create-translation.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { UpdateTranslationDto } from './dto/update-translation.dto';
 
-/**
- * UC13 - Quản lý bài viết (phase 3 doc mục 4.5).
- * PR này: bài + bản gốc. API bản dịch thêm ở PR sau.
- */
+/** UC13 - Quản lý bài viết và bản dịch (phase 3 doc mục 4.5) */
 @ApiTags('Admin / Posts')
 @ApiBearerAuth()
 @Roles('blog_owner')
@@ -54,9 +53,9 @@ export class AdminPostsController {
 
   @Post()
   @ApiOperation({
-    summary: 'UC13 - Tạo bài viết và bản gốc',
+    summary: 'UC13 - Tạo bài viết, bản gốc và các bản dịch',
     description:
-      'Tạo bài + bản gốc trong một transaction. Ngôn ngữ gốc phải đang hoạt động.',
+      'Tạo bài + bản gốc + `translations[]` (không bắt buộc) trong một transaction. Mọi ngôn ngữ phải đang hoạt động, bản dịch khác ngôn ngữ gốc và không trùng nhau.',
   })
   @ApiDataResponse(AdminPostDetailDto, { status: 201 })
   @ApiErrorResponses(400, 401, 403)
@@ -115,6 +114,59 @@ export class AdminPostsController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<null> {
     await this.adminPostsService.remove(user.id, id);
+    return null;
+  }
+
+  @Post(':id/translations')
+  @ApiOperation({
+    summary: 'UC13 - Thêm bản dịch',
+    description:
+      'Ngôn ngữ phải đang hoạt động. Bài đã có bản dịch ở ngôn ngữ đó → 409.',
+  })
+  @ApiDataResponse(AdminPostDetailDto, { status: 201 })
+  @ApiErrorResponses(400, 401, 403, 404, 409)
+  @ResponseMessage('Thêm bản dịch thành công')
+  addTranslation(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreateTranslationDto,
+  ): Promise<AdminPostDetailDto> {
+    return this.adminPostsService.addTranslation(user.id, id, dto);
+  }
+
+  @Patch(':id/translations/:code')
+  @ApiOperation({
+    summary: 'UC13 - Sửa bản dịch',
+    description:
+      'Trường không gửi thì giữ nguyên. Đổi tiêu đề thì sinh lại slug. `publishedAt` chỉ ghi lần đầu chuyển sang `published`.',
+  })
+  @ApiDataResponse(AdminPostDetailDto)
+  @ApiErrorResponses(400, 401, 403, 404)
+  @ResponseMessage('Cập nhật bản dịch thành công')
+  updateTranslation(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseIntPipe) id: number,
+    @Param('code') code: string,
+    @Body() dto: UpdateTranslationDto,
+  ): Promise<AdminPostDetailDto> {
+    return this.adminPostsService.updateTranslation(user.id, id, code, dto);
+  }
+
+  @Delete(':id/translations/:code')
+  @ApiOperation({
+    summary: 'UC13 - Xóa bản dịch',
+    description:
+      'Xóa bản dịch và bình luận của nó. Bản gốc → 400 `ORIGINAL_TRANSLATION_REQUIRED`.',
+  })
+  @ApiDataResponse(null)
+  @ApiErrorResponses(400, 401, 403, 404)
+  @ResponseMessage('Đã xóa bản dịch.')
+  async removeTranslation(
+    @CurrentUser() user: AuthUser,
+    @Param('id', ParseIntPipe) id: number,
+    @Param('code') code: string,
+  ): Promise<null> {
+    await this.adminPostsService.removeTranslation(user.id, id, code);
     return null;
   }
 }

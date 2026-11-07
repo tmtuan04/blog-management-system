@@ -763,7 +763,7 @@
     },
     {
       "name": "03 - Admin Posts",
-      "description": "UC13 (A3, PR bài + bản gốc). Cần chạy 00 - Auth trước. Đặt {{categoryId}} theo danh mục đã seed (B1) trước khi tạo bài. API bản dịch thêm ở PR sau.",
+      "description": "UC13 (A3): bài, bản gốc và bản dịch. Cần chạy 00 - Auth trước. Đặt {{categoryId}} theo danh mục đã seed (B1) trước khi tạo bài. Các request bản dịch dùng bài vừa tạo ({{postId}}, bản gốc vi) và ngôn ngữ en đã seed.",
       "auth": {
         "type": "bearer",
         "bearer": [
@@ -1054,6 +1054,231 @@
                 "admin",
                 "posts",
                 "{{postId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 - Thêm bản dịch",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"201 và success = true\", () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test(\"Có bản dịch en\", () => {",
+                  "  const codes = pm.response.json().data.translations.map((t) => t.code);",
+                  "  pm.expect(codes).to.include(\"en\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"languageCode\": \"en\",\n  \"title\": \"Postman translation {{$timestamp}}\",\n  \"excerpt\": \"Test excerpt\",\n  \"content\": \"<p>Translation content from Postman</p>\",\n  \"status\": \"draft\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts/{{postId}}/translations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts",
+                "{{postId}}",
+                "translations"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 - Thêm bản dịch trùng ngôn ngữ (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"409 CONFLICT\", () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.code).to.eql(\"CONFLICT\");",
+                  "  pm.expect(body.errors[0].field).to.eql(\"languageCode\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"languageCode\": \"en\",\n  \"title\": \"Duplicate translation\",\n  \"content\": \"<p>Duplicate</p>\",\n  \"status\": \"draft\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts/{{postId}}/translations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts",
+                "{{postId}}",
+                "translations"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 - Sửa bản dịch",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 và success = true\", () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test(\"Đăng bản dịch thì có publishedAt\", () => {",
+                  "  const en = pm.response.json().data.translations.find((t) => t.code === \"en\");",
+                  "  pm.expect(en.status).to.eql(\"published\");",
+                  "  pm.expect(en.publishedAt).to.be.a(\"string\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman translation updated {{$timestamp}}\",\n  \"status\": \"published\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts/{{postId}}/translations/en",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts",
+                "{{postId}}",
+                "translations",
+                "en"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 - Xóa bản gốc (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"400 ORIGINAL_TRANSLATION_REQUIRED\", () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.code).to.eql(\"ORIGINAL_TRANSLATION_REQUIRED\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts/{{postId}}/translations/vi",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts",
+                "{{postId}}",
+                "translations",
+                "vi"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC13 - Xóa bản dịch",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test(\"data = null\", () => pm.expect(pm.response.json().data).to.eql(null));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/posts/{{postId}}/translations/en",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "posts",
+                "{{postId}}",
+                "translations",
+                "en"
               ]
             }
           }

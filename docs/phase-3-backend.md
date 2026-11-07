@@ -295,7 +295,7 @@ Mọi route có quyền `owner` và chỉ làm việc với bài của người 
 | Method | Route | Ghi chú |
 | --- | --- | --- |
 | GET | `/admin/posts` | `?status=` (theo bản gốc), `?language=` (có bản dịch ở ngôn ngữ đó), `?categoryId=`, `?q=` (tìm `LIKE` trong tiêu đề mọi bản dịch), phân trang. Mỗi dòng: `id`, tiêu đề + ngôn ngữ gốc, danh mục, `thumbnail`, `translations [{ code, status }]`, `updatedAt` (lớn nhất giữa bài và các bản dịch) |
-| POST | `/admin/posts` | Body: `languageCode`, `categoryId`, `thumbnail?`, `translation { title, excerpt?, content, status }`. Tạo bài và bản gốc trong cùng một transaction. Ngôn ngữ phải đang hoạt động, danh mục phải tồn tại. 201 |
+| POST | `/admin/posts` | Body: `languageCode`, `categoryId`, `thumbnail?`, `translation { title, excerpt?, content, status }`, `translations? [{ languageCode, title, excerpt?, content, status }]`. Tạo bài, bản gốc và các bản dịch trong cùng một transaction: lỗi ở bản nào thì không tạo gì, lỗi ghi field dạng `translations.0.title`. Mọi ngôn ngữ phải đang hoạt động, bản dịch khác ngôn ngữ gốc và không trùng nhau, danh mục phải tồn tại. 201. `translations` thêm theo góp ý của mentor: màn viết bài soạn được bản dịch ngay khi tạo bài |
 | GET | `/admin/posts/:id` | Phần dùng chung + mọi bản dịch (kể cả bản dịch ở ngôn ngữ đã tắt) + `slug`, `viewCount`, `publishedAt` của từng bản dịch. Dùng cho màn sửa bài |
 | PATCH | `/admin/posts/:id` | Body `{ categoryId?, thumbnail? }` (`thumbnail: null` là bỏ ảnh). Không nhận `languageCode` |
 | DELETE | `/admin/posts/:id` | Xóa bài, mọi bản dịch, bình luận (cascade) và file thumbnail |
@@ -481,7 +481,7 @@ Cập nhật 05/11: B1 đã merge nên B4 và C1 bắt đầu được. Việc �
 | --- | --- | --- | --- |
 | A1 (**đã xong**) | Khung backend: `docker-compose.yml`, project NestJS, config 3 môi trường, migrations đủ 12 bảng (gồm FULLTEXT `ngram`), model; mọi phần ở mục 3 (response, exception filter, guard, language middleware, phân trang, Redis + cache, throttler, upload, lọc HTML, slug, Swagger, helmet, CORS); Jest + helper test (`tokenFor(role)`); khung Postman collection. Module mẫu `languages` (chỉ `GET /languages`) để B, C copy | | **Merge sớm** (mục tiêu 28/10) vì mọi việc khác cần. Module mẫu có đủ controller, service, DTO, test unit và e2e |
 | A2 (**đã xong**) | Auth UC01-UC04: register, login + rate limit, refresh xoay vòng, logout, forgot/reset password + email, `/auth/me` | A1 | Merge sớm để Postman có token thật |
-| A3 (**đang làm**: PR bài + bản gốc đã merge 02/11, còn PR bản dịch) | Quản lý bài viết UC13 (mục 4.5), xóa cache bài viết | A1 | Phần lớn nhất của phase. Tách 2 PR: bài + bản gốc, rồi bản dịch. Test e2e dùng dữ liệu riêng nên không phải chờ B1; B1 chỉ cần khi thử bằng Postman |
+| A3 (**đang làm**: PR bài + bản gốc đã merge 02/11, PR bản dịch ở nhánh `feature/be-posts-translations`) | Quản lý bài viết UC13 (mục 4.5), xóa cache bài viết | A1 | Phần lớn nhất của phase. Tách 2 PR: bài + bản gốc, rồi bản dịch. Test e2e dùng dữ liệu riêng nên không phải chờ B1; B1 chỉ cần khi thử bằng Postman |
 | A4 | Chi tiết bài UC06: `/posts/:slug`, `/related`, tăng lượt xem | A3 | |
 | A5 | Tìm kiếm UC19 (Should) | A3 | Test với cả từ khóa tiếng Việt có dấu |
 | A6 | Hồ sơ cá nhân UC12 (Should, mục 4.4) | A2 | Chuyển từ B sang ở bản 1.1. Avatar dùng lại `UploadModule` |

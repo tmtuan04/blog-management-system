@@ -6,6 +6,10 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Quản lý bản dịch bài viết UC13 (A3, PR 2/2):
+  - `POST /admin/posts/:id/translations` (ngôn ngữ đã có bản dịch → 409), `PATCH /admin/posts/:id/translations/:code` (trường không gửi thì giữ nguyên; đổi tiêu đề thì sinh lại slug; `publishedAt` chỉ ghi lần đầu chuyển sang `published`; bản dịch ở ngôn ngữ đã tắt vẫn sửa được), `DELETE /admin/posts/:id/translations/:code` (xóa kèm bình luận; bản gốc → 400 `ORIGINAL_TRANSLATION_REQUIRED`). Mọi thao tác xóa cache `posts` + `categories`.
+  - `POST /admin/posts` nhận thêm `translations[]` (không bắt buộc) để tạo bài, bản gốc và các bản dịch trong cùng một transaction, khớp màn viết bài mới soạn được bản dịch (góp ý của mentor). Bản dịch trùng ngôn ngữ gốc hoặc trùng nhau → 400 ở `translations.N.languageCode`. Phase 3 doc mục 4.5 cập nhật theo.
+  - DTO `CreateTranslationDto`, `UpdateTranslationDto`. Unit test và e2e cho các ràng buộc trên; Postman folder `03 - Admin Posts` thêm 5 request bản dịch.
 - Ô "Bản dịch" ở `admin/post-create.html` đổi từ nhóm checkbox sang dropdown chọn nhiều (UC13, theo góp ý của mentor: nhóm checkbox chiếm chỗ, nhiều ngôn ngữ thì các hàng không thẳng cột):
   - Component `multi-select` (`scss/components/_multi-select.scss`, `js/multi-select.js`): khung giống `.form-select`, ngôn ngữ đã chọn hiện thành chip có nút bỏ chọn; khung luôn cao một dòng: hiện tối đa 3 chip (ít hơn nếu khung hẹp, tính lại khi đổi cỡ màn hình), còn lại gộp vào chip "+N" (rê chuột vào để xem tên); chọn hết thì hiện "Tất cả (N ngôn ngữ)". Menu có ô tìm (không phân biệt hoa/thường và dấu), "Chọn tất cả" (theo kết quả đang lọc, có trạng thái chọn một phần), danh sách cuộn, dòng "Không tìm thấy ngôn ngữ".
   - Thêm 5 ngôn ngữ demo (Français, Deutsch, 日本語, 한국어, 中文) vào ô "Ngôn ngữ gốc" và ô "Bản dịch" để thấy được ô tìm, chip "+N" và "Tất cả". Tab + form của các ngôn ngữ này dựng từ `<template id="postTranslationTemplate">` (`post-language-select.js`), không chép tay từng bản.

@@ -398,4 +398,221 @@ describe('Admin Posts (e2e)', () => {
       expect(await PostTranslation.count({ where: { postId: id } })).toBe(0);
     });
   });
+
+  describe('bản dịch', () => {
+    async function createPost(
+      token: string,
+      body: Record<string, unknown> = {},
+    ): Promise<number> {
+      const category = await createCategory();
+      const res = await request(server())
+        .post(api())
+        .set(bearer(token))
+        .send({
+          languageCode: 'vi',
+          categoryId: category.id,
+          translation: translationBody(),
+          ...body,
+        })
+        .expect(201);
+      return res.body.data.id as number;
+    }
+
+    it('POST /admin/posts tạo luôn translations[]', async () => {
+      const { token } = await tokenFor(ctx.app, 'blog_owner');
+      const category = await createCategory();
+      const res = await request(server())
+        .post(api())
+        .set(bearer(token))
+        .send({
+          languageCode: 'vi',
+          categoryId: category.id,
+          translation: translationBody(),
+          translations: [
+            {
+              languageCode: 'en',
+              ...translationBody({
+                title: 'English version',
+                status: 'published',
+              }),
+            },
+          ],
+        })
+        .expect(201);
+
+      expect(res.body.data.translations).toMatchObject([
+        { code: 'vi', isOriginal: true, publishedAt: null },
+        {
+          code: 'en',
+          isOriginal: false,
+          slug: 'english-version',
+          status: 'published',
+          publishedAt: expect.any(String),
+        },
+      ]);
+    });
+
+    it('POST /admin/posts: lỗi bản dịch ghi field translations.N.*, không tạo gì', async () => {
+      const { token } = await tokenFor(ctx.app, 'blog_owner');
+      const category = await createCategory();
+      const send = (translations: unknown[]) =>
+        request(server())
+          .post(api())
+          .set(bearer(token))
+          .send({
+            languageCode: 'vi',
+            categoryId: category.id,
+            translation: translationBody(),
+            translations,
+          })
+          .expect(400);
+
+      const short = await send([
+        { languageCode: 'en', ...translationBody({ title: 'abc' }) },
+      ]);
+      expect(short.body.errors).toEqual([
+        {
+          field: 'translations.0.title',
+          message: 'Tiêu đề cần từ 5 đến 255 ký tự.',
+        },
+      ]);
+
+      const sameAsOriginal = await send([
+        { languageCode: 'vi', ...translationBody() },
+      ]);
+      expect(sameAsOriginal.body.errors).toEqual([
+        {
+          field: 'translations.0.languageCode',
+          message: 'Bản dịch phải khác ngôn ngữ gốc.',
+        },
+      ]);
+
+      expect(await Post.count()).toBe(0);
+    });
+
+    it('POST /:id/translations: 201, trùng ngôn ngữ 409, bài người khác 403, không có bài 404', async () => {
+      const owner = await tokenFor(ctx.app, 'blog_owner');
+      const other = await tokenFor(ctx.app, 'blog_owner');
+      const id = await createPost(owner.token);
+      const body = {
+        languageCode: 'en',
+        ...translationBody({ title: 'English version' }),
+      };
+
+      const created = await request(server())
+        .post(api(`/${id}/translations`))
+        .set(bearer(owner.token))
+        .send(body)
+        .expect(201);
+      expect(created.body.message).toBe('Thêm bản dịch thành công');
+      const codes = (created.body.data.translations as { code: string }[]).map(
+        (t) => t.code,
+      );
+      expect(codes).toEqual(['vi', 'en']);
+
+      const duplicate = await request(server())
+        .post(api(`/${id}/translations`))
+        .set(bearer(owner.token))
+        .send(body)
+        .expect(409);
+      expect(duplicate.body.code).toBe('CONFLICT');
+      expect(duplicate.body.errors).toEqual([
+        {
+          field: 'languageCode',
+          message: 'Bài viết đã có bản dịch ở ngôn ngữ này.',
+        },
+      ]);
+
+      await request(server())
+        .post(api(`/${id}/translations`))
+        .set(bearer(other.token))
+        .send(body)
+        .expect(403);
+
+      await request(server())
+        .post(api('/999999/translations'))
+        .set(bearer(owner.token))
+        .send(body)
+        .expect(404);
+    });
+
+    it('PATCH /:id/translations/:code: sinh lại slug, publishedAt chỉ ghi lần đầu', async () => {
+      const { token } = await tokenFor(ctx.app, 'blog_owner');
+      const id = await createPost(token, {
+        translations: [{ languageCode: 'en', ...translationBody() }],
+      });
+      const patch = (body: Record<string, unknown>) =>
+        request(server())
+          .patch(api(`/${id}/translations/en`))
+          .set(bearer(token))
+          .send(body)
+          .expect(200);
+      const english = (res: request.Response) =>
+        (res.body.data.translations as { code: string }[]).find(
+          (t) => t.code === 'en',
+        ) as Record<string, unknown>;
+
+      const renamed = await patch({ title: 'Updated English title' });
+      expect(renamed.body.message).toBe('Cập nhật bản dịch thành công');
+      expect(english(renamed)).toMatchObject({
+        title: 'Updated English title',
+        slug: 'updated-english-title',
+        publishedAt: null,
+      });
+
+      const published = await patch({ status: 'published' });
+      const firstPublishedAt = english(published).publishedAt;
+      expect(firstPublishedAt).toEqual(expect.any(String));
+
+      await patch({ status: 'archived' });
+      const republished = await patch({ status: 'published' });
+      expect(english(republished).publishedAt).toBe(firstPublishedAt);
+
+      await request(server())
+        .patch(api(`/${id}/translations/ja`))
+        .set(bearer(token))
+        .send({ title: 'Khong co ban dich' })
+        .expect(404);
+    });
+
+    it('DELETE /:id/translations/:code: bản gốc 400, bản dịch xóa kèm bình luận', async () => {
+      const { token, user } = await tokenFor(ctx.app, 'blog_owner');
+      const id = await createPost(token, {
+        translations: [{ languageCode: 'en', ...translationBody() }],
+      });
+      const en = await PostTranslation.findOne({
+        where: {
+          postId: id,
+          languageId: (await Language.findOne({ where: { code: 'en' } }))!.id,
+        },
+      });
+      await PostTranslation.sequelize!.query(
+        'INSERT INTO comments (post_translation_id, user_id, content, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
+        { replacements: [en!.id, user.id, 'Binh luan thu'] },
+      );
+
+      const original = await request(server())
+        .delete(api(`/${id}/translations/vi`))
+        .set(bearer(token))
+        .expect(400);
+      expect(original.body.code).toBe('ORIGINAL_TRANSLATION_REQUIRED');
+
+      const deleted = await request(server())
+        .delete(api(`/${id}/translations/en`))
+        .set(bearer(token))
+        .expect(200);
+      expect(deleted.body).toEqual({
+        success: true,
+        message: 'Đã xóa bản dịch.',
+        data: null,
+      });
+
+      expect(await PostTranslation.count({ where: { postId: id } })).toBe(1);
+      const [rows] = await PostTranslation.sequelize!.query(
+        'SELECT COUNT(*) AS total FROM comments WHERE post_translation_id = ?',
+        { replacements: [en!.id] },
+      );
+      expect(Number((rows as { total: number }[])[0].total)).toBe(0);
+    });
+  });
 });
