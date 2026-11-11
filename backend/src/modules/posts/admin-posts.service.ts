@@ -154,7 +154,12 @@ export class AdminPostsService {
     return paginate(items, count, query);
   }
 
-  /** POST /admin/posts: tạo bài, bản gốc và các bản dịch trong cùng một transaction */
+  /**
+   * POST /admin/posts: tạo bài và bản gốc trong cùng một transaction (bài không
+   * có bản gốc là dữ liệu sai). Bản dịch thêm sau bằng
+   * `POST /admin/posts/:id/translations`, mỗi bản một request: một bản lỗi
+   * không làm mất bài và các bản đã lưu.
+   */
   async create(
     userId: number,
     dto: CreatePostDto,
@@ -168,17 +173,11 @@ export class AdminPostsService {
     if (dto.thumbnail) {
       await this.assertThumbnail(dto.thumbnail);
     }
-    const prepared = [
-      await this.prepareTranslation(
-        dto.translation,
-        language.id,
-        'translation',
-      ),
-      ...(await this.prepareExtraTranslations(
-        dto.translations ?? [],
-        language.id,
-      )),
-    ];
+    const original = await this.prepareTranslation(
+      dto.translation,
+      language.id,
+      'translation',
+    );
 
     const postId = await this.sequelize.transaction(async (transaction) => {
       const post = await this.postModel.create(
@@ -190,12 +189,10 @@ export class AdminPostsService {
         },
         { transaction },
       );
-      for (const translation of prepared) {
-        await this.translationModel.create(
-          { postId: post.id, ...translation },
-          { transaction },
-        );
-      }
+      await this.translationModel.create(
+        { postId: post.id, ...original },
+        { transaction },
+      );
       return post.id;
     });
 
@@ -434,39 +431,6 @@ export class AdminPostsService {
       status: fields.status,
       publishedAt: fields.status === 'published' ? new Date() : null,
     };
-  }
-
-  /**
-   * `translations[]` khi tạo bài: mỗi ngôn ngữ đang hoạt động một bản, khác
-   * ngôn ngữ gốc. Lỗi ghi field dạng `translations.0.languageCode`.
-   */
-  private async prepareExtraTranslations(
-    items: CreateTranslationDto[],
-    originalLanguageId: number,
-  ): Promise<PreparedTranslation[]> {
-    const usedLanguageIds = new Set([originalLanguageId]);
-    const prepared: PreparedTranslation[] = [];
-    for (const [index, item] of items.entries()) {
-      const prefix = `translations.${index}`;
-      const language = await this.resolveActiveLanguage(
-        item.languageCode,
-        `${prefix}.languageCode`,
-      );
-      if (usedLanguageIds.has(language.id)) {
-        throw AppException.validation([
-          {
-            field: `${prefix}.languageCode`,
-            message:
-              language.id === originalLanguageId
-                ? 'Bản dịch phải khác ngôn ngữ gốc.'
-                : 'Mỗi ngôn ngữ chỉ có một bản dịch.',
-          },
-        ]);
-      }
-      usedLanguageIds.add(language.id);
-      prepared.push(await this.prepareTranslation(item, language.id, prefix));
-    }
-    return prepared;
   }
 
   /** Lọc XSS, không còn chữ hay ảnh thì báo lỗi ở `field` (mục 3.7) */

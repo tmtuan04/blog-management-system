@@ -150,6 +150,7 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Changed
 
+- `POST /admin/posts` bỏ `translations[]`, chỉ tạo bài + bản gốc trong một transaction (UC13, A3, theo góp ý của mentor). Trước đây bài, bản gốc và mọi bản dịch nằm chung một transaction nên chỉ một bản dịch lỗi (ví dụ trùng slug do hai request đồng thời) là mất cả bài, và lỗi DB không chỉ ra được tab nào. Nay màn viết bài (phase 4) lưu bài + bản gốc trước, rồi gọi `POST /admin/posts/:id/translations` cho từng tab: bản nào lỗi thì chỉ bản đó lỗi, báo đúng tab, các bản khác vẫn lưu. Gửi `translations` → 400 `Trường này không được phép`. Bỏ `prepareExtraTranslations` và các test của nó; e2e thêm test "một bản dịch lỗi không ảnh hưởng bài và các bản đã lưu", "thêm bản dịch ở ngôn ngữ gốc → 409". Phase 3 doc mục 4.5 cập nhật theo.
 - HTML phát hiện nhờ `extract-i18n.mjs`: nút xóa key ở `admin/ui-translations.html` dùng aria-label chung "Xóa key" (trước đây chứa tên key nên mỗi dòng một chữ khác nhau); `validation.email_taken` ở `admin/users.html` dùng cùng câu với `public/register.html`.
 - `docs/sample-data.md`: đường dẫn ảnh mẫu theo quy tắc upload (`uploads/images/<uuid>.png`); trang `contact`, `privacy` có thêm bản `en`.
 - Chia lại việc phase 3 (`docs/phase-3-backend.md` 1.0 → 1.1): A ~50%, B ~35%, C ~15%.
