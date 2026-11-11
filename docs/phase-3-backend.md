@@ -295,7 +295,7 @@ Mọi route có quyền `owner` và chỉ làm việc với bài của người 
 | Method | Route | Ghi chú |
 | --- | --- | --- |
 | GET | `/admin/posts` | `?status=` (theo bản gốc), `?language=` (có bản dịch ở ngôn ngữ đó), `?categoryId=`, `?q=` (tìm `LIKE` trong tiêu đề mọi bản dịch), phân trang. Mỗi dòng: `id`, tiêu đề + ngôn ngữ gốc, danh mục, `thumbnail`, `translations [{ code, status }]`, `updatedAt` (lớn nhất giữa bài và các bản dịch) |
-| POST | `/admin/posts` | Body: `languageCode`, `categoryId`, `thumbnail?`, `translation { title, excerpt?, content, status }`, `translations? [{ languageCode, title, excerpt?, content, status }]`. Tạo bài, bản gốc và các bản dịch trong cùng một transaction: lỗi ở bản nào thì không tạo gì, lỗi ghi field dạng `translations.0.title`. Mọi ngôn ngữ phải đang hoạt động, bản dịch khác ngôn ngữ gốc và không trùng nhau, danh mục phải tồn tại. 201. `translations` thêm theo góp ý của mentor: màn viết bài soạn được bản dịch ngay khi tạo bài |
+| POST | `/admin/posts` | Body: `languageCode`, `categoryId`, `thumbnail?`, `translation { title, excerpt?, content, status }`. Tạo bài và bản gốc trong cùng một transaction, lỗi ghi field dạng `translation.title`. Ngôn ngữ gốc phải đang hoạt động, danh mục phải tồn tại. 201. Không nhận bản dịch (gửi `translations` → 400): màn viết bài lưu bài + bản gốc trước, rồi gọi `POST /admin/posts/:id/translations` cho từng tab bản dịch, để một bản lỗi chỉ báo lỗi ở tab đó và không làm mất bài cùng các bản đã lưu (góp ý của mentor, xem CHANGELOG) |
 | GET | `/admin/posts/:id` | Phần dùng chung + mọi bản dịch (kể cả bản dịch ở ngôn ngữ đã tắt) + `slug`, `viewCount`, `publishedAt` của từng bản dịch. Dùng cho màn sửa bài |
 | PATCH | `/admin/posts/:id` | Body `{ categoryId?, thumbnail? }` (`thumbnail: null` là bỏ ảnh). Không nhận `languageCode` |
 | DELETE | `/admin/posts/:id` | Xóa bài, mọi bản dịch, bình luận (cascade) và file thumbnail |
@@ -304,6 +304,8 @@ Mọi route có quyền `owner` và chỉ làm việc với bài của người 
 | DELETE | `/admin/posts/:id/translations/:code` | Xóa bản dịch và bình luận của nó. Bản gốc → 400 |
 
 Mọi API thay đổi dữ liệu ở bảng này đều xóa cache theo mục 3.5. Nội dung luôn qua `sanitizeRichText`.
+
+Luồng "Lưu" ở màn viết bài (phase 4): gọi `POST /admin/posts`; lỗi thì đánh dấu tab bản gốc, chưa tạo gì. Thành công thì gọi `POST /admin/posts/:id/translations` cho từng tab bản dịch, rồi chuyển sang màn sửa bài (`/admin/posts/:id/edit`). Bản dịch nào lỗi thì giữ nội dung, đánh dấu tab đó và báo "Đã lưu bài, N bản dịch chưa lưu được" để người dùng sửa và lưu lại ở màn sửa bài.
 
 ### 4.6. Quản trị hệ thống (B)
 
