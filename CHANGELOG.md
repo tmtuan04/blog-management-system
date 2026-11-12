@@ -6,6 +6,11 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Cấu hình Claude Code cho repo:
+  - `CLAUDE.md` ở gốc: tổng quan dự án, lệnh chạy và test, bảng trỏ tới đúng mục trong `docs/`.
+  - `.claude/rules/`: `backend.md` (chỉ nạp khi sửa `backend/**`), `html.md` (chỉ nạp khi sửa `html/**`), `git-workflow.md` (nhánh, commit, changelog, mô tả PR, cách gỡ conflict).
+  - `.claude/skills/`: `new-backend-module` (làm một module API theo mẫu `languages`), `new-html-page` (dựng một màn từ `_templates/`), `pr-ready` (kiểm tra nhánh trước khi tạo PR và soạn mô tả PR).
+  - `.claude/settings.json`: cho phép sẵn các lệnh lint, test, i18n, build; hỏi lại trước khi rollback migration, xóa seed, `docker compose down`; chặn đọc và sửa `backend/.env`. `.gitignore` bỏ qua `.claude/settings.local.json`.
 - Quản lý bản dịch bài viết UC13 (A3, PR 2/2):
   - `POST /admin/posts/:id/translations` (ngôn ngữ đã có bản dịch → 409), `PATCH /admin/posts/:id/translations/:code` (trường không gửi thì giữ nguyên; đổi tiêu đề thì sinh lại slug; `publishedAt` chỉ ghi lần đầu chuyển sang `published`; bản dịch ở ngôn ngữ đã tắt vẫn sửa được), `DELETE /admin/posts/:id/translations/:code` (xóa kèm bình luận; bản gốc → 400 `ORIGINAL_TRANSLATION_REQUIRED`). Mọi thao tác xóa cache `posts` + `categories`.
   - `POST /admin/posts` nhận thêm `translations[]` (không bắt buộc) để tạo bài, bản gốc và các bản dịch trong cùng một transaction, khớp màn viết bài mới soạn được bản dịch (góp ý của mentor). Bản dịch trùng ngôn ngữ gốc hoặc trùng nhau → 400 ở `translations.N.languageCode`. Phase 3 doc mục 4.5 cập nhật theo.

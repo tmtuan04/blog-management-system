@@ -1,2 +1,5 @@
 # Biến cho docker-compose (đổi cổng host)
 .env
+
+# Cấu hình Claude Code riêng từng máy
+.claude/settings.local.json
