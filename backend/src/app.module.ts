@@ -23,6 +23,7 @@ import { UploadModule } from './infra/upload/upload.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { LanguagesModule } from './modules/languages/languages.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { UiTranslationsModule } from './modules/ui-translations/ui-translations.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { PostsModule } from './modules/posts/posts.module';
     AuthModule,
     LanguagesModule,
     PostsModule,
+    UiTranslationsModule,
   ],
   providers: [
     // Thứ tự guard: rate limit → xác thực → phân quyền

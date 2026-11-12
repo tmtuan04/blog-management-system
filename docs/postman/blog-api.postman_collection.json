@@ -718,8 +718,543 @@
               ]
             }
           }
+        },
+        {
+          "name": "UC16 - Danh sách khi chưa đăng nhập (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 và success = false', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('UNAUTHORIZED');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Danh sách ngôn ngữ",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "const languages = pm.response.json().data;",
+                  "pm.test('Có postTranslationCount và đúng 1 ngôn ngữ mặc định', () => {",
+                  "  pm.expect(languages[0]).to.include.keys('id', 'code', 'name', 'isDefault', 'isActive', 'postTranslationCount');",
+                  "  pm.expect(languages.filter((l) => l.isDefault).length).to.eql(1);",
+                  "});",
+                  "// Lưu id cho các request sau",
+                  "const byDefault = languages.find((l) => l.isDefault);",
+                  "const inUse = languages.find((l) => !l.isDefault && l.postTranslationCount > 0);",
+                  "if (byDefault) pm.environment.set('defaultLanguageId', String(byDefault.id));",
+                  "if (inUse) pm.environment.set('usedLanguageId', String(inUse.id));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Thêm ngôn ngữ",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 và success = true', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "const data = pm.response.json().data;",
+                  "if (data && data.id) pm.environment.set('languageId', String(data.id));",
+                  "pm.test('Ngôn ngữ mới chưa có bản dịch bài viết', () => {",
+                  "  pm.expect(data.code).to.eql('fr');",
+                  "  pm.expect(data.postTranslationCount).to.eql(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"fr\",\n  \"name\": \"Français\",\n  \"isActive\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Thêm ngôn ngữ trùng mã (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 và success = false', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('CONFLICT');",
+                  "});",
+                  "pm.test('Lỗi ở field code', () => {",
+                  "  pm.expect(pm.response.json().errors[0].field).to.eql('code');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"vi\",\n  \"name\": \"Tiếng Việt\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Thêm ngôn ngữ sai mã ISO 639-1 (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('VALIDATION_ERROR');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"xx\",\n  \"name\": \"Sai mã\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Ngôn ngữ đang tắt không có ở API public (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 và success = false', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ui-translations/fr",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ui-translations",
+                "fr"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Sửa ngôn ngữ",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Đã đổi tên và bật', () => {",
+                  "  pm.expect(pm.response.json().data.name).to.eql('Français (FR)');",
+                  "  pm.expect(pm.response.json().data.isActive).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Français (FR)\",\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages/{{languageId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages",
+                "{{languageId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Tắt ngôn ngữ mặc định (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('BAD_REQUEST');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages/{{defaultLanguageId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages",
+                "{{defaultLanguageId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Đặt làm mặc định",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Là ngôn ngữ mặc định', () => {",
+                  "  pm.expect(pm.response.json().data.isDefault).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages/{{languageId}}/default",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages",
+                "{{languageId}}",
+                "default"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Trả mặc định về ngôn ngữ cũ",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Là ngôn ngữ mặc định', () => {",
+                  "  pm.expect(pm.response.json().data.isDefault).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages/{{defaultLanguageId}}/default",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages",
+                "{{defaultLanguageId}}",
+                "default"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Xóa ngôn ngữ mặc định (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('BAD_REQUEST');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages/{{defaultLanguageId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages",
+                "{{defaultLanguageId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Xóa ngôn ngữ đang có bản dịch bài (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 và success = false', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('LANGUAGE_IN_USE');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages/{{usedLanguageId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages",
+                "{{usedLanguageId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC16 - Xóa ngôn ngữ",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/languages/{{languageId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "languages",
+                "{{languageId}}"
+              ]
+            }
+          }
         }
-      ]
+      ],
+      "description": "UC09 + UC16 (B2). Các request admin cần chạy 00 - Auth trước. Chạy theo thứ tự: thêm ngôn ngữ fr, sửa, đặt mặc định rồi trả mặc định về ngôn ngữ cũ, cuối cùng xóa fr nên dữ liệu seed không đổi.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminAccessToken}}",
+            "type": "string"
+          }
+        ]
+      }
     },
     {
       "name": "02 - Uploads",
@@ -1312,6 +1847,616 @@
                 "admin",
                 "posts",
                 "{{postId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - UI Translations",
+      "description": "UC17 (B2). Cần chạy 00 - Auth trước. Các request ghi dùng key postman.sample và xóa key đó ở cuối nên dữ liệu seed không đổi.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminAccessToken}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "UC17 - Bản dịch giao diện của một ngôn ngữ",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('data là object key → value', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data).to.be.an('object');",
+                  "  pm.expect(data['menu.home']).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ui-translations/en",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ui-translations",
+                "en"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Ngôn ngữ không có (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 và success = false', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ui-translations/xx",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ui-translations",
+                "xx"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Danh sách khi chưa đăng nhập (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 và success = false', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('UNAUTHORIZED');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Danh sách bản dịch giao diện",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Có meta phân trang, mỗi dòng có key và values', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.meta).to.include.keys('page', 'limit', 'total', 'totalPages');",
+                  "  pm.expect(body.data[0]).to.include.keys('key', 'values');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations?page=1&limit=50",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Tìm theo key hoặc giá trị",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Có key menu.home', () => {",
+                  "  pm.expect(pm.response.json().data.some((row) => row.key === 'menu.home')).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations?q=menu.home",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "menu.home"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Thêm key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 và success = true', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Ô để trống trả null', () => {",
+                  "  pm.expect(pm.response.json().data.values.en).to.eql(null);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"postman.sample\",\n  \"values\": {\n    \"vi\": \"Mẫu Postman\",\n    \"en\": \"\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Thêm key trùng (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 và success = false', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('CONFLICT');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"postman.sample\",\n  \"values\": {\n    \"vi\": \"Mẫu Postman\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Thêm key sai dạng (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('VALIDATION_ERROR');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"Postman Sample\",\n  \"values\": {\n    \"vi\": \"Mẫu Postman\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Thêm key thiếu giá trị mặc định (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('VALIDATION_ERROR');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"postman.other\",\n  \"values\": {\n    \"en\": \"Other\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Sửa giá trị một ô",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Đã lưu giá trị en', () => {",
+                  "  pm.expect(pm.response.json().data.values.en).to.eql('Postman sample');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": \"Postman sample\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations/postman.sample/en",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations",
+                "postman.sample",
+                "en"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Để trống ô ngôn ngữ không mặc định",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Ô en về null', () => {",
+                  "  pm.expect(pm.response.json().data.values.en).to.eql(null);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations/postman.sample/en",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations",
+                "postman.sample",
+                "en"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Để trống ô ngôn ngữ mặc định (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('VALIDATION_ERROR');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations/postman.sample/vi",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations",
+                "postman.sample",
+                "vi"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Xóa key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations/postman.sample",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations",
+                "postman.sample"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC17 - Xóa key không có (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 và success = false', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/ui-translations/postman.sample",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "ui-translations",
+                "postman.sample"
               ]
             }
           }
