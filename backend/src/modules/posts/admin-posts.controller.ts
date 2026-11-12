@@ -53,9 +53,9 @@ export class AdminPostsController {
 
   @Post()
   @ApiOperation({
-    summary: 'UC13 - Tạo bài viết, bản gốc và các bản dịch',
+    summary: 'UC13 - Tạo bài viết và bản gốc',
     description:
-      'Tạo bài + bản gốc + `translations[]` (không bắt buộc) trong một transaction. Mọi ngôn ngữ phải đang hoạt động, bản dịch khác ngôn ngữ gốc và không trùng nhau.',
+      'Tạo bài + bản gốc trong một transaction. Ngôn ngữ gốc phải đang hoạt động, danh mục phải tồn tại. Bản dịch thêm sau bằng `POST /admin/posts/:id/translations`, mỗi bản một request.',
   })
   @ApiDataResponse(AdminPostDetailDto, { status: 201 })
   @ApiErrorResponses(400, 401, 403)

@@ -295,7 +295,7 @@ Mọi route có quyền `owner` và chỉ làm việc với bài của người 
 | Method | Route | Ghi chú |
 | --- | --- | --- |
 | GET | `/admin/posts` | `?status=` (theo bản gốc), `?language=` (có bản dịch ở ngôn ngữ đó), `?categoryId=`, `?q=` (tìm `LIKE` trong tiêu đề mọi bản dịch), phân trang. Mỗi dòng: `id`, tiêu đề + ngôn ngữ gốc, danh mục, `thumbnail`, `translations [{ code, status }]`, `updatedAt` (lớn nhất giữa bài và các bản dịch) |
-| POST | `/admin/posts` | Body: `languageCode`, `categoryId`, `thumbnail?`, `translation { title, excerpt?, content, status }`, `translations? [{ languageCode, title, excerpt?, content, status }]`. Tạo bài, bản gốc và các bản dịch trong cùng một transaction: lỗi ở bản nào thì không tạo gì, lỗi ghi field dạng `translations.0.title`. Mọi ngôn ngữ phải đang hoạt động, bản dịch khác ngôn ngữ gốc và không trùng nhau, danh mục phải tồn tại. 201. `translations` thêm theo góp ý của mentor: màn viết bài soạn được bản dịch ngay khi tạo bài |
+| POST | `/admin/posts` | Body: `languageCode`, `categoryId`, `thumbnail?`, `translation { title, excerpt?, content, status }`. Tạo bài và bản gốc trong cùng một transaction, lỗi ghi field dạng `translation.title`. Ngôn ngữ gốc phải đang hoạt động, danh mục phải tồn tại. 201. Không nhận bản dịch (gửi `translations` → 400): màn viết bài lưu bài + bản gốc trước, rồi gọi `POST /admin/posts/:id/translations` cho từng tab bản dịch, để một bản lỗi chỉ báo lỗi ở tab đó và không làm mất bài cùng các bản đã lưu (góp ý của mentor, xem CHANGELOG) |
 | GET | `/admin/posts/:id` | Phần dùng chung + mọi bản dịch (kể cả bản dịch ở ngôn ngữ đã tắt) + `slug`, `viewCount`, `publishedAt` của từng bản dịch. Dùng cho màn sửa bài |
 | PATCH | `/admin/posts/:id` | Body `{ categoryId?, thumbnail? }` (`thumbnail: null` là bỏ ảnh). Không nhận `languageCode` |
 | DELETE | `/admin/posts/:id` | Xóa bài, mọi bản dịch, bình luận (cascade) và file thumbnail |
@@ -304,6 +304,8 @@ Mọi route có quyền `owner` và chỉ làm việc với bài của người 
 | DELETE | `/admin/posts/:id/translations/:code` | Xóa bản dịch và bình luận của nó. Bản gốc → 400 |
 
 Mọi API thay đổi dữ liệu ở bảng này đều xóa cache theo mục 3.5. Nội dung luôn qua `sanitizeRichText`.
+
+Luồng "Lưu" ở màn viết bài (phase 4): gọi `POST /admin/posts`; lỗi thì đánh dấu tab bản gốc, chưa tạo gì. Thành công thì gọi `POST /admin/posts/:id/translations` cho từng tab bản dịch, rồi chuyển sang màn sửa bài (`/admin/posts/:id/edit`). Bản dịch nào lỗi thì giữ nội dung, đánh dấu tab đó và báo "Đã lưu bài, N bản dịch chưa lưu được" để người dùng sửa và lưu lại ở màn sửa bài.
 
 ### 4.6. Quản trị hệ thống (B)
 
@@ -332,7 +334,7 @@ Mọi route có quyền `admin`.
 | Method | Route | Ghi chú |
 | --- | --- | --- |
 | GET | `/admin/languages` | Mọi ngôn ngữ + `postTranslationCount` |
-| POST | `/admin/languages` | Body `{ code, name, isActive }`. `code` theo ISO 639-1 (kiểm tra bằng danh sách mã trong `common/iso-639-1.ts`), trùng → 409. Trong cùng transaction: sao chép mọi `ui_translations` của ngôn ngữ mặc định sang ngôn ngữ mới |
+| POST | `/admin/languages` | Body `{ code, name, isActive }` (`name` tối đa 50 ký tự, `isActive` không gửi thì là `true`). `code` theo ISO 639-1 (kiểm tra bằng danh sách mã trong `common/iso-639-1.ts`), trùng → 409. Trong cùng transaction: sao chép mọi `ui_translations` của ngôn ngữ mặc định sang ngôn ngữ mới |
 | PATCH | `/admin/languages/:id` | Body `{ name?, isActive? }`. Không đổi `code`. Tắt ngôn ngữ mặc định → 400 |
 | PATCH | `/admin/languages/:id/default` | Đặt làm mặc định, bỏ mặc định ngôn ngữ cũ trong cùng transaction. Ngôn ngữ đang tắt → 400 |
 | DELETE | `/admin/languages/:id` | Ngôn ngữ mặc định → 400. Đang có bản dịch bài (kể cả là ngôn ngữ gốc) → 409 `LANGUAGE_IN_USE`. Xóa được thì cascade `category_translations`, `ui_translations`, `page_translations` |
@@ -341,9 +343,9 @@ Mọi route có quyền `admin`.
 
 | Method | Route | Ghi chú |
 | --- | --- | --- |
-| GET | `/admin/ui-translations` | `?q=` (tìm theo key hoặc giá trị), phân trang theo key (50 / trang). Mỗi dòng: `key`, `values: { vi: "...", en: null }` |
-| POST | `/admin/ui-translations` | Body `{ key, values: { vi, en } }`. `key` dạng `nhom.ten` (`^[a-z0-9_]+(\.[a-z0-9_]+)+$`), trùng → 409. Giá trị của ngôn ngữ mặc định bắt buộc |
-| PUT | `/admin/ui-translations/:key/:code` | Body `{ value }`. Sửa một ô (màn phase 2 sửa tại chỗ từng ô). Giá trị rỗng ở ngôn ngữ không mặc định thì xóa dòng (frontend sẽ dùng giá trị mặc định) |
+| GET | `/admin/ui-translations` | `?q=` (tìm theo key hoặc giá trị), phân trang theo key (50 / trang). Mỗi dòng: `key`, `values: { vi: "...", en: null }`. `values` chỉ gồm các ngôn ngữ đang hoạt động (mỗi ngôn ngữ một cột của màn phase 2) |
+| POST | `/admin/ui-translations` | Body `{ key, values: { vi, en } }`. `key` dạng `nhom.ten` (`^[a-z0-9_]+(\.[a-z0-9_]+)+$`), trùng → 409. `key` tối đa 100 ký tự, mỗi giá trị tối đa 255 ký tự. Giá trị của ngôn ngữ mặc định bắt buộc (thiếu → 400 ở `values.<code>`); mã không phải ngôn ngữ đang hoạt động → 400 |
+| PUT | `/admin/ui-translations/:key/:code` | Body `{ value }`. Sửa một ô (màn phase 2 sửa tại chỗ từng ô). Giá trị rỗng ở ngôn ngữ không mặc định thì xóa dòng (frontend sẽ dùng giá trị mặc định); rỗng ở ngôn ngữ mặc định → 400. Key hoặc ngôn ngữ không có, đã tắt → 404 |
 | DELETE | `/admin/ui-translations/:key` | Xóa key ở mọi ngôn ngữ |
 
 **Trang tĩnh (UC18)**
@@ -465,7 +467,7 @@ Gộp cột "Chờ" của cả ba người. Việc trong cùng một đợt làm
 | Đợt | Việc | Bắt đầu được khi | Mở đường cho |
 | --- | --- | --- | --- |
 | 1 | A1 (**đã xong**) | Ngay từ đầu | Mọi việc còn lại |
-| 2 | A2 (**đã xong**), A3 (**đang làm**), B1 (**đã xong**), B2, B3, B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
+| 2 | A2 (**đã xong**), A3 (**đang làm**), B1 (**đã xong**), B2 (**đã xong**), B3, B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
 | 3 | A4, A5, A6, A7, B4, B5, C1 | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
 | 4 | C2 | B3 và C1 đã merge | |
 | 5 | C3 (kiểm tra tổng) | A4 và B6 đã merge. Nên đợi mọi việc Must khác merge để kiểm tra một lần | A8, các PR sửa lỗi của A và B |
@@ -493,7 +495,7 @@ Cập nhật 05/11: B1 đã merge nên B4 và C1 bắt đầu được. Việc �
 | # | Việc | Chờ | Ghi chú |
 | --- | --- | --- | --- |
 | B1 (**đã xong**) | Seeders (mục 5), script `extract-i18n.mjs` | A1 | **Merge sớm** vì A3, C1 cần dữ liệu |
-| B2 | Ngôn ngữ UC16 (admin, mở rộng module mẫu) + bản dịch giao diện UC17 (admin + `GET /ui-translations/:code`) | A1 | Thêm ngôn ngữ thì sao chép UI translation |
+| B2 (**đã xong**) | Ngôn ngữ UC16 (admin, mở rộng module mẫu) + bản dịch giao diện UC17 (admin + `GET /ui-translations/:code`) | A1 | Thêm ngôn ngữ thì sao chép UI translation |
 | B3 | Danh mục UC15 (admin) | A1 | Tạo module `categories`. C2 thêm route public vào đây |
 | B4 | Bình luận UC08 | A1, B1 | Quyền xóa cần biết tác giả bài qua `post_translations → posts.user_id` |
 | B5 | Người dùng UC14 | A2 | Thu hồi refresh token dùng hàm của A2 |

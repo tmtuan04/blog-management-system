@@ -6,6 +6,17 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Quản lý ngôn ngữ UC16 và bản dịch giao diện UC17 (B2), nhánh `feature/be-languages-ui-translations`:
+  - UC16, Super Admin: `GET /admin/languages` (mọi ngôn ngữ kèm `postTranslationCount`), `POST /admin/languages` (`code` theo ISO 639-1, trùng → 409 ở field `code`; `name` tối đa 50 ký tự; `isActive` không gửi thì là `true`; sao chép mọi `ui_translations` của ngôn ngữ mặc định sang ngôn ngữ mới trong cùng transaction), `PATCH /admin/languages/:id` (chỉ `name`, `isActive`; gửi `code` → 400; tắt ngôn ngữ mặc định → 400), `PATCH /admin/languages/:id/default` (bỏ mặc định cũ trong cùng transaction; ngôn ngữ đang tắt → 400), `DELETE /admin/languages/:id` (mặc định → 400; đang có bản dịch bài → 409 `LANGUAGE_IN_USE`). Mọi thao tác ghi xóa toàn bộ `cache:`.
+  - UC17: `GET /ui-translations/:code` (public, object `{ key: value }` đã điền giá trị mặc định cho key chưa dịch, mã không có hoặc đã tắt → 404, cache `cache:ui:{code}`); Super Admin: `GET /admin/ui-translations` (`?q=` tìm theo key hoặc giá trị, phân trang theo key, mặc định 50), `POST /admin/ui-translations` (`key` dạng `nhom.ten` tối đa 100 ký tự, trùng → 409 ở field `key`; thiếu giá trị ngôn ngữ mặc định → 400 ở `values.<code>`; giá trị tối đa 255 ký tự), `PUT /admin/ui-translations/:key/:code` (rỗng ở ngôn ngữ không mặc định thì xóa dòng, rỗng ở ngôn ngữ mặc định → 400 ở `value`), `DELETE /admin/ui-translations/:key`. `values` chỉ gồm các ngôn ngữ đang hoạt động, khớp màn `admin/ui-translations.html`. Mọi thao tác ghi xóa `cache:ui:`.
+  - Phần nền: thêm `src/common/iso-639-1.ts` (danh sách mã ISO 639-1). Module mới `UiTranslationsModule`; `LanguagesModule` thêm `AdminLanguagesController`, `AdminLanguagesService`.
+  - Test: unit `admin-languages.service.spec.ts`, `ui-translations.service.spec.ts`; e2e `admin-languages.e2e-spec.ts`, `ui-translations.e2e-spec.ts`; `response-format.e2e-spec.ts` thêm nhóm Admin Languages và UI Translations. Postman: folder `01 - Languages` thêm 13 request UC16, folder mới `04 - UI Translations` (14 request); các request ghi tự dọn dữ liệu ở cuối.
+  - Phase 3 doc: B2 chuyển sang đã xong, mục 4.6 ghi thêm giới hạn độ dài và phạm vi của `values`.
+- Cấu hình Claude Code cho repo:
+  - `CLAUDE.md` ở gốc: tổng quan dự án, lệnh chạy và test, bảng trỏ tới đúng mục trong `docs/`.
+  - `.claude/rules/`: `backend.md` (chỉ nạp khi sửa `backend/**`), `html.md` (chỉ nạp khi sửa `html/**`), `git-workflow.md` (nhánh, commit, changelog, mô tả PR, cách gỡ conflict).
+  - `.claude/skills/`: `new-backend-module` (làm một module API theo mẫu `languages`), `new-html-page` (dựng một màn từ `_templates/`), `pr-ready` (kiểm tra nhánh trước khi tạo PR và soạn mô tả PR).
+  - `.claude/settings.json`: cho phép sẵn các lệnh lint, test, i18n, build; hỏi lại trước khi rollback migration, xóa seed, `docker compose down`; chặn đọc và sửa `backend/.env`. `.gitignore` bỏ qua `.claude/settings.local.json`.
 - Quản lý bản dịch bài viết UC13 (A3, PR 2/2):
   - `POST /admin/posts/:id/translations` (ngôn ngữ đã có bản dịch → 409), `PATCH /admin/posts/:id/translations/:code` (trường không gửi thì giữ nguyên; đổi tiêu đề thì sinh lại slug; `publishedAt` chỉ ghi lần đầu chuyển sang `published`; bản dịch ở ngôn ngữ đã tắt vẫn sửa được), `DELETE /admin/posts/:id/translations/:code` (xóa kèm bình luận; bản gốc → 400 `ORIGINAL_TRANSLATION_REQUIRED`). Mọi thao tác xóa cache `posts` + `categories`.
   - `POST /admin/posts` nhận thêm `translations[]` (không bắt buộc) để tạo bài, bản gốc và các bản dịch trong cùng một transaction, khớp màn viết bài mới soạn được bản dịch (góp ý của mentor). Bản dịch trùng ngôn ngữ gốc hoặc trùng nhau → 400 ở `translations.N.languageCode`. Phase 3 doc mục 4.5 cập nhật theo.
@@ -150,6 +161,7 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Changed
 
+- `POST /admin/posts` bỏ `translations[]`, chỉ tạo bài + bản gốc trong một transaction (UC13, A3, theo góp ý của mentor). Trước đây bài, bản gốc và mọi bản dịch nằm chung một transaction nên chỉ một bản dịch lỗi (ví dụ trùng slug do hai request đồng thời) là mất cả bài, và lỗi DB không chỉ ra được tab nào. Nay màn viết bài (phase 4) lưu bài + bản gốc trước, rồi gọi `POST /admin/posts/:id/translations` cho từng tab: bản nào lỗi thì chỉ bản đó lỗi, báo đúng tab, các bản khác vẫn lưu. Gửi `translations` → 400 `Trường này không được phép`. Bỏ `prepareExtraTranslations` và các test của nó; e2e thêm test "một bản dịch lỗi không ảnh hưởng bài và các bản đã lưu", "thêm bản dịch ở ngôn ngữ gốc → 409". Phase 3 doc mục 4.5 cập nhật theo.
 - HTML phát hiện nhờ `extract-i18n.mjs`: nút xóa key ở `admin/ui-translations.html` dùng aria-label chung "Xóa key" (trước đây chứa tên key nên mỗi dòng một chữ khác nhau); `validation.email_taken` ở `admin/users.html` dùng cùng câu với `public/register.html`.
 - `docs/sample-data.md`: đường dẫn ảnh mẫu theo quy tắc upload (`uploads/images/<uuid>.png`); trang `contact`, `privacy` có thêm bản `en`.
 - Chia lại việc phase 3 (`docs/phase-3-backend.md` 1.0 → 1.1): A ~50%, B ~35%, C ~15%.
