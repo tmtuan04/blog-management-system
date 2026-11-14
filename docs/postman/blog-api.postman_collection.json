@@ -2462,6 +2462,241 @@
           }
         }
       ]
+    },
+    {
+      "name": "05 - Public Posts",
+      "description": "C1 - UC05: Danh sách bài viết công khai, Popular, phân trang và validation.",
+      "item": [
+        {
+          "name": "UC05 - Danh sách bài viết",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success = true', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test('data là mảng', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('Có meta phân trang', () => {",
+                  "  pm.expect(body.meta).to.include({ page: 1, limit: 10 });",
+                  "  pm.expect(body.meta.total).to.be.a('number');",
+                  "  pm.expect(body.meta.totalPages).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC05 - Bài viết phổ biến",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success = true', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test('Popular tối đa 5 bài', () => {",
+                  "  pm.expect(body.data).to.be.an('array');",
+                  "  pm.expect(body.data.length).to.be.at.most(5);",
+                  "});",
+                  "pm.test('viewCount giảm dần', () => {",
+                  "  const views = body.data.map(post => post.viewCount);",
+                  "  for (let i = 1; i < views.length; i++) {",
+                  "    pm.expect(views[i - 1]).to.be.at.least(views[i]);",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/popular?limit=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "popular"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC05 - Validation page = 0",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Validation error', () => {",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.code).to.eql('VALIDATION_ERROR');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts?page=0&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC05 - Validation limit = 51",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Validation error', () => {",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.code).to.eql('VALIDATION_ERROR');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts?page=1&limit=51",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "51"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC05 - Validation Popular limit = 11",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Validation error', () => {",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.code).to.eql('VALIDATION_ERROR');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/popular?limit=11",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "popular"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "11"
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }
