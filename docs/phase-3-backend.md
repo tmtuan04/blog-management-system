@@ -467,13 +467,15 @@ Gộp cột "Chờ" của cả ba người. Việc trong cùng một đợt làm
 | Đợt | Việc | Bắt đầu được khi | Mở đường cho |
 | --- | --- | --- | --- |
 | 1 | A1 (**đã xong**) | Ngay từ đầu | Mọi việc còn lại |
-| 2 | A2 (**đã xong**), A3 (**đang làm**), B1 (**đã xong**), B2 (**đã xong**), B3, B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
-| 3 | A4, A5, A6, A7, B4, B5, C1 | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
+| 2 | A2 (**đã xong**), A3 (**đã xong**), B1 (**đã xong**), B2 (**đã xong**), B3, B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
+| 3 | A4, A5, A6, A7, B4, B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
 | 4 | C2 | B3 và C1 đã merge | |
 | 5 | C3 (kiểm tra tổng) | A4 và B6 đã merge. Nên đợi mọi việc Must khác merge để kiểm tra một lần | A8, các PR sửa lỗi của A và B |
 | 6 | A8 | C3 đã merge | Kết thúc phase: merge `dev` → `master` |
 
-Cập nhật 05/11: B1 đã merge nên B4 và C1 bắt đầu được. Việc đang chặn nhiều người nhất là phần bản dịch của **A3** (chặn A4, A5, rồi gián tiếp C3).
+Cập nhật 05/11: B1 đã merge nên B4 và C1 bắt đầu được.
+
+Cập nhật 14/11: A3 đã merge xong (PR bản dịch #48, #49 ngày 07/11, #50 ngày 11/11) nên A4, A5 bắt đầu được. Việc đang chặn nhiều người nhất là **A4** (chặn C3) và **B3** (chặn C2).
 
 ### 8.3. Việc của từng người
 
@@ -483,7 +485,7 @@ Cập nhật 05/11: B1 đã merge nên B4 và C1 bắt đầu được. Việc �
 | --- | --- | --- | --- |
 | A1 (**đã xong**) | Khung backend: `docker-compose.yml`, project NestJS, config 3 môi trường, migrations đủ 12 bảng (gồm FULLTEXT `ngram`), model; mọi phần ở mục 3 (response, exception filter, guard, language middleware, phân trang, Redis + cache, throttler, upload, lọc HTML, slug, Swagger, helmet, CORS); Jest + helper test (`tokenFor(role)`); khung Postman collection. Module mẫu `languages` (chỉ `GET /languages`) để B, C copy | | **Merge sớm** (mục tiêu 28/10) vì mọi việc khác cần. Module mẫu có đủ controller, service, DTO, test unit và e2e |
 | A2 (**đã xong**) | Auth UC01-UC04: register, login + rate limit, refresh xoay vòng, logout, forgot/reset password + email, `/auth/me` | A1 | Merge sớm để Postman có token thật |
-| A3 (**đang làm**: PR bài + bản gốc đã merge 02/11, PR bản dịch ở nhánh `feature/be-posts-translations`) | Quản lý bài viết UC13 (mục 4.5), xóa cache bài viết | A1 | Phần lớn nhất của phase. Tách 2 PR: bài + bản gốc, rồi bản dịch. Test e2e dùng dữ liệu riêng nên không phải chờ B1; B1 chỉ cần khi thử bằng Postman |
+| A3 (**đã xong**: PR bài + bản gốc merge 02/11, PR bản dịch merge 07/11 và 11/11) | Quản lý bài viết UC13 (mục 4.5), xóa cache bài viết | A1 | Phần lớn nhất của phase. Tách 2 PR: bài + bản gốc, rồi bản dịch. Test e2e dùng dữ liệu riêng nên không phải chờ B1; B1 chỉ cần khi thử bằng Postman |
 | A4 | Chi tiết bài UC06: `/posts/:slug`, `/related`, tăng lượt xem | A3 | |
 | A5 | Tìm kiếm UC19 (Should) | A3 | Test với cả từ khóa tiếng Việt có dấu |
 | A6 | Hồ sơ cá nhân UC12 (Should, mục 4.4) | A2 | Chuyển từ B sang ở bản 1.1. Avatar dùng lại `UploadModule` |
@@ -505,7 +507,7 @@ Cập nhật 05/11: B1 đã merge nên B4 và C1 bắt đầu được. Việc �
 
 | # | Việc | Chờ | Ghi chú |
 | --- | --- | --- | --- |
-| C1 | Chạy thử migrate, seed, rollback trên database trống (việc còn lại của phase 1), báo lỗi cho A và B. Sau đó làm `GET /posts`, `GET /posts/popular` (UC05) có cache | A1, B1 | Copy cách làm của module mẫu. Gặp chỗ chưa rõ thì hỏi A trước khi làm |
+| C1 (**đã xong**) | Chạy thử migrate, seed, rollback trên database trống (việc còn lại của phase 1), báo lỗi cho A và B. Sau đó làm `GET /posts`, `GET /posts/popular` (UC05) có cache | A1, B1 | Copy cách làm của module mẫu. Gặp chỗ chưa rõ thì hỏi A trước khi làm |
 | C2 | `GET /categories`, `/categories/:slug`, `/categories/:slug/posts` (UC07) có cache | B3, C1 | Dùng lại hàm truy vấn thẻ bài của C1 |
 | C3 | Kiểm tra tổng: chạy cả Postman collection bằng Postman CLI trên dữ liệu vừa seed; đối chiếu từng API với format 6.4 và bảng mục 4; viết `db:seed:perf` và đo `GET /posts`, `/categories/:slug/posts`, `/search`, `/admin/posts` với 10.000 bài; ghi lỗi thành danh sách, lỗi trong một module chuyển người làm module đó, lỗi phần nền chuyển A | A4, B6 | Làm sau cùng. Ghi danh sách lỗi và số đo thời gian vào mô tả PR |
 

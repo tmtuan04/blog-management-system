@@ -10,13 +10,6 @@
  * - Jest + Supertest
  */
 
-// Mock tạm thời để xử lý lỗi tương thích Jest / htmlparser2 ESM.
-// Không sử dụng mock này để kiểm thử tính năng sanitize HTML.
-jest.mock('sanitize-html', () => ({
-  __esModule: true,
-  default: jest.fn((html: string) => html),
-}));
-
 import request from 'supertest';
 
 import { Category } from '../src/modules/categories/models/category.model';
@@ -443,6 +436,76 @@ describe('Public Posts - UC05 (e2e)', () => {
       expect(posts[1].viewCount).toBe(40);
 
       expect(posts[0].viewCount).toBeGreaterThan(posts[1].viewCount);
+    });
+  });
+
+  describe('Cache (phase 3 doc mục 3.5)', () => {
+    it('lần gọi thứ hai lấy từ cache, không thấy dữ liệu sửa thẳng trong DB', async () => {
+      await seedPosts();
+      await request(server())
+        .get(api())
+        .set('Accept-Language', 'vi')
+        .expect(200);
+
+      // Sửa thẳng trong DB, không qua API nên cache không bị xóa
+      await PostTranslation.update(
+        { title: 'Đã đổi trong DB' },
+        { where: { slug: 'tim-hieu-redis' } },
+      );
+
+      const res = await request(server())
+        .get(api())
+        .set('Accept-Language', 'vi')
+        .expect(200);
+      const titles = (res.body.data as PublicPostCard[]).map((p) => p.title);
+      expect(titles).toContain('Tìm hiểu Redis');
+      expect(titles).not.toContain('Đã đổi trong DB');
+    });
+
+    it('tạo bài qua API admin thì danh sách và popular thấy ngay bài mới', async () => {
+      await seedPosts();
+      const category = await Category.findOne();
+      await request(server())
+        .get(api())
+        .set('Accept-Language', 'vi')
+        .expect(200);
+      await request(server())
+        .get(api('/popular'))
+        .set('Accept-Language', 'vi')
+        .expect(200);
+
+      const { token } = await tokenFor(ctx.app, 'blog_owner');
+      await request(server())
+        .post('/api/v1/admin/posts')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          languageCode: 'vi',
+          categoryId: category!.id,
+          translation: {
+            title: 'Bài mới qua API',
+            content: '<p>Nội dung bài mới</p>',
+            status: 'published',
+          },
+        })
+        .expect(201);
+
+      const list = await request(server())
+        .get(api())
+        .set('Accept-Language', 'vi')
+        .expect(200);
+      const cards = list.body.data as PublicPostCard[];
+      // Bài mới nhất đứng đầu
+      expect(cards[0].title).toBe('Bài mới qua API');
+      expect(list.body.meta.total).toBe(4);
+
+      const popular = await request(server())
+        .get(api('/popular?limit=10'))
+        .set('Accept-Language', 'vi')
+        .expect(200);
+      const popularTitles = (popular.body.data as PublicPostCard[]).map(
+        (p) => p.title,
+      );
+      expect(popularTitles).toContain('Bài mới qua API');
     });
   });
 });

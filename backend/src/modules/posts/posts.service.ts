@@ -1,110 +1,116 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op, type Order } from 'sequelize';
+import { Op, type Order, type WhereOptions } from 'sequelize';
 
 import type { RequestLanguage } from '../../common/types/request-context';
 import { paginate, type Paginated } from '../../common/utils/paginate';
+import { CacheTtl, RedisKeys } from '../../common/utils/redis-keys';
 import { CacheService } from '../../infra/redis/cache.service';
 
 import { CategoryTranslation } from '../categories/models/category-translation.model';
-import { Language } from '../languages/models/language.model';
+import { LanguagesService } from '../languages/languages.service';
 import { User } from '../users/models/user.model';
 
+import type { PublicPostCardDto } from './dto/public-post-response.dto';
 import { Post } from './models/post.model';
 import { PostTranslation } from './models/post-translation.model';
 
-// ============================================
-// 1. KIỂU DỮ LIỆU TRẢ VỀ CHO TRANG CHỦ
-// ============================================
-
-export interface PublicPostCard {
-  slug: string;
-  title: string;
-  excerpt: string | null;
-  thumbnail: string | null;
-
-  category: {
-    name: string;
-    slug: string;
-  } | null;
-
-  author: {
-    fullName: string;
-    avatar: string | null;
-  };
-
-  publishedAt: string | null;
-  viewCount: number;
-  readingMinutes: number;
+export interface PostCardQuery {
+  limit: number;
+  offset: number;
+  order: Order;
+  /** Chỉ lấy bài thuộc danh mục này (UC07) */
+  categoryId?: number;
 }
 
-// Dùng kiểu phân trang chung của dự án
-export type PaginatedPostsResult = Paginated<PublicPostCard>;
-
-// Kiểu dữ liệu trung gian trước khi gọi paginate()
-interface PostCardsResult {
-  items: PublicPostCard[];
+/** Kết quả trước khi gọi paginate(), để cache được bằng JSON */
+export interface PostCardPage {
+  items: PublicPostCardDto[];
   total: number;
 }
 
-// ============================================
-// 2. POSTS SERVICE - UC05
-// ============================================
+const WORDS_PER_MINUTE = 200;
+
+/** Mới nhất trước; `id` để thứ tự ổn định khi trùng thời điểm đăng */
+export const LATEST_ORDER: Order = [
+  ['publishedAt', 'DESC'],
+  ['id', 'DESC'],
+];
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(PostTranslation)
     private readonly postTranslationModel: typeof PostTranslation,
-
     @InjectModel(CategoryTranslation)
     private readonly categoryTranslationModel: typeof CategoryTranslation,
-
-    @InjectModel(Language)
-    private readonly languageModel: typeof Language,
-
-    private readonly cacheService: CacheService,
+    private readonly languagesService: LanguagesService,
+    private readonly cache: CacheService,
   ) {}
 
-  // ============================================
-  // 3. TÍNH THỜI GIAN ĐỌC
-  // ============================================
-
-  // Quy ước: 200 từ/phút, tối thiểu 1 phút
-  private calculateReadingMinutes(content: string): number {
-    const text = content
-      .replace(/<[^>]*>/g, ' ')
-      .replace(/&(?:[a-z]+|#\d+|#x[\da-f]+);/gi, ' ')
-      .trim();
-
-    const wordCount = text ? text.split(/\s+/).length : 0;
-
-    return Math.max(1, Math.ceil(wordCount / 200));
+  /** GET /posts (UC05): bản dịch published ở ngôn ngữ đang chọn, mới nhất trước */
+  async findAll(
+    language: RequestLanguage,
+    page = 1,
+    limit = 10,
+  ): Promise<Paginated<PublicPostCardDto>> {
+    // Cache kết quả thô rồi mới paginate(): Symbol đánh dấu phân trang
+    // của paginate() không giữ được qua JSON trong Redis
+    const { items, total } = await this.cache.wrap(
+      RedisKeys.postsList(language.code, page, limit),
+      CacheTtl.posts,
+      () =>
+        this.findCards(language, {
+          limit,
+          offset: (page - 1) * limit,
+          order: LATEST_ORDER,
+        }),
+    );
+    return paginate(items, total, { page, limit });
   }
 
-  // ============================================
-  // 4. HÀM TRUY VẤN DÙNG CHUNG
-  // ============================================
-
-  private async loadPostCards(
+  /** GET /posts/popular (UC05): theo lượt xem giảm dần */
+  findPopular(
     language: RequestLanguage,
-    limit: number,
-    offset: number,
-    order: Order,
-  ): Promise<PostCardsResult> {
-    // 4.1. Lấy các bản dịch đã xuất bản
-    const { rows, count } = await this.postTranslationModel.findAndCountAll({
-      where: {
-        languageId: language.id,
-        status: 'published',
+    limit = 5,
+  ): Promise<PublicPostCardDto[]> {
+    return this.cache.wrap(
+      RedisKeys.postsPopular(language.code, limit),
+      CacheTtl.posts,
+      async () => {
+        const { items } = await this.findCards(language, {
+          limit,
+          offset: 0,
+          order: [
+            ['viewCount', 'DESC'],
+            ...(LATEST_ORDER as [string, string][]),
+          ],
+        });
+        return items;
       },
+    );
+  }
 
+  /**
+   * Thẻ bài của các bản dịch published ở ngôn ngữ đang chọn. Dùng chung cho
+   * trang chủ, sidebar và trang danh mục (C2 gọi với `categoryId`). Không cache,
+   * nơi gọi tự cache theo key của mình.
+   */
+  async findCards(
+    language: RequestLanguage,
+    query: PostCardQuery,
+  ): Promise<PostCardPage> {
+    const postWhere: WhereOptions<Post> =
+      query.categoryId === undefined ? {} : { categoryId: query.categoryId };
+
+    const { rows, count } = await this.postTranslationModel.findAndCountAll({
+      where: { languageId: language.id, status: 'published' },
       include: [
         {
           model: Post,
           as: 'post',
           required: true,
-
+          where: postWhere,
           include: [
             {
               model: User,
@@ -115,194 +121,87 @@ export class PostsService {
           ],
         },
       ],
-
-      order,
-      limit,
-      offset,
+      order: query.order,
+      limit: query.limit,
+      offset: query.offset,
       distinct: true,
     });
 
-    // Không có bài viết phù hợp
     if (rows.length === 0) {
-      return {
-        items: [],
-        total: count,
-      };
+      return { items: [], total: count };
     }
 
-    // ============================================
-    // 4.2. Xác định ngôn ngữ mặc định
-    // ============================================
-
-    let defaultLanguageId = language.id;
-
-    if (!language.isDefault) {
-      const defaultLanguage = await this.languageModel.findOne({
-        where: {
-          isDefault: true,
-        },
-      });
-
-      defaultLanguageId = defaultLanguage?.id ?? language.id;
-    }
-
-    // ============================================
-    // 4.3. Lấy danh sách categoryId
-    // ============================================
-
-    const categoryIds = [
-      ...new Set(
-        rows
-          .map((translation) => translation.post?.categoryId)
-          .filter((id): id is number => typeof id === 'number'),
-      ),
-    ];
-
-    // Map dùng để lưu tên và slug danh mục
-    const categoryMap = new Map<
-      number,
-      {
-        name: string;
-        slug: string;
-      }
-    >();
-
-    // ============================================
-    // 4.4. Lấy bản dịch danh mục
-    // ============================================
-
-    if (categoryIds.length > 0) {
-      const categoryTranslations = await this.categoryTranslationModel.findAll({
-        where: {
-          categoryId: {
-            [Op.in]: categoryIds,
-          },
-
-          languageId: {
-            [Op.in]: [language.id, defaultLanguageId],
-          },
-        },
-      });
-
-      // Lưu bản dịch của ngôn ngữ mặc định trước
-      for (const category of categoryTranslations) {
-        if (category.languageId === defaultLanguageId) {
-          categoryMap.set(category.categoryId, {
-            name: category.name,
-            slug: category.slug,
-          });
-        }
-      }
-
-      // Ưu tiên bản dịch theo ngôn ngữ hiện tại
-      for (const category of categoryTranslations) {
-        if (category.languageId === language.id) {
-          categoryMap.set(category.categoryId, {
-            name: category.name,
-            slug: category.slug,
-          });
-        }
-      }
-    }
-
-    // ============================================
-    // 4.5. Chuyển dữ liệu thành thẻ bài viết
-    // ============================================
-
-    const items: PublicPostCard[] = rows.map((translation) => {
-      const post = translation.post!;
-
-      return {
-        slug: translation.slug,
-
-        title: translation.title,
-
-        excerpt: translation.excerpt ?? null,
-
-        thumbnail: post.thumbnail ?? null,
-
-        category: categoryMap.get(post.categoryId) ?? null,
-
-        author: {
-          fullName: post.author?.fullName ?? '',
-
-          avatar: post.author?.avatar ?? null,
-        },
-
-        publishedAt:
-          translation.publishedAt instanceof Date
-            ? translation.publishedAt.toISOString()
-            : null,
-
-        viewCount: Number(translation.viewCount),
-
-        readingMinutes: this.calculateReadingMinutes(translation.content),
-      };
-    });
-
-    return {
-      items,
-      total: count,
-    };
-  }
-
-  // ============================================
-  // 5. UC05 - GET /api/v1/posts
-  // ============================================
-
-  async findAll(
-    language: RequestLanguage,
-    page = 1,
-    limit = 10,
-  ): Promise<PaginatedPostsResult> {
-    const cacheKey = `cache:posts:list:v2:${language.code}:${page}:${limit}`;
-
-    const offset = (page - 1) * limit;
-
-    // Redis lưu dữ liệu JSON thông thường
-    const { items, total } = await this.cacheService.wrap<PostCardsResult>(
-      cacheKey,
-      300,
-      () =>
-        this.loadPostCards(language, limit, offset, [
-          ['publishedAt', 'DESC'],
-          ['id', 'DESC'],
-        ]),
+    const categories = await this.loadCategoryNames(
+      language,
+      rows.map((row) => row.post!.categoryId),
     );
 
-    // QUAN TRỌNG:
-    // Gọi paginate() SAU khi đọc dữ liệu từ Redis.
-    //
-    // paginate() thêm Symbol đặc biệt để
-    // TransformInterceptor nhận diện phân trang.
-    //
-    // Nếu paginate() được gọi trước khi cache,
-    // Redis JSON sẽ làm mất Symbol đó.
-
-    return paginate(items, total, {
-      page,
-      limit,
+    const items = rows.map((row): PublicPostCardDto => {
+      const post = row.post!;
+      return {
+        slug: row.slug,
+        title: row.title,
+        excerpt: row.excerpt ?? null,
+        thumbnail: post.thumbnail ?? null,
+        category: categories.get(post.categoryId) ?? null,
+        author: {
+          fullName: post.author?.fullName ?? '',
+          avatar: post.author?.avatar ?? null,
+        },
+        publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
+        viewCount: Number(row.viewCount),
+        readingMinutes: calculateReadingMinutes(row.content),
+      };
     });
+
+    return { items, total: count };
   }
 
-  // ============================================
-  // 6. UC05 - GET /api/v1/posts/popular
-  // ============================================
-
-  async findPopular(
+  /**
+   * Tên + slug danh mục ở ngôn ngữ đang chọn, thiếu thì dùng ngôn ngữ mặc định.
+   * Một truy vấn cho cả trang, không N+1.
+   */
+  private async loadCategoryNames(
     language: RequestLanguage,
-    limit = 5,
-  ): Promise<PublicPostCard[]> {
-    const cacheKey = `cache:posts:popular:${language.code}:${limit}`;
+    categoryIds: number[],
+  ): Promise<Map<number, { name: string; slug: string }>> {
+    const result = new Map<number, { name: string; slug: string }>();
+    const ids = [...new Set(categoryIds)];
+    if (ids.length === 0) return result;
 
-    return this.cacheService.wrap<PublicPostCard[]>(cacheKey, 300, async () => {
-      const { items } = await this.loadPostCards(language, limit, 0, [
-        ['viewCount', 'DESC'],
-        ['publishedAt', 'DESC'],
-        ['id', 'DESC'],
-      ]);
+    const languageIds = [language.id];
+    if (!language.isDefault) {
+      const languages = await this.languagesService.findActive();
+      const fallback = languages.find((item) => item.isDefault);
+      if (fallback) languageIds.push(fallback.id);
+    }
 
-      return items;
+    const translations = await this.categoryTranslationModel.findAll({
+      where: {
+        categoryId: { [Op.in]: ids },
+        languageId: { [Op.in]: languageIds },
+      },
     });
+
+    // Ngôn ngữ mặc định trước, ngôn ngữ đang chọn ghi đè sau
+    const sorted = [...translations].sort(
+      (a, b) =>
+        Number(a.languageId === language.id) -
+        Number(b.languageId === language.id),
+    );
+    for (const item of sorted) {
+      result.set(item.categoryId, { name: item.name, slug: item.slug });
+    }
+    return result;
   }
+}
+
+/** Số chữ trong nội dung đã bỏ thẻ / 200, làm tròn lên, tối thiểu 1 (phase 3 doc mục 4.2) */
+export function calculateReadingMinutes(content: string): number {
+  const text = content
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&(?:[a-z]+|#\d+|#x[\da-f]+);/gi, ' ')
+    .trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  return Math.max(1, Math.ceil(words / WORDS_PER_MINUTE));
 }

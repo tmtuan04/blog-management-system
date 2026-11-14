@@ -1,9 +1,10 @@
-import { PostsService } from './posts.service';
+import { calculateReadingMinutes, PostsService } from './posts.service';
 import { PostTranslation } from './models/post-translation.model';
 import { CategoryTranslation } from '../categories/models/category-translation.model';
-import { Language } from '../languages/models/language.model';
+import { LanguagesService } from '../languages/languages.service';
 import { CacheService } from '../../infra/redis/cache.service';
 import type { RequestLanguage } from '../../common/types/request-context';
+import { Op } from 'sequelize';
 import { isPaginated } from '../../common/utils/paginate';
 
 describe('PostsService - UC05', () => {
@@ -17,8 +18,8 @@ describe('PostsService - UC05', () => {
     findAll: jest.Mock;
   };
 
-  let languageModel: {
-    findOne: jest.Mock;
+  let languagesService: {
+    findActive: jest.Mock;
   };
 
   let cacheService: {
@@ -65,8 +66,11 @@ describe('PostsService - UC05', () => {
       ]),
     };
 
-    languageModel = {
-      findOne: jest.fn(),
+    languagesService = {
+      findActive: jest.fn().mockResolvedValue([
+        { id: 1, code: 'vi', name: 'Tiếng Việt', isDefault: true },
+        { id: 2, code: 'en', name: 'English', isDefault: false },
+      ]),
     };
 
     cacheService = {
@@ -81,7 +85,7 @@ describe('PostsService - UC05', () => {
     service = new PostsService(
       postModel as unknown as typeof PostTranslation,
       categoryModel as unknown as typeof CategoryTranslation,
-      languageModel as unknown as typeof Language,
+      languagesService as unknown as LanguagesService,
       cacheService as unknown as CacheService,
     );
   });
@@ -191,7 +195,7 @@ describe('PostsService - UC05', () => {
     expect(result).toHaveLength(1);
   });
 
-  it('findPopular sử dụng Redis cache 300 giây', async () => {
+  it('findPopular dùng key cache:posts:popular, TTL 5 phút', async () => {
     postModel.findAndCountAll.mockResolvedValue({
       rows: [samplePost],
       count: 1,
@@ -226,10 +230,6 @@ describe('PostsService - UC05', () => {
       isDefault: false,
     };
 
-    languageModel.findOne.mockResolvedValue({
-      id: 1,
-    });
-
     postModel.findAndCountAll.mockResolvedValue({
       rows: [samplePost],
       count: 1,
@@ -237,15 +237,110 @@ describe('PostsService - UC05', () => {
 
     const result = await service.findAll(en);
 
-    expect(languageModel.findOne).toHaveBeenCalledWith({
+    expect(categoryModel.findAll).toHaveBeenCalledWith({
       where: {
-        isDefault: true,
+        categoryId: { [Op.in]: [1] },
+        languageId: { [Op.in]: [2, 1] },
       },
     });
 
     expect(result.items[0].category).toEqual({
       name: 'Công nghệ',
       slug: 'cong-nghe',
+    });
+  });
+
+  it('findAll dùng key cache:posts:list theo ngôn ngữ, trang, limit', async () => {
+    postModel.findAndCountAll.mockResolvedValue({ rows: [], count: 0 });
+
+    await service.findAll(vi, 3, 20);
+
+    expect(cacheService.wrap).toHaveBeenCalledWith(
+      'cache:posts:list:vi:3:20',
+      300,
+      expect.any(Function),
+    );
+  });
+
+  it('ngôn ngữ mặc định không gọi LanguagesService, chỉ lấy tên danh mục ở chính nó', async () => {
+    postModel.findAndCountAll.mockResolvedValue({
+      rows: [samplePost],
+      count: 1,
+    });
+
+    await service.findAll(vi);
+
+    expect(languagesService.findActive).not.toHaveBeenCalled();
+    expect(categoryModel.findAll).toHaveBeenCalledWith({
+      where: {
+        categoryId: { [Op.in]: [1] },
+        languageId: { [Op.in]: [1] },
+      },
+    });
+  });
+
+  it('tên danh mục ở ngôn ngữ đang chọn ưu tiên hơn ngôn ngữ mặc định', async () => {
+    const en: RequestLanguage = { id: 2, code: 'en', isDefault: false };
+    // Bản en đứng trước bản vi để chắc chắn kết quả không phụ thuộc thứ tự DB trả về
+    categoryModel.findAll.mockResolvedValue([
+      { categoryId: 1, languageId: 2, name: 'Technology', slug: 'technology' },
+      { categoryId: 1, languageId: 1, name: 'Công nghệ', slug: 'cong-nghe' },
+    ]);
+    postModel.findAndCountAll.mockResolvedValue({
+      rows: [samplePost],
+      count: 1,
+    });
+
+    const result = await service.findAll(en);
+
+    expect(result.items[0].category).toEqual({
+      name: 'Technology',
+      slug: 'technology',
+    });
+  });
+
+  it('category = null khi danh mục chưa có tên ở cả hai ngôn ngữ', async () => {
+    categoryModel.findAll.mockResolvedValue([]);
+    postModel.findAndCountAll.mockResolvedValue({
+      rows: [samplePost],
+      count: 1,
+    });
+
+    const result = await service.findAll(vi);
+
+    expect(result.items[0].category).toBeNull();
+  });
+
+  it('findCards lọc theo categoryId khi có (dùng cho UC07)', async () => {
+    postModel.findAndCountAll.mockResolvedValue({ rows: [], count: 0 });
+
+    await service.findCards(vi, {
+      limit: 10,
+      offset: 0,
+      order: [['publishedAt', 'DESC']],
+      categoryId: 7,
+    });
+
+    const options = postModel.findAndCountAll.mock.calls[0][0] as {
+      include: { where: unknown }[];
+    };
+    expect(options.include[0].where).toEqual({ categoryId: 7 });
+  });
+
+  describe('calculateReadingMinutes', () => {
+    it('tối thiểu 1 phút, kể cả nội dung rỗng', () => {
+      expect(calculateReadingMinutes('')).toBe(1);
+      expect(calculateReadingMinutes('<p></p>')).toBe(1);
+    });
+
+    it('200 chữ là 1 phút, 201 chữ làm tròn lên 2 phút', () => {
+      expect(calculateReadingMinutes('a '.repeat(200))).toBe(1);
+      expect(calculateReadingMinutes('a '.repeat(201))).toBe(2);
+    });
+
+    it('bỏ thẻ HTML và thực thể, không dính chữ hai bên thẻ', () => {
+      const words = Array.from({ length: 401 }, () => '<b>chữ</b>&nbsp;');
+      expect(calculateReadingMinutes('<p>' + words.join('') + '</p>')).toBe(3);
     });
   });
 });
