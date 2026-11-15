@@ -3,6 +3,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { UploadModule } from '../../infra/upload/upload.module';
 import { CategoryTranslation } from '../categories/models/category-translation.model';
 import { Category } from '../categories/models/category.model';
+import { Comment } from '../comments/models/comment.model';
 import { LanguagesModule } from '../languages/languages.module';
 import { Language } from '../languages/models/language.model';
 import { AdminPostsController } from './admin-posts.controller';
@@ -21,6 +22,7 @@ import { PostsService } from './posts.service';
       Language,
       Category,
       CategoryTranslation,
+      Comment,
     ]),
     // UploadService: kiểm tra file thumbnail
     UploadModule,
