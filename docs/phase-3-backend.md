@@ -468,7 +468,7 @@ Gộp cột "Chờ" của cả ba người. Việc trong cùng một đợt làm
 | --- | --- | --- | --- |
 | 1 | A1 (**đã xong**) | Ngay từ đầu | Mọi việc còn lại |
 | 2 | A2 (**đã xong**), A3 (**đã xong**), B1 (**đã xong**), B2 (**đã xong**), B3, B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
-| 3 | A4, A5, A6, A7, B4, B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
+| 3 | A4 (**đã xong**), A5, A6, A7, B4, B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
 | 4 | C2 | B3 và C1 đã merge | |
 | 5 | C3 (kiểm tra tổng) | A4 và B6 đã merge. Nên đợi mọi việc Must khác merge để kiểm tra một lần | A8, các PR sửa lỗi của A và B |
 | 6 | A8 | C3 đã merge | Kết thúc phase: merge `dev` → `master` |
@@ -476,6 +476,8 @@ Gộp cột "Chờ" của cả ba người. Việc trong cùng một đợt làm
 Cập nhật 05/11: B1 đã merge nên B4 và C1 bắt đầu được.
 
 Cập nhật 14/11: A3 đã merge xong (PR bản dịch #48, #49 ngày 07/11, #50 ngày 11/11) nên A4, A5 bắt đầu được. Việc đang chặn nhiều người nhất là **A4** (chặn C3) và **B3** (chặn C2).
+
+Cập nhật 15/11: A4 xong, C3 chỉ còn chờ B6. Việc đang chặn nhiều người nhất là **B3** (chặn C2) và **B6** (chặn C3).
 
 ### 8.3. Việc của từng người
 
@@ -486,7 +488,7 @@ Cập nhật 14/11: A3 đã merge xong (PR bản dịch #48, #49 ngày 07/11, #5
 | A1 (**đã xong**) | Khung backend: `docker-compose.yml`, project NestJS, config 3 môi trường, migrations đủ 12 bảng (gồm FULLTEXT `ngram`), model; mọi phần ở mục 3 (response, exception filter, guard, language middleware, phân trang, Redis + cache, throttler, upload, lọc HTML, slug, Swagger, helmet, CORS); Jest + helper test (`tokenFor(role)`); khung Postman collection. Module mẫu `languages` (chỉ `GET /languages`) để B, C copy | | **Merge sớm** (mục tiêu 28/10) vì mọi việc khác cần. Module mẫu có đủ controller, service, DTO, test unit và e2e |
 | A2 (**đã xong**) | Auth UC01-UC04: register, login + rate limit, refresh xoay vòng, logout, forgot/reset password + email, `/auth/me` | A1 | Merge sớm để Postman có token thật |
 | A3 (**đã xong**: PR bài + bản gốc merge 02/11, PR bản dịch merge 07/11 và 11/11) | Quản lý bài viết UC13 (mục 4.5), xóa cache bài viết | A1 | Phần lớn nhất của phase. Tách 2 PR: bài + bản gốc, rồi bản dịch. Test e2e dùng dữ liệu riêng nên không phải chờ B1; B1 chỉ cần khi thử bằng Postman |
-| A4 | Chi tiết bài UC06: `/posts/:slug`, `/related`, tăng lượt xem | A3 | |
+| A4 (**đã xong**) | Chi tiết bài UC06: `/posts/:slug`, `/related`, tăng lượt xem | A3 | `/related` trả 404 khi slug không có ở ngôn ngữ đang chọn, giống `/posts/:slug` |
 | A5 | Tìm kiếm UC19 (Should) | A3 | Test với cả từ khóa tiếng Việt có dấu |
 | A6 | Hồ sơ cá nhân UC12 (Should, mục 4.4) | A2 | Chuyển từ B sang ở bản 1.1. Avatar dùng lại `UploadModule` |
 | A7 | OAuth UC20 Google, Github (Should) | A2 | Cần đăng ký app OAuth (requirements mục 9) trước ngày làm |
@@ -593,4 +595,5 @@ Cả nhóm chốt các mục này trước khi bắt đầu A1. Cột "Đề xu�
 - Giữ slug cũ hoặc redirect khi đổi tiêu đề.
 - Ghi log ra file, monitoring. Chỉ log ra console.
 - Cấu hình production: PM2, Nginx, MySQL user riêng (phase 5). Phase 3 chỉ cần `.env.example` đủ biến.
+- `trust proxy` theo vị trí của Nginx (phase 5). `app.setup.ts` đang đặt `'loopback'`: chỉ tin `X-Forwarded-For` khi request đến từ 127.0.0.1. Nginx chạy ở container hoặc máy khác thì `req.ip` luôn là IP của Nginx, khi đó lượt xem UC06 (`view:{translationId}:{ip}`) chỉ tính 1 lần / giờ / bản dịch cho cả trang, và rate limit đăng nhập (`auth:login-fail:{ip}:{email}`) dồn mọi người vào chung một IP. Phase 5 phải đặt `trust proxy` theo dải mạng của proxy.
 - Các chức năng ở requirements mục 8.

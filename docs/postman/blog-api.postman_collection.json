@@ -2465,7 +2465,7 @@
     },
     {
       "name": "05 - Public Posts",
-      "description": "C1 - UC05: Danh sách bài viết công khai, Popular, phân trang và validation.",
+      "description": "C1 - UC05: Danh sách bài viết công khai, Popular, phân trang và validation. A4 - UC06: chi tiết bài, bài cùng danh mục.",
       "item": [
         {
           "name": "UC05 - Danh sách bài viết",
@@ -2692,6 +2692,288 @@
                   "key": "limit",
                   "value": "11"
                 }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC06 - Chi tiết bài viết (khách)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Slug thuộc ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success = true', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test('Đủ trường chi tiết', () => {",
+                  "  pm.expect(body.data).to.include.keys('translationId', 'slug', 'title', 'content', 'author', 'category', 'viewCount', 'readingMinutes', 'commentCount', 'availableLanguages', 'canDeleteComments');",
+                  "  pm.expect(body.data.slug).to.eql('huong-dan-angular');",
+                  "});",
+                  "pm.test('Khách không xóa được bình luận', () => pm.expect(body.data.canDeleteComments).to.eql(false));",
+                  "pm.test('availableLanguages có vi và en', () => {",
+                  "  const codes = body.data.availableLanguages.map((item) => item.code);",
+                  "  pm.expect(codes).to.include.members(['vi', 'en']);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/huong-dan-angular",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "huong-dan-angular"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC06 - Chi tiết bài viết (Super Admin)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Slug thuộc ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success = true', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test('Super Admin xóa được bình luận', () => pm.expect(body.data.canDeleteComments).to.eql(true));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/huong-dan-angular",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "huong-dan-angular"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC06 - Chi tiết bản dịch en",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Slug thuộc ngôn ngữ 'en', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'en' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success = true', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test('Đúng bản en', () => pm.expect(body.data.slug).to.eql('angular-tutorial'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/angular-tutorial",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "angular-tutorial"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC06 - Slug thuộc ngôn ngữ khác → 404",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Slug thuộc ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('NOT_FOUND', () => pm.expect(body.code).to.eql('NOT_FOUND'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/angular-tutorial",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "angular-tutorial"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC06 - Bài nháp → 404",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Slug thuộc ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('NOT_FOUND', () => pm.expect(body.code).to.eql('NOT_FOUND'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/ban-nhap",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "ban-nhap"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC06 - Bài viết cùng danh mục",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Slug thuộc ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success = true', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test('Tối đa 4 bài, không có bài đang xem', () => {",
+                  "  pm.expect(body.data).to.be.an('array');",
+                  "  pm.expect(body.data.length).to.be.at.most(4);",
+                  "  pm.expect(body.data.map((post) => post.slug)).to.not.include('huong-dan-angular');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/huong-dan-angular/related",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "huong-dan-angular",
+                "related"
               ]
             }
           }

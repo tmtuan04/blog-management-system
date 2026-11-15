@@ -67,6 +67,24 @@ describe('Response format 6.4 (e2e)', () => {
     });
   });
 
+  describe('Posts', () => {
+    it('phân trang: có meta', async () => {
+      const res = await request(server()).get('/api/v1/posts').expect(200);
+      expectSuccess(res.body);
+      expect(res.body.meta).toEqual(
+        expect.objectContaining({ page: 1, limit: 10 }),
+      );
+    });
+
+    it('chi tiết bài không có: 404 NOT_FOUND', async () => {
+      const res = await request(server())
+        .get('/api/v1/posts/khong-ton-tai')
+        .expect(404);
+      expectError(res.body);
+      expect(res.body.code).toBe('NOT_FOUND');
+    });
+  });
+
   describe('Admin Languages', () => {
     it('thành công', async () => {
       const { token } = await tokenFor(ctx.app, 'super_admin');

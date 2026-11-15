@@ -1,8 +1,16 @@
-import { calculateReadingMinutes, PostsService } from './posts.service';
+import {
+  calculateReadingMinutes,
+  PostsService,
+  RELATED_LIMIT,
+} from './posts.service';
 import { PostTranslation } from './models/post-translation.model';
 import { CategoryTranslation } from '../categories/models/category-translation.model';
+import { Comment } from '../comments/models/comment.model';
 import { LanguagesService } from '../languages/languages.service';
 import { CacheService } from '../../infra/redis/cache.service';
+import { RedisService } from '../../infra/redis/redis.service';
+import { AppException } from '../../common/errors';
+import { CacheTtl } from '../../common/utils/redis-keys';
 import type { RequestLanguage } from '../../common/types/request-context';
 import { Op } from 'sequelize';
 import { isPaginated } from '../../common/utils/paginate';
@@ -85,8 +93,10 @@ describe('PostsService - UC05', () => {
     service = new PostsService(
       postModel as unknown as typeof PostTranslation,
       categoryModel as unknown as typeof CategoryTranslation,
+      {} as typeof Comment,
       languagesService as unknown as LanguagesService,
       cacheService as unknown as CacheService,
+      {} as RedisService,
     );
   });
 
@@ -341,6 +351,245 @@ describe('PostsService - UC05', () => {
     it('bỏ thẻ HTML và thực thể, không dính chữ hai bên thẻ', () => {
       const words = Array.from({ length: 401 }, () => '<b>chữ</b>&nbsp;');
       expect(calculateReadingMinutes('<p>' + words.join('') + '</p>')).toBe(3);
+    });
+  });
+});
+
+describe('PostsService - UC06', () => {
+  let service: PostsService;
+  let postModel: {
+    findOne: jest.Mock;
+    findAll: jest.Mock;
+    findAndCountAll: jest.Mock;
+    increment: jest.Mock;
+  };
+  let categoryModel: { findAll: jest.Mock };
+  let commentModel: { count: jest.Mock };
+  let redisClient: { set: jest.Mock };
+
+  const vi: RequestLanguage = { id: 1, code: 'vi', isDefault: true };
+  const en: RequestLanguage = { id: 2, code: 'en', isDefault: false };
+  const ip = '1.2.3.4';
+
+  const translation = {
+    id: 10,
+    slug: 'huong-dan-angular',
+    title: 'Hướng dẫn Angular',
+    excerpt: null,
+    content: '<p>Nội dung</p>',
+    viewCount: 5,
+    publishedAt: new Date('2026-10-12T00:00:00Z'),
+    post: {
+      id: 3,
+      userId: 7,
+      categoryId: 1,
+      thumbnail: 'uploads/images/a.webp',
+      author: { fullName: 'Nguyễn Văn An', avatar: null },
+    },
+  };
+
+  beforeEach(() => {
+    postModel = {
+      findOne: jest.fn().mockResolvedValue(translation),
+      findAll: jest.fn().mockResolvedValue([
+        { languageId: 2, slug: 'angular-tutorial' },
+        { languageId: 1, slug: 'huong-dan-angular' },
+      ]),
+      findAndCountAll: jest.fn().mockResolvedValue({ rows: [], count: 0 }),
+      increment: jest.fn().mockResolvedValue(undefined),
+    };
+    categoryModel = {
+      findAll: jest.fn().mockResolvedValue([
+        {
+          categoryId: 1,
+          languageId: 1,
+          name: 'Lập trình',
+          slug: 'lap-trinh',
+        },
+      ]),
+    };
+    commentModel = { count: jest.fn().mockResolvedValue(4) };
+    redisClient = { set: jest.fn().mockResolvedValue('OK') };
+
+    service = new PostsService(
+      postModel as unknown as typeof PostTranslation,
+      categoryModel as unknown as typeof CategoryTranslation,
+      commentModel as unknown as typeof Comment,
+      {
+        findActive: jest.fn().mockResolvedValue([
+          { id: 1, code: 'vi', name: 'Tiếng Việt', isDefault: true },
+          { id: 2, code: 'en', name: 'English', isDefault: false },
+        ]),
+      } as unknown as LanguagesService,
+      { wrap: jest.fn() } as unknown as CacheService,
+      { client: redisClient } as unknown as RedisService,
+    );
+  });
+
+  describe('findBySlug', () => {
+    it('chỉ tìm bản dịch published có slug ở ngôn ngữ đang chọn', async () => {
+      await service.findBySlug(vi, 'huong-dan-angular', ip);
+
+      expect(postModel.findOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            slug: 'huong-dan-angular',
+            languageId: 1,
+            status: 'published',
+          },
+        }),
+      );
+    });
+
+    it('không có hoặc chưa đăng thì 404, không tính lượt xem', async () => {
+      postModel.findOne.mockResolvedValue(null);
+
+      const error = await service
+        .findBySlug(vi, 'khong-co', ip)
+        .catch((e: unknown) => e);
+
+      expect(error).toBeInstanceOf(AppException);
+      expect((error as AppException).getStatus()).toBe(404);
+      expect(redisClient.set).not.toHaveBeenCalled();
+    });
+
+    it('trả đủ dữ liệu chi tiết', async () => {
+      const result = await service.findBySlug(vi, 'huong-dan-angular', ip);
+
+      expect(result).toEqual({
+        translationId: 10,
+        slug: 'huong-dan-angular',
+        title: 'Hướng dẫn Angular',
+        excerpt: null,
+        content: '<p>Nội dung</p>',
+        thumbnail: 'uploads/images/a.webp',
+        category: { name: 'Lập trình', slug: 'lap-trinh' },
+        author: { fullName: 'Nguyễn Văn An', avatar: null },
+        publishedAt: '2026-10-12T00:00:00.000Z',
+        viewCount: 6,
+        readingMinutes: 1,
+        commentCount: 4,
+        availableLanguages: [
+          { code: 'vi', name: 'Tiếng Việt', slug: 'huong-dan-angular' },
+          { code: 'en', name: 'English', slug: 'angular-tutorial' },
+        ],
+        canDeleteComments: false,
+      });
+      expect(commentModel.count).toHaveBeenCalledWith({
+        where: { postTranslationId: 10 },
+      });
+    });
+
+    it('availableLanguages chỉ xét bản published ở ngôn ngữ đang hoạt động', async () => {
+      await service.findBySlug(vi, 'huong-dan-angular', ip);
+
+      expect(postModel.findAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            postId: 3,
+            status: 'published',
+            languageId: { [Op.in]: [1, 2] },
+          },
+        }),
+      );
+    });
+
+    it('lần xem đầu của IP thì tăng lượt xem, key view có TTL 1 giờ', async () => {
+      await service.findBySlug(vi, 'huong-dan-angular', ip);
+
+      expect(redisClient.set).toHaveBeenCalledWith(
+        'view:10:1.2.3.4',
+        '1',
+        'EX',
+        CacheTtl.view,
+        'NX',
+      );
+      expect(postModel.increment).toHaveBeenCalledWith('viewCount', {
+        by: 1,
+        where: { id: 10 },
+      });
+    });
+
+    it('IP đã xem trong 1 giờ thì không tăng lượt xem', async () => {
+      redisClient.set.mockResolvedValue(null);
+
+      const result = await service.findBySlug(vi, 'huong-dan-angular', ip);
+
+      expect(postModel.increment).not.toHaveBeenCalled();
+      expect(result.viewCount).toBe(5);
+    });
+
+    it('danh mục chưa có tên ở ngôn ngữ đang chọn thì dùng ngôn ngữ mặc định', async () => {
+      const result = await service.findBySlug(en, 'angular-tutorial', ip);
+
+      expect(categoryModel.findAll).toHaveBeenCalledWith({
+        where: {
+          categoryId: { [Op.in]: [1] },
+          languageId: { [Op.in]: [2, 1] },
+        },
+      });
+      expect(result.category).toEqual({
+        name: 'Lập trình',
+        slug: 'lap-trinh',
+      });
+    });
+
+    it.each([
+      ['khách', undefined, false],
+      ['user thường', { id: 99, role: 'user', jti: 'x' }, false],
+      ['blog owner khác', { id: 8, role: 'blog_owner', jti: 'x' }, false],
+      ['tác giả bài', { id: 7, role: 'blog_owner', jti: 'x' }, true],
+      ['super admin', { id: 1, role: 'super_admin', jti: 'x' }, true],
+    ] as const)(
+      'canDeleteComments với %s là %s',
+      async (_name, viewer, expected) => {
+        const result = await service.findBySlug(
+          vi,
+          'huong-dan-angular',
+          ip,
+          viewer ? { ...viewer } : undefined,
+        );
+
+        expect(result.canDeleteComments).toBe(expected);
+      },
+    );
+  });
+
+  describe('findRelated', () => {
+    it('tối đa 4 bài cùng danh mục, cùng ngôn ngữ, bỏ bài đang xem', async () => {
+      await service.findRelated(vi, 'huong-dan-angular');
+
+      expect(RELATED_LIMIT).toBe(4);
+      expect(postModel.findAndCountAll).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { languageId: 1, status: 'published' },
+          limit: 4,
+          offset: 0,
+          include: [
+            expect.objectContaining({
+              where: { categoryId: 1, id: { [Op.ne]: 3 } },
+            }),
+          ],
+        }),
+      );
+    });
+
+    it('slug không có ở ngôn ngữ đang chọn thì 404', async () => {
+      postModel.findOne.mockResolvedValue(null);
+
+      const error = await service
+        .findRelated(vi, 'khong-co')
+        .catch((e: unknown) => e);
+
+      expect((error as AppException).getStatus()).toBe(404);
+      expect(postModel.findAndCountAll).not.toHaveBeenCalled();
+    });
+
+    it('không tăng lượt xem', async () => {
+      await service.findRelated(vi, 'huong-dan-angular');
+
+      expect(redisClient.set).not.toHaveBeenCalled();
+      expect(postModel.increment).not.toHaveBeenCalled();
     });
   });
 });

@@ -2,15 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Op, type Order, type WhereOptions } from 'sequelize';
 
-import type { RequestLanguage } from '../../common/types/request-context';
+import { AppException } from '../../common/errors';
+import type {
+  AuthUser,
+  RequestLanguage,
+} from '../../common/types/request-context';
 import { paginate, type Paginated } from '../../common/utils/paginate';
 import { CacheTtl, RedisKeys } from '../../common/utils/redis-keys';
 import { CacheService } from '../../infra/redis/cache.service';
+import { RedisService } from '../../infra/redis/redis.service';
 
 import { CategoryTranslation } from '../categories/models/category-translation.model';
+import { Comment } from '../comments/models/comment.model';
 import { LanguagesService } from '../languages/languages.service';
 import { User } from '../users/models/user.model';
 
+import type { PublicPostDetailDto } from './dto/public-post-detail-response.dto';
 import type { PublicPostCardDto } from './dto/public-post-response.dto';
 import { Post } from './models/post.model';
 import { PostTranslation } from './models/post-translation.model';
@@ -21,6 +28,8 @@ export interface PostCardQuery {
   order: Order;
   /** Chỉ lấy bài thuộc danh mục này (UC07) */
   categoryId?: number;
+  /** Bỏ bài này ra khỏi kết quả (bài cùng danh mục, UC06) */
+  excludePostId?: number;
 }
 
 /** Kết quả trước khi gọi paginate(), để cache được bằng JSON */
@@ -30,6 +39,11 @@ export interface PostCardPage {
 }
 
 const WORDS_PER_MINUTE = 200;
+
+/** Số bài cùng danh mục ở trang chi tiết (phase 3 doc mục 4.2) */
+export const RELATED_LIMIT = 4;
+
+const POST_NOT_FOUND = 'Không tìm thấy bài viết';
 
 /** Mới nhất trước; `id` để thứ tự ổn định khi trùng thời điểm đăng */
 export const LATEST_ORDER: Order = [
@@ -44,9 +58,163 @@ export class PostsService {
     private readonly postTranslationModel: typeof PostTranslation,
     @InjectModel(CategoryTranslation)
     private readonly categoryTranslationModel: typeof CategoryTranslation,
+    @InjectModel(Comment)
+    private readonly commentModel: typeof Comment,
     private readonly languagesService: LanguagesService,
     private readonly cache: CacheService,
+    private readonly redis: RedisService,
   ) {}
+
+  /**
+   * GET /posts/:slug (UC06): bản dịch published có slug này ở ngôn ngữ đang chọn.
+   * Không cache: lượt xem, số bình luận và `canDeleteComments` khác nhau theo
+   * từng lần xem.
+   */
+  async findBySlug(
+    language: RequestLanguage,
+    slug: string,
+    ip: string,
+    viewer?: AuthUser,
+  ): Promise<PublicPostDetailDto> {
+    const translation = await this.postTranslationModel.findOne({
+      where: { slug, languageId: language.id, status: 'published' },
+      include: [
+        {
+          model: Post,
+          as: 'post',
+          required: true,
+          include: [
+            {
+              model: User,
+              as: 'author',
+              attributes: ['fullName', 'avatar'],
+              required: true,
+            },
+          ],
+        },
+      ],
+    });
+    if (!translation) {
+      throw AppException.notFound(POST_NOT_FOUND);
+    }
+    const post = translation.post!;
+
+    const [counted, categories, commentCount, availableLanguages] =
+      await Promise.all([
+        this.countView(translation.id, ip),
+        this.loadCategoryNames(language, [post.categoryId]),
+        this.commentModel.count({
+          where: { postTranslationId: translation.id },
+        }),
+        this.findAvailableLanguages(post.id),
+      ]);
+
+    return {
+      translationId: translation.id,
+      slug: translation.slug,
+      title: translation.title,
+      excerpt: translation.excerpt ?? null,
+      content: translation.content,
+      thumbnail: post.thumbnail ?? null,
+      category: categories.get(post.categoryId) ?? null,
+      author: {
+        fullName: post.author?.fullName ?? '',
+        avatar: post.author?.avatar ?? null,
+      },
+      publishedAt: translation.publishedAt
+        ? translation.publishedAt.toISOString()
+        : null,
+      viewCount: Number(translation.viewCount) + (counted ? 1 : 0),
+      readingMinutes: calculateReadingMinutes(translation.content),
+      commentCount,
+      availableLanguages,
+      canDeleteComments:
+        viewer !== undefined &&
+        (viewer.role === 'super_admin' || viewer.id === Number(post.userId)),
+    };
+  }
+
+  /**
+   * GET /posts/:slug/related (UC06): tối đa 4 bài cùng danh mục, có bản dịch
+   * published ở cùng ngôn ngữ, bỏ bài đang xem, mới nhất trước.
+   */
+  async findRelated(
+    language: RequestLanguage,
+    slug: string,
+  ): Promise<PublicPostCardDto[]> {
+    const translation = await this.postTranslationModel.findOne({
+      where: { slug, languageId: language.id, status: 'published' },
+      attributes: ['id', 'postId'],
+      include: [
+        {
+          model: Post,
+          as: 'post',
+          required: true,
+          attributes: ['id', 'categoryId'],
+        },
+      ],
+    });
+    if (!translation) {
+      throw AppException.notFound(POST_NOT_FOUND);
+    }
+
+    const { items } = await this.findCards(language, {
+      limit: RELATED_LIMIT,
+      offset: 0,
+      order: LATEST_ORDER,
+      categoryId: translation.post!.categoryId,
+      excludePostId: translation.post!.id,
+    });
+    return items;
+  }
+
+  /**
+   * Tăng lượt xem của bản dịch, mỗi IP một lần trong 1 giờ (phase 3 doc mục 3.5).
+   * `SET NX` để hai request cùng lúc từ một IP chỉ tính một lần.
+   * Trả true nếu lần xem này được tính.
+   */
+  private async countView(translationId: number, ip: string): Promise<boolean> {
+    const result = await this.redis.client.set(
+      RedisKeys.view(translationId, ip),
+      '1',
+      'EX',
+      CacheTtl.view,
+      'NX',
+    );
+    if (result !== 'OK') return false;
+
+    // Không xóa cache: lượt xem trên thẻ bài được phép trễ tối đa 5 phút
+    await this.postTranslationModel.increment('viewCount', {
+      by: 1,
+      where: { id: translationId },
+    });
+    return true;
+  }
+
+  /** Ngôn ngữ đang hoạt động có bản dịch published của bài, theo thứ tự của findActive() */
+  private async findAvailableLanguages(
+    postId: number,
+  ): Promise<PublicPostDetailDto['availableLanguages']> {
+    const languages = await this.languagesService.findActive();
+    const translations = await this.postTranslationModel.findAll({
+      where: {
+        postId,
+        status: 'published',
+        languageId: { [Op.in]: languages.map((item) => item.id) },
+      },
+      attributes: ['languageId', 'slug'],
+    });
+    const slugs = new Map(
+      translations.map((item) => [item.languageId, item.slug]),
+    );
+    return languages
+      .filter((item) => slugs.has(item.id))
+      .map((item) => ({
+        code: item.code,
+        name: item.name,
+        slug: slugs.get(item.id)!,
+      }));
+  }
 
   /** GET /posts (UC05): bản dịch published ở ngôn ngữ đang chọn, mới nhất trước */
   async findAll(
@@ -100,8 +268,13 @@ export class PostsService {
     language: RequestLanguage,
     query: PostCardQuery,
   ): Promise<PostCardPage> {
-    const postWhere: WhereOptions<Post> =
-      query.categoryId === undefined ? {} : { categoryId: query.categoryId };
+    const postWhere: WhereOptions<Post> = {};
+    if (query.categoryId !== undefined) {
+      Object.assign(postWhere, { categoryId: query.categoryId });
+    }
+    if (query.excludePostId !== undefined) {
+      Object.assign(postWhere, { id: { [Op.ne]: query.excludePostId } });
+    }
 
     const { rows, count } = await this.postTranslationModel.findAndCountAll({
       where: { languageId: language.id, status: 'published' },
