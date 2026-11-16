@@ -6,6 +6,17 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Quản lý danh mục UC15 (B3), nhánh `feature/be-categories`:
+  - Module mới `CategoriesModule` (`AdminCategoriesController`, `AdminCategoriesService`), chỉ Super Admin; route public UC07 thêm vào module này ở việc C2.
+  - `GET /admin/categories`: phân trang, mỗi dòng `id`, `translations [{ code, name, slug }]` (ngôn ngữ mặc định đứng đầu, ngôn ngữ chưa có tên thì không có trong mảng), `postCount` (bài mọi trạng thái), `createdAt`, `updatedAt`. `?q=` tìm `LIKE` trong tên ở mọi ngôn ngữ (có `escapeLike`), khớp ô tìm của màn `admin/categories.html`. Bản dịch và số bài của cả trang lấy bằng 2 truy vấn gộp.
+  - `POST /admin/categories`: body `{ names: { vi, en, ... } }`. Tên ngôn ngữ mặc định bắt buộc (“Nhập tên danh mục ở ngôn ngữ mặc định (Tiếng Việt).”), tên khác rỗng dài 2-150 ký tự, mã ngôn ngữ không có → 400; lỗi ghi field `names.<code>`, báo mọi lỗi một lần. Tên rỗng thì không tạo dòng `category_translations`. Slug tự sinh, trùng trong cùng ngôn ngữ thì thêm `-2`. Tạo danh mục và bản dịch trong một transaction. 201.
+  - `PATCH /admin/categories/:id`: ràng buộc như POST; ngôn ngữ không gửi thì giữ nguyên, tên rỗng ở ngôn ngữ không mặc định thì xóa bản dịch, đổi tên thì sinh lại slug. Không có → 404.
+  - `DELETE /admin/categories/:id`: còn bài → 409 `CATEGORY_IN_USE` (“Danh mục đang có N bài viết. Chuyển các bài viết sang danh mục khác rồi thử xóa lại.”, khớp hộp “Không thể xóa” của màn HTML); bản dịch xóa theo khóa ngoại CASCADE. Không có → 404.
+  - Mọi thao tác ghi xóa cache `cache:categories:` và `cache:posts:`.
+  - Test: unit `admin-categories.service.spec.ts` (16 test, service phủ 100% dòng); e2e mới `test/admin-categories.e2e-spec.ts` (401, 403, validate, slug trùng, `q`, 404, 409, xóa cache); `response-format.e2e-spec.ts` thêm nhóm Admin Categories. Postman folder mới `06 - Admin Categories` (9 request, tự dọn danh mục vừa tạo; biến `newCategoryId`, `usedCategoryId`).
+  - Phase 3 doc: mục 4.6 ghi thêm `?q=` và cách PATCH xử lý ngôn ngữ không gửi; mục 8: B3 chuyển sang đã xong, thêm ghi chú 16/11 (C2 bắt đầu được, việc đang chặn còn B6).
+  - Lệch cần sửa sau: màn `admin/categories.html` đặt `maxlength="100"` cho ô tên, còn doc và cột DB là 150; backend theo doc (150).
+
 - Chi tiết bài viết UC06 (A4), nhánh `feature/be-post-detail`:
   - `GET /posts/:slug` (public, `optionalAuth`): bản dịch `published` có slug này ở ngôn ngữ đang chọn; không có, đang `draft` / `archived`, hoặc slug thuộc ngôn ngữ khác → 404 `NOT_FOUND`. Trả `translationId`, `slug`, `title`, `excerpt`, `content`, `thumbnail`, `category { name, slug }` (thiếu tên ở ngôn ngữ đang chọn thì dùng ngôn ngữ mặc định), `author { fullName, avatar }`, `publishedAt`, `viewCount`, `readingMinutes`, `commentCount` (gồm cả trả lời), `availableLanguages [{ code, name, slug }]` (ngôn ngữ đang hoạt động có bản `published`, gồm cả ngôn ngữ đang xem, mặc định đứng đầu), `canDeleteComments` (tác giả bài hoặc Super Admin; khách hoặc token lỗi thì `false`). Không cache.
   - Lượt xem: `SET view:{translationId}:{ip} NX EX 3600`, chỉ khi đặt được key mới `viewCount + 1`, nên mỗi IP tính 1 lần / giờ / bản dịch kể cả khi gửi hai request cùng lúc. IP lấy từ `req.ip` (đã `trust proxy` loopback). `viewCount` trả về đã gồm lượt vừa tính. Không xóa cache danh sách.

@@ -324,9 +324,9 @@ Mọi route có quyền `admin`.
 
 | Method | Route | Ghi chú |
 | --- | --- | --- |
-| GET | `/admin/categories` | Mọi danh mục: `translations [{ code, name, slug }]` theo mọi ngôn ngữ, `postCount` (mọi trạng thái). Có phân trang |
+| GET | `/admin/categories` | Mọi danh mục: `translations [{ code, name, slug }]` theo mọi ngôn ngữ (mặc định đứng đầu), `postCount` (mọi trạng thái). `?q=` tìm `LIKE` trong tên ở mọi ngôn ngữ (ô tìm của màn `admin/categories.html`). Có phân trang |
 | POST | `/admin/categories` | Body `{ names: { vi: "...", en: "" } }`. Tên ngôn ngữ mặc định bắt buộc (2-150 ký tự). Tên rỗng thì không tạo dòng `category_translations`. Slug tự sinh |
-| PATCH | `/admin/categories/:id` | Như POST. Xóa tên của ngôn ngữ không mặc định thì xóa dòng bản dịch đó |
+| PATCH | `/admin/categories/:id` | Như POST. Ngôn ngữ không có trong `names` thì giữ nguyên. Xóa tên của ngôn ngữ không mặc định thì xóa dòng bản dịch đó. Đổi tên thì sinh lại slug. Lỗi ghi field dạng `names.vi` |
 | DELETE | `/admin/categories/:id` | Còn bài → 409 `CATEGORY_IN_USE` |
 
 **Ngôn ngữ (UC16)**
@@ -467,7 +467,7 @@ Gộp cột "Chờ" của cả ba người. Việc trong cùng một đợt làm
 | Đợt | Việc | Bắt đầu được khi | Mở đường cho |
 | --- | --- | --- | --- |
 | 1 | A1 (**đã xong**) | Ngay từ đầu | Mọi việc còn lại |
-| 2 | A2 (**đã xong**), A3 (**đã xong**), B1 (**đã xong**), B2 (**đã xong**), B3, B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
+| 2 | A2 (**đã xong**), A3 (**đã xong**), B1 (**đã xong**), B2 (**đã xong**), B3 (**đã xong**), B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
 | 3 | A4 (**đã xong**), A5, A6, A7, B4, B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
 | 4 | C2 | B3 và C1 đã merge | |
 | 5 | C3 (kiểm tra tổng) | A4 và B6 đã merge. Nên đợi mọi việc Must khác merge để kiểm tra một lần | A8, các PR sửa lỗi của A và B |
@@ -478,6 +478,8 @@ Cập nhật 05/11: B1 đã merge nên B4 và C1 bắt đầu được.
 Cập nhật 14/11: A3 đã merge xong (PR bản dịch #48, #49 ngày 07/11, #50 ngày 11/11) nên A4, A5 bắt đầu được. Việc đang chặn nhiều người nhất là **A4** (chặn C3) và **B3** (chặn C2).
 
 Cập nhật 15/11: A4 xong, C3 chỉ còn chờ B6. Việc đang chặn nhiều người nhất là **B3** (chặn C2) và **B6** (chặn C3).
+
+Cập nhật 16/11: B3 xong nên C2 bắt đầu được. Việc đang chặn nhiều người nhất còn **B6** (chặn C3).
 
 ### 8.3. Việc của từng người
 
@@ -500,7 +502,7 @@ Cập nhật 15/11: A4 xong, C3 chỉ còn chờ B6. Việc đang chặn nhiều
 | --- | --- | --- | --- |
 | B1 (**đã xong**) | Seeders (mục 5), script `extract-i18n.mjs` | A1 | **Merge sớm** vì A3, C1 cần dữ liệu |
 | B2 (**đã xong**) | Ngôn ngữ UC16 (admin, mở rộng module mẫu) + bản dịch giao diện UC17 (admin + `GET /ui-translations/:code`) | A1 | Thêm ngôn ngữ thì sao chép UI translation |
-| B3 | Danh mục UC15 (admin) | A1 | Tạo module `categories`. C2 thêm route public vào đây |
+| B3 (**đã xong**) | Danh mục UC15 (admin) | A1 | Tạo module `categories`. C2 thêm route public vào đây |
 | B4 | Bình luận UC08 | A1, B1 | Quyền xóa cần biết tác giả bài qua `post_translations → posts.user_id` |
 | B5 | Người dùng UC14 | A2 | Thu hồi refresh token dùng hàm của A2 |
 | B6 | Trang tĩnh UC11 + UC18 | A1 | |
