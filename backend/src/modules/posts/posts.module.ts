@@ -12,6 +12,7 @@ import { PostTranslation } from './models/post-translation.model';
 import { Post } from './models/post.model';
 import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
+import { SearchController } from './search.controller';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { PostsService } from './posts.service';
     // LanguagesService: ngôn ngữ mặc định (có cache) để lấy tên danh mục dự phòng
     LanguagesModule,
   ],
-  controllers: [AdminPostsController, PostsController],
+  controllers: [AdminPostsController, PostsController, SearchController],
   providers: [AdminPostsService, PostsService],
   // C2 dùng PostsService.findCards cho GET /categories/:slug/posts
   exports: [PostsService],

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op, type Order, type WhereOptions } from 'sequelize';
+import { literal, Op, type Order, type WhereOptions } from 'sequelize';
 
 import { AppException } from '../../common/errors';
 import type {
@@ -30,6 +30,11 @@ export interface PostCardQuery {
   categoryId?: number;
   /** Bỏ bài này ra khỏi kết quả (bài cùng danh mục, UC06) */
   excludePostId?: number;
+  /**
+   * Biểu thức đã qua `toBooleanSearchTerm`, lọc bằng FULLTEXT (UC19). Truyền
+   * vào SQL bằng replacement `:search`, nên `order` dùng được `SEARCH_ORDER`.
+   */
+  search?: string;
 }
 
 /** Kết quả trước khi gọi paginate(), để cache được bằng JSON */
@@ -50,6 +55,41 @@ export const LATEST_ORDER: Order = [
   ['publishedAt', 'DESC'],
   ['id', 'DESC'],
 ];
+
+/**
+ * Điểm liên quan của FULLTEXT `ft_post_translations_search` (parser ngram).
+ * Danh sách cột phải trùng đúng thứ tự cột của index thì MySQL mới dùng index.
+ */
+const SEARCH_MATCH =
+  'MATCH (`PostTranslation`.`title`, `PostTranslation`.`excerpt`, `PostTranslation`.`content`) AGAINST (:search IN BOOLEAN MODE)';
+
+/** Liên quan nhất trước; trùng điểm thì mới nhất trước */
+const SEARCH_ORDER: Order = [
+  [literal(SEARCH_MATCH), 'DESC'],
+  ...(LATEST_ORDER as [string, string][]),
+];
+
+/**
+ * Mọi ký tự không phải chữ (kể cả dấu tổ hợp) hoặc số là chỗ tách từ. Toán tử
+ * của BOOLEAN MODE (`+ - < > ( ) ~ * " @`) cũng bị bỏ ở bước này.
+ */
+const WORD_SEPARATOR = /[^\p{L}\p{M}\p{N}]+/u;
+
+/** Bằng `ngram_token_size`: từ ngắn hơn không có token nào trong index */
+const MIN_WORD_LENGTH = 2;
+
+/**
+ * Từ khóa người dùng gõ thành biểu thức cho `AGAINST (... IN BOOLEAN MODE)`:
+ * mỗi từ từ 2 ký tự trở lên thêm `+` để kết quả phải chứa đủ mọi từ, từ 1 ký tự
+ * bị bỏ vì không bao giờ khớp. Trả chuỗi rỗng nếu không còn từ nào để tìm.
+ */
+export function toBooleanSearchTerm(keyword: string): string {
+  return keyword
+    .split(WORD_SEPARATOR)
+    .filter((word) => [...word].length >= MIN_WORD_LENGTH)
+    .map((word) => `+${word}`)
+    .join(' ');
+}
 
 @Injectable()
 export class PostsService {
@@ -260,9 +300,33 @@ export class PostsService {
   }
 
   /**
+   * GET /search (UC19): bản dịch published ở ngôn ngữ đang chọn khớp từ khóa
+   * trong tiêu đề, tóm tắt, nội dung; liên quan nhất trước. Không cache vì từ
+   * khóa quá đa dạng (phase 3 doc mục 3.5 không có key cho tìm kiếm).
+   */
+  async search(
+    language: RequestLanguage,
+    keyword: string,
+    page = 1,
+    limit = 10,
+  ): Promise<Paginated<PublicPostCardDto>> {
+    const search = toBooleanSearchTerm(keyword);
+    if (!search) {
+      return paginate([], 0, { page, limit });
+    }
+    const { items, total } = await this.findCards(language, {
+      limit,
+      offset: (page - 1) * limit,
+      order: SEARCH_ORDER,
+      search,
+    });
+    return paginate(items, total, { page, limit });
+  }
+
+  /**
    * Thẻ bài của các bản dịch published ở ngôn ngữ đang chọn. Dùng chung cho
-   * trang chủ, sidebar và trang danh mục (C2 gọi với `categoryId`). Không cache,
-   * nơi gọi tự cache theo key của mình.
+   * trang chủ, sidebar, trang danh mục (C2 gọi với `categoryId`) và tìm kiếm
+   * (`search`). Không cache, nơi gọi tự cache theo key của mình.
    */
   async findCards(
     language: RequestLanguage,
@@ -276,8 +340,19 @@ export class PostsService {
       Object.assign(postWhere, { id: { [Op.ne]: query.excludePostId } });
     }
 
+    const where: WhereOptions<PostTranslation> = {
+      languageId: language.id,
+      status: 'published',
+    };
+    if (query.search !== undefined) {
+      Object.assign(where, { [Op.and]: [literal(SEARCH_MATCH)] });
+    }
+
     const { rows, count } = await this.postTranslationModel.findAndCountAll({
-      where: { languageId: language.id, status: 'published' },
+      where,
+      ...(query.search !== undefined && {
+        replacements: { search: query.search },
+      }),
       include: [
         {
           model: Post,
