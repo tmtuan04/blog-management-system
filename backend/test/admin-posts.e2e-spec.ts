@@ -272,11 +272,10 @@ describe('Admin Posts (e2e)', () => {
         .set(bearer(owner.token))
         .expect(200);
       expect(allMine.body.meta.total).toBe(2);
-      expect(
-        allMine.body.data.every(
-          (row: { title: string }) => !row.title.includes('nguoi khac'),
-        ),
-      ).toBe(true);
+      const mineRows = allMine.body.data as { title: string }[];
+      expect(mineRows.every((row) => !row.title.includes('nguoi khac'))).toBe(
+        true,
+      );
 
       const drafts = await request(server())
         .get(api())

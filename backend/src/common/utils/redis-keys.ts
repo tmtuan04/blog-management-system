@@ -15,6 +15,10 @@ export const RedisKeys = {
   view: (translationId: number, ip: string) => `view:${translationId}:${ip}`,
 
   // Cache response
+  postsList: (code: string, page: number, limit: number) =>
+    `cache:posts:list:${code}:${page}:${limit}`,
+  postsPopular: (code: string, limit: number) =>
+    `cache:posts:popular:${code}:${limit}`,
   languagesActive: () => 'cache:languages:active',
   uiTranslations: (code: string) => `cache:ui:${code}`,
 } as const;
