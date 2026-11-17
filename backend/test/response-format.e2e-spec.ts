@@ -110,6 +110,43 @@ describe('Response format 6.4 (e2e)', () => {
     });
   });
 
+  describe('Admin Categories', () => {
+    it('thành công', async () => {
+      const { token } = await tokenFor(ctx.app, 'super_admin');
+      const res = await request(server())
+        .post('/api/v1/admin/categories')
+        .set(bearer(token))
+        .send({ names: { vi: 'Định dạng phản hồi' } })
+        .expect(201);
+      expectSuccess(res.body);
+    });
+
+    it('phân trang có meta', async () => {
+      const { token } = await tokenFor(ctx.app, 'super_admin');
+      const res = await request(server())
+        .get('/api/v1/admin/categories?limit=5')
+        .set(bearer(token))
+        .expect(200);
+      expectSuccess(res.body);
+      expect(res.body.meta).toEqual(
+        expect.objectContaining({ page: 1, limit: 5 }),
+      );
+    });
+
+    it('lỗi validate có field dạng names.<code>', async () => {
+      const { token } = await tokenFor(ctx.app, 'super_admin');
+      const res = await request(server())
+        .post('/api/v1/admin/categories')
+        .set(bearer(token))
+        .send({ names: { en: 'Travel' } })
+        .expect(400);
+      expectError(res.body);
+      expect(res.body.errors).toEqual([
+        { field: 'names.vi', message: expect.any(String) },
+      ]);
+    });
+  });
+
   describe('UI Translations', () => {
     it('thành công', async () => {
       const res = await request(server())
