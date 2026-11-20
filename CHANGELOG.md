@@ -6,6 +6,16 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Danh mục công khai UC07 (C2), nhánh `feature/be-categories-public-c2`:
+  - `CategoriesController` và `CategoriesService` thêm vào `CategoriesModule` (module import thêm `LanguagesModule`, `PostsModule`, model `PostTranslation`). Cả 3 route đều public.
+  - `GET /categories`: mọi danh mục, sắp theo `id`. Mỗi dòng có `id`, `name`, `slug` theo ngôn ngữ đang chọn (thiếu thì dùng ngôn ngữ mặc định) và `postCount` (số bản dịch `published` ở ngôn ngữ đang chọn, đếm cho mọi danh mục bằng một truy vấn `GROUP BY`). Cache `cache:categories:list:{code}` 10 phút.
+  - `GET /categories/:slug`: tìm theo slug của ngôn ngữ đang chọn. Danh mục chưa có tên ở ngôn ngữ đó thì nhận slug của ngôn ngữ mặc định; slug mặc định của danh mục đã có bản dịch thì 404. Trả `id`, `name`, `slug`, `postCount`, `translations [{ code, slug }]` (ngôn ngữ đang hoạt động có bản dịch). Không có → 404 `NOT_FOUND` (“Không tìm thấy danh mục”). Cache `cache:categories:detail:{code}:{slug}` 10 phút.
+  - `GET /categories/:slug/posts`: thẻ bài như `GET /posts`, lọc theo danh mục, mới nhất trước, phân trang mặc định 10, `limit` > 50 → 400; tìm danh mục theo cùng quy tắc slug như trên. Dùng lại `PostsService.findCards`. Cache `cache:posts:category:{code}:{categoryId}:{page}:{limit}` 5 phút.
+  - Các key nằm dưới prefix `cache:categories:` và `cache:posts:`, nên đã được admin bài viết (A3) và admin danh mục (B3) xóa khi ghi.
+  - Phần nền: `RedisKeys.categoriesList`, `RedisKeys.categoryDetail`, `RedisKeys.categoryPosts` trong `common/utils/redis-keys.ts`. Response DTO `PublicCategoryDto`, `PublicCategoryDetailDto`.
+  - Test: unit `categories.service.spec.ts` (10 test, service phủ 95% dòng); e2e mới `test/categories.e2e-spec.ts` (11 test: danh sách rỗng, `postCount`, tên dự phòng, chi tiết và `translations`, slug dự phòng, phân trang, chỉ bản `published`, 400, 404). Postman folder mới `07 - Public Categories` (9 request).
+  - Phase 3 doc mục 8: C2 chuyển sang đã xong, thêm ghi chú 20/11 (việc đang chặn vẫn là B6).
+
 - Quản lý danh mục UC15 (B3), nhánh `feature/be-categories`:
   - Module mới `CategoriesModule` (`AdminCategoriesController`, `AdminCategoriesService`), chỉ Super Admin; route public UC07 thêm vào module này ở việc C2.
   - `GET /admin/categories`: phân trang, mỗi dòng `id`, `translations [{ code, name, slug }]` (ngôn ngữ mặc định đứng đầu, ngôn ngữ chưa có tên thì không có trong mảng), `postCount` (bài mọi trạng thái), `createdAt`, `updatedAt`. `?q=` tìm `LIKE` trong tên ở mọi ngôn ngữ (có `escapeLike`), khớp ô tìm của màn `admin/categories.html`. Bản dịch và số bài của cả trang lấy bằng 2 truy vấn gộp.
