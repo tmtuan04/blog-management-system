@@ -469,7 +469,7 @@ Gộp cột "Chờ" của cả ba người. Việc trong cùng một đợt làm
 | 1 | A1 (**đã xong**) | Ngay từ đầu | Mọi việc còn lại |
 | 2 | A2 (**đã xong**), A3 (**đã xong**), B1 (**đã xong**), B2 (**đã xong**), B3 (**đã xong**), B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
 | 3 | A4 (**đã xong**), A5, A6, A7, B4, B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
-| 4 | C2 | B3 và C1 đã merge | |
+| 4 | C2 (**đã xong**) | B3 và C1 đã merge | |
 | 5 | C3 (kiểm tra tổng) | A4 và B6 đã merge. Nên đợi mọi việc Must khác merge để kiểm tra một lần | A8, các PR sửa lỗi của A và B |
 | 6 | A8 | C3 đã merge | Kết thúc phase: merge `dev` → `master` |
 
@@ -480,6 +480,8 @@ Cập nhật 14/11: A3 đã merge xong (PR bản dịch #48, #49 ngày 07/11, #5
 Cập nhật 15/11: A4 xong, C3 chỉ còn chờ B6. Việc đang chặn nhiều người nhất là **B3** (chặn C2) và **B6** (chặn C3).
 
 Cập nhật 16/11: B3 xong nên C2 bắt đầu được. Việc đang chặn nhiều người nhất còn **B6** (chặn C3).
+
+Cập nhật 20/11: C2 xong, C chỉ còn C3. Việc đang chặn nhiều người nhất vẫn là **B6** (chặn C3).
 
 ### 8.3. Việc của từng người
 
@@ -512,7 +514,7 @@ Cập nhật 16/11: B3 xong nên C2 bắt đầu được. Việc đang chặn n
 | # | Việc | Chờ | Ghi chú |
 | --- | --- | --- | --- |
 | C1 (**đã xong**) | Chạy thử migrate, seed, rollback trên database trống (việc còn lại của phase 1), báo lỗi cho A và B. Sau đó làm `GET /posts`, `GET /posts/popular` (UC05) có cache | A1, B1 | Copy cách làm của module mẫu. Gặp chỗ chưa rõ thì hỏi A trước khi làm |
-| C2 | `GET /categories`, `/categories/:slug`, `/categories/:slug/posts` (UC07) có cache | B3, C1 | Dùng lại hàm truy vấn thẻ bài của C1 |
+| C2 (**đã xong**) | `GET /categories`, `/categories/:slug`, `/categories/:slug/posts` (UC07) có cache | B3, C1 | Dùng lại hàm truy vấn thẻ bài của C1 |
 | C3 | Kiểm tra tổng: chạy cả Postman collection bằng Postman CLI trên dữ liệu vừa seed; đối chiếu từng API với format 6.4 và bảng mục 4; viết `db:seed:perf` và đo `GET /posts`, `/categories/:slug/posts`, `/search`, `/admin/posts` với 10.000 bài; ghi lỗi thành danh sách, lỗi trong một module chuyển người làm module đó, lỗi phần nền chuyển A | A4, B6 | Làm sau cùng. Ghi danh sách lỗi và số đo thời gian vào mô tả PR |
 
 Hướng dẫn từng bước (cài máy, chạy backend, quy trình làm một module, test, Postman, Git): [phase-3-huong-dan.md](phase-3-huong-dan.md).

@@ -19,6 +19,19 @@ export const RedisKeys = {
     `cache:posts:list:${code}:${page}:${limit}`,
   postsPopular: (code: string, limit: number) =>
     `cache:posts:popular:${code}:${limit}`,
+
+  // UC07 - Danh mục công khai
+  categoriesList: (code: string) => `cache:categories:list:${code}`,
+
+  categoryDetail: (code: string, slug: string) =>
+    `cache:categories:detail:${code}:${slug}`,
+
+  categoryPosts: (
+    code: string,
+    categoryId: number,
+    page: number,
+    limit: number,
+  ) => `cache:posts:category:${code}:${categoryId}:${page}:${limit}`,
   languagesActive: () => 'cache:languages:active',
   uiTranslations: (code: string) => `cache:ui:${code}`,
 } as const;
