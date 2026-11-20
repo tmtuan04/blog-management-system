@@ -20,13 +20,6 @@ import { TestContext, createTestApp } from './helpers/app';
 import { tokenFor } from './helpers/auth';
 import { resetDatabase } from './helpers/db';
 
-// Workaround lỗi Jest ESM / sanitize-html có sẵn của dự án.
-// Không dùng mock này để kiểm thử tính năng lọc HTML.
-jest.mock('sanitize-html', () => ({
-  __esModule: true,
-  default: jest.fn((html: string) => html),
-}));
-
 interface CategoryData {
   id: number;
   name: string;
