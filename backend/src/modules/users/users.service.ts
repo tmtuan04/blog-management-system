@@ -29,8 +29,15 @@ export class UsersService {
     return model.findOne({ where: { email }, include: [Role] });
   }
 
-  findById(id: number): Promise<User | null> {
-    return this.userModel.findByPk(id, { include: [Role] });
+  /** Kèm role. `withPassword` để biết tài khoản đã có mật khẩu chưa (UC12) */
+  findById(
+    id: number,
+    options: { withPassword?: boolean } = {},
+  ): Promise<User | null> {
+    const model = options.withPassword
+      ? this.userModel.scope('withPassword')
+      : this.userModel;
+    return model.findByPk(id, { include: [Role] });
   }
 
   async emailExists(email: string): Promise<boolean> {
@@ -54,5 +61,13 @@ export class UsersService {
 
   async updatePassword(id: number, passwordHash: string): Promise<void> {
     await this.userModel.update({ passwordHash }, { where: { id } });
+  }
+
+  /** UC12: chỉ nhận họ tên và avatar, email và role không đổi qua đây */
+  async updateProfile(
+    id: number,
+    values: Partial<Pick<User, 'fullName' | 'avatar'>>,
+  ): Promise<void> {
+    await this.userModel.update(values, { where: { id } });
   }
 }

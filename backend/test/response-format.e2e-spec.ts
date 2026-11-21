@@ -1,4 +1,8 @@
 import request from 'supertest';
+import { Category } from '../src/modules/categories/models/category.model';
+import { Language } from '../src/modules/languages/models/language.model';
+import { Post } from '../src/modules/posts/models/post.model';
+import { PostTranslation } from '../src/modules/posts/models/post-translation.model';
 import { TestContext, createTestApp } from './helpers/app';
 import { bearer, tokenFor } from './helpers/auth';
 import { resetDatabase } from './helpers/db';
@@ -82,6 +86,31 @@ describe('Response format 6.4 (e2e)', () => {
         .expect(404);
       expectError(res.body);
       expect(res.body.code).toBe('NOT_FOUND');
+    });
+  });
+
+  describe('Search', () => {
+    it('phân trang: có meta', async () => {
+      const res = await request(server())
+        .get('/api/v1/search')
+        .query({ q: 'lập trình' })
+        .expect(200);
+      expectSuccess(res.body);
+      expect(res.body.meta).toEqual(
+        expect.objectContaining({ page: 1, limit: 10, total: 0 }),
+      );
+    });
+
+    it('lỗi validate có field q', async () => {
+      const res = await request(server())
+        .get('/api/v1/search')
+        .query({ q: 'a' })
+        .expect(400);
+      expectError(res.body);
+      expect(res.body.code).toBe('VALIDATION_ERROR');
+      expect(res.body.errors).toEqual([
+        expect.objectContaining({ field: 'q' }),
+      ]);
     });
   });
 
@@ -207,6 +236,93 @@ describe('Response format 6.4 (e2e)', () => {
     it('401 khi không có token', async () => {
       const res = await request(server()).get('/api/v1/auth/me').expect(401);
       expectError(res.body);
+    });
+  });
+
+  describe('Comments', () => {
+    let translationId: number;
+
+    beforeAll(async () => {
+      const { user: author } = await tokenFor(ctx.app, 'blog_owner');
+      const vi = (await Language.findOne({ where: { code: 'vi' } }))!;
+      const category = await Category.create({});
+      const post = await Post.create({
+        userId: author.id,
+        languageId: vi.id,
+        categoryId: category.id,
+      });
+      const translation = await PostTranslation.create({
+        postId: post.id,
+        languageId: vi.id,
+        title: 'Định dạng bình luận',
+        slug: 'dinh-dang-binh-luan',
+        excerpt: null,
+        content: '<p>Nội dung</p>',
+        status: 'published',
+        viewCount: 0,
+        publishedAt: new Date(),
+      });
+      translationId = Number(translation.id);
+    });
+
+    it('thành công: 201 trả bình luận vừa tạo', async () => {
+      const { token } = await tokenFor(ctx.app, 'user');
+      const res = await request(server())
+        .post(`/api/v1/post-translations/${translationId}/comments`)
+        .set(bearer(token))
+        .send({ content: 'Bài viết rất hay!' })
+        .expect(201);
+      expectSuccess(res.body);
+      expect(res.body).not.toHaveProperty('meta');
+    });
+
+    it('phân trang có meta', async () => {
+      const res = await request(server())
+        .get(`/api/v1/post-translations/${translationId}/comments`)
+        .expect(200);
+      expectSuccess(res.body);
+      expect(res.body.meta).toEqual(
+        expect.objectContaining({ page: 1, limit: 20 }),
+      );
+    });
+
+    it('lỗi validate có errors[] với field', async () => {
+      const { token } = await tokenFor(ctx.app, 'user');
+      const res = await request(server())
+        .post(`/api/v1/post-translations/${translationId}/comments`)
+        .set(bearer(token))
+        .send({ content: '<b>hi</b>' })
+        .expect(400);
+      expectError(res.body);
+      expect(res.body.code).toBe('VALIDATION_ERROR');
+      expect(res.body.errors).toEqual([
+        { field: 'content', message: expect.any(String) },
+      ]);
+    });
+  });
+
+  describe('Profile', () => {
+    it('thành công', async () => {
+      const { token } = await tokenFor(ctx.app, 'user');
+      const res = await request(server())
+        .get('/api/v1/profile')
+        .set(bearer(token))
+        .expect(200);
+      expectSuccess(res.body);
+      expect(res.body).not.toHaveProperty('meta');
+    });
+
+    it('lỗi validate có errors[] với field', async () => {
+      const { token } = await tokenFor(ctx.app, 'user');
+      const res = await request(server())
+        .patch('/api/v1/profile/password')
+        .set(bearer(token))
+        .send({ newPassword: 'NewPass123', confirmPassword: 'NewPass123' })
+        .expect(400);
+      expectError(res.body);
+      expect(res.body.errors).toEqual([
+        { field: 'currentPassword', message: expect.any(String) },
+      ]);
     });
   });
 

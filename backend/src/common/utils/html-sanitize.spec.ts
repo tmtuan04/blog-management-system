@@ -69,4 +69,28 @@ describe('containsHtml', () => {
     expect(containsHtml('Hay quá <b>!</b>')).toBe(true);
     expect(containsHtml('2 < 3 và 5 > 4')).toBe(false);
   });
+
+  it.each([
+    '<script>alert(1)</script>',
+    '</div>',
+    '<br/>',
+    '<IMG SRC=x onerror=alert(1)>',
+    '<svg/onload=alert(1)>',
+    `<a href="javascript:x" title='t'>link</a>`,
+    '<my-widget>',
+    'trước <!-- comment -->',
+  ])('coi %s là HTML', (text) => {
+    expect(containsHtml(text)).toBe(true);
+  });
+
+  it.each([
+    'Nên dùng List<String> thay vì mảng',
+    'Map<String, Integer>',
+    'nếu a<b thì c>d',
+    'Box<T> và Pair<K, V>',
+    'mũi tên <-- và -->',
+    '<3 bài này',
+  ])('không coi %s là HTML', (text) => {
+    expect(containsHtml(text)).toBe(false);
+  });
 });

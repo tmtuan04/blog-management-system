@@ -3,7 +3,7 @@ import { User } from './models/user.model';
 import { UsersService } from './users.service';
 
 describe('UsersService', () => {
-  const scoped = { findOne: jest.fn() };
+  const scoped = { findOne: jest.fn(), findByPk: jest.fn() };
   const userModel = {
     scope: jest.fn(() => scoped),
     findOne: jest.fn(),
@@ -34,6 +34,21 @@ describe('UsersService', () => {
   it('findById kèm role', async () => {
     await service.findById(3);
     expect(userModel.findByPk).toHaveBeenCalledWith(3, { include: [Role] });
+    expect(userModel.scope).not.toHaveBeenCalled();
+  });
+
+  it('findById withPassword thì dùng scope withPassword', async () => {
+    await service.findById(3, { withPassword: true });
+    expect(userModel.scope).toHaveBeenCalledWith('withPassword');
+    expect(scoped.findByPk).toHaveBeenCalledWith(3, { include: [Role] });
+  });
+
+  it('updateProfile chỉ ghi các field được truyền', async () => {
+    await service.updateProfile(3, { fullName: 'An' });
+    expect(userModel.update).toHaveBeenCalledWith(
+      { fullName: 'An' },
+      { where: { id: 3 } },
+    );
   });
 
   it('emailExists', async () => {

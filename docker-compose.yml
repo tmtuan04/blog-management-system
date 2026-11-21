@@ -20,6 +20,10 @@ services:
       - --collation-server=utf8mb4_unicode_ci
       # FULLTEXT ngram: tách từ theo cụm 2 ký tự (mặc định), giữ rõ ở đây để không phụ thuộc bản image
       - --ngram_token_size=2
+      # Tắt stopword cho FULLTEXT: ngram bỏ mọi token chứa stopword (a, i...), làm mất
+      # các cụm có a/à/ậ/i/ì. Đặt ở server để TRUNCATE, OPTIMIZE, ALTER dựng lại index
+      # cũng không bật lại stopword (UC19, migration 20261117000001)
+      - --innodb_ft_enable_stopword=OFF
     ports:
       - "${MYSQL_HOST_PORT:-3306}:3306"
     volumes:

@@ -197,6 +197,7 @@ Cache bị xóa khi dữ liệu liên quan thay đổi (requirements 6.2). `Cach
 | Danh mục | `cache:categories:`, `cache:posts:` (vì tên danh mục nằm trong thẻ bài) |
 | Ngôn ngữ | `cache:` (toàn bộ) |
 | UI translation | `cache:ui:` |
+| Họ tên, avatar của tài khoản (UC12) | `cache:posts:` (vì thẻ bài có `author { fullName, avatar }`, avatar cũ bị xóa file) |
 | Khóa tài khoản | `auth:user-active:{userId}` |
 
 Lượt xem không xóa cache: số lượt xem trên thẻ bài được phép trễ tối đa 5 phút.
@@ -263,7 +264,7 @@ Mọi route có prefix `/api/v1`. Cột "Quyền": `public` (không cần đăng
 | GET | `/categories` | public | UC07 | C | sidebar, chip | Mọi danh mục, tên và slug theo ngôn ngữ đang chọn, `postCount` (số bản dịch `published` ở ngôn ngữ đó). Cache |
 | GET | `/categories/:slug` | public | UC07 | C | `category` | Danh mục theo slug ở ngôn ngữ đang chọn + `postCount` + `translations [{ code, slug }]` để phase 4 đổi slug khi đổi ngôn ngữ (UC09). Thiếu tên ở ngôn ngữ đang chọn thì dùng slug của ngôn ngữ mặc định. Không có → 404 |
 | GET | `/categories/:slug/posts` | public | UC07 | C | `category` | Như `GET /posts`, lọc theo danh mục. Cache |
-| GET | `/search` | public | UC19 | A | `search` | `?q=` 2-100 ký tự (trim trước khi kiểm tra), sai → 400. `MATCH ... AGAINST (? IN BOOLEAN MODE)` trên FULLTEXT `ngram`, sắp theo độ liên quan, phân trang. Chỉ bản `published` ở ngôn ngữ đang chọn |
+| GET | `/search` | public | UC19 | A | `search` | `?q=` 2-100 ký tự (trim trước khi kiểm tra), sai → 400. `MATCH ... AGAINST (? IN BOOLEAN MODE)` trên FULLTEXT `ngram`, sắp theo độ liên quan, phân trang. Chỉ bản `published` ở ngôn ngữ đang chọn. Nhiều từ thì kết quả phải chứa đủ mọi từ (mỗi từ thêm `+`); tách từ ở mọi ký tự không phải chữ hoặc số nên toán tử BOOLEAN MODE bị bỏ; từ 1 ký tự bị bỏ vì ngắn hơn `ngram_token_size`. Gõ không dấu vẫn khớp bài có dấu (collation `utf8mb4_unicode_ci`). Không cache. Index không dùng stopword (mục 11) |
 | GET | `/languages` | public | UC09, UC16 | B | header | Ngôn ngữ đang hoạt động: `code`, `name`, `isDefault`. Cache |
 | GET | `/ui-translations/:code` | public | UC09, UC17 | B | mọi màn | Object `{ key: value }` của ngôn ngữ `code`, đã gộp sẵn giá trị của ngôn ngữ mặc định cho các key bị thiếu. Mã không có hoặc đã tắt → 404. Cache |
 | GET | `/pages` | public | UC11 | B | footer, header | Trang đang hiển thị: `key`, `title` theo ngôn ngữ đang chọn (thiếu thì dùng ngôn ngữ mặc định) |
@@ -284,9 +285,9 @@ Mọi route có prefix `/api/v1`. Cột "Quyền": `public` (không cần đăng
 | Method | Route | Quyền | UC | Ghi chú |
 | --- | --- | --- | --- | --- |
 | GET | `/profile` | auth | UC12 | `fullName`, `email`, `avatar`, `role`, `hasPassword` (false thì phase 4 ẩn ô mật khẩu cũ) |
-| PATCH | `/profile` | auth | UC12 | Body `{ fullName }`. DTO không có `email`, `role` nên `whitelist` tự chặn |
-| POST | `/profile/avatar` | auth | UC12 | Multipart, field `file`. Theo mục 3.6. Xóa ảnh cũ |
-| PATCH | `/profile/password` | auth | UC12 | Body `{ currentPassword?, newPassword, confirmPassword }`. Có mật khẩu thì `currentPassword` bắt buộc và phải đúng (sai → 400 kèm `errors[{field: "currentPassword"}]`). Mật khẩu mới theo ràng buộc UC01 |
+| PATCH | `/profile` | auth | UC12 | Body `{ fullName }`. DTO không có `email`, `role` nên `whitelist` tự chặn: gửi kèm thì 400 ở field đó (`forbidNonWhitelisted`). Trả hồ sơ sau khi sửa |
+| POST | `/profile/avatar` | auth | UC12 | Multipart, field `file`. Theo mục 3.6. 200, trả `{ path, url }`. Xóa ảnh cũ |
+| PATCH | `/profile/password` | auth | UC12 | Body `{ currentPassword?, newPassword, confirmPassword }`. Có mật khẩu thì `currentPassword` bắt buộc và phải đúng (sai → 400 kèm `errors[{field: "currentPassword"}]`). Mật khẩu mới theo ràng buộc UC01. Thành công thì thu hồi mọi refresh token như UC03 |
 
 ### 4.5. Quản lý bài viết (A)
 
@@ -468,7 +469,7 @@ Gộp cột "Chờ" của cả ba người. Việc trong cùng một đợt làm
 | --- | --- | --- | --- |
 | 1 | A1 (**đã xong**) | Ngay từ đầu | Mọi việc còn lại |
 | 2 | A2 (**đã xong**), A3 (**đã xong**), B1 (**đã xong**), B2 (**đã xong**), B3 (**đã xong**), B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
-| 3 | A4 (**đã xong**), A5, A6, A7, B4, B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
+| 3 | A4 (**đã xong**), A5, A6 (**đã xong**), A7, B4, B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
 | 4 | C2 (**đã xong**) | B3 và C1 đã merge | |
 | 5 | C3 (kiểm tra tổng) | A4 và B6 đã merge. Nên đợi mọi việc Must khác merge để kiểm tra một lần | A8, các PR sửa lỗi của A và B |
 | 6 | A8 | C3 đã merge | Kết thúc phase: merge `dev` → `master` |
@@ -481,7 +482,11 @@ Cập nhật 15/11: A4 xong, C3 chỉ còn chờ B6. Việc đang chặn nhiều
 
 Cập nhật 16/11: B3 xong nên C2 bắt đầu được. Việc đang chặn nhiều người nhất còn **B6** (chặn C3).
 
+Cập nhật 17/11: A5 xong. Việc đang chặn nhiều người nhất vẫn là **B6** (chặn C3).
+
 Cập nhật 20/11: C2 xong, C chỉ còn C3. Việc đang chặn nhiều người nhất vẫn là **B6** (chặn C3).
+
+Cập nhật 21/11: A6 xong. Việc đang chặn nhiều người nhất vẫn là **B6** (chặn C3).
 
 ### 8.3. Việc của từng người
 
@@ -493,8 +498,8 @@ Cập nhật 20/11: C2 xong, C chỉ còn C3. Việc đang chặn nhiều ngư�
 | A2 (**đã xong**) | Auth UC01-UC04: register, login + rate limit, refresh xoay vòng, logout, forgot/reset password + email, `/auth/me` | A1 | Merge sớm để Postman có token thật |
 | A3 (**đã xong**: PR bài + bản gốc merge 02/11, PR bản dịch merge 07/11 và 11/11) | Quản lý bài viết UC13 (mục 4.5), xóa cache bài viết | A1 | Phần lớn nhất của phase. Tách 2 PR: bài + bản gốc, rồi bản dịch. Test e2e dùng dữ liệu riêng nên không phải chờ B1; B1 chỉ cần khi thử bằng Postman |
 | A4 (**đã xong**) | Chi tiết bài UC06: `/posts/:slug`, `/related`, tăng lượt xem | A3 | `/related` trả 404 khi slug không có ở ngôn ngữ đang chọn, giống `/posts/:slug` |
-| A5 | Tìm kiếm UC19 (Should) | A3 | Test với cả từ khóa tiếng Việt có dấu |
-| A6 | Hồ sơ cá nhân UC12 (Should, mục 4.4) | A2 | Chuyển từ B sang ở bản 1.1. Avatar dùng lại `UploadModule` |
+| A5 (**đã xong**) | Tìm kiếm UC19 (Should) | A3 | Test với cả từ khóa tiếng Việt có dấu |
+| A6 (**đã xong**) | Hồ sơ cá nhân UC12 (Should, mục 4.4) | A2 | Chuyển từ B sang ở bản 1.1. Avatar dùng lại `UploadModule` |
 | A7 | OAuth UC20 Google, Github (Should) | A2 | Cần đăng ký app OAuth (requirements mục 9) trước ngày làm |
 | A8 | Duyệt lỗi C báo ở C3 thuộc phần nền, hoàn thiện Swagger, kiểm tra độ phủ chung, merge `dev` → `master` | C3 | |
 
@@ -600,4 +605,5 @@ Cả nhóm chốt các mục này trước khi bắt đầu A1. Cột "Đề xu�
 - Ghi log ra file, monitoring. Chỉ log ra console.
 - Cấu hình production: PM2, Nginx, MySQL user riêng (phase 5). Phase 3 chỉ cần `.env.example` đủ biến.
 - `trust proxy` theo vị trí của Nginx (phase 5). `app.setup.ts` đang đặt `'loopback'`: chỉ tin `X-Forwarded-For` khi request đến từ 127.0.0.1. Nginx chạy ở container hoặc máy khác thì `req.ip` luôn là IP của Nginx, khi đó lượt xem UC06 (`view:{translationId}:{ip}`) chỉ tính 1 lần / giờ / bản dịch cho cả trang, và rate limit đăng nhập (`auth:login-fail:{ip}:{email}`) dồn mọi người vào chung một IP. Phase 5 phải đặt `trust proxy` theo dải mạng của proxy.
+- MySQL của server (phase 5) phải chạy với `ngram_token_size=2` và `innodb_ft_enable_stopword=OFF` như `docker-compose.yml`. Với parser `ngram`, MySQL bỏ khỏi FULLTEXT mọi token chứa stopword; danh sách mặc định có `a`, `i` và collation không phân biệt dấu nên mất mọi cụm có a, à, ậ, i, ì... (tìm "REST API", "lap trinh" không ra bài). Migration `20261117000001` đã dựng lại index không stopword, nhưng `TRUNCATE`, `OPTIMIZE TABLE` hoặc `ALTER` dựng lại bảng `post_translations` sẽ lấy theo cấu hình server.
 - Các chức năng ở requirements mục 8.

@@ -2,6 +2,7 @@ import {
   calculateReadingMinutes,
   PostsService,
   RELATED_LIMIT,
+  toBooleanSearchTerm,
 } from './posts.service';
 import { PostTranslation } from './models/post-translation.model';
 import { CategoryTranslation } from '../categories/models/category-translation.model';
@@ -539,6 +540,11 @@ describe('PostsService - UC06', () => {
       ['user thường', { id: 99, role: 'user', jti: 'x' }, false],
       ['blog owner khác', { id: 8, role: 'blog_owner', jti: 'x' }, false],
       ['tác giả bài', { id: 7, role: 'blog_owner', jti: 'x' }, true],
+      [
+        'tác giả bài đã bị hạ xuống user',
+        { id: 7, role: 'user', jti: 'x' },
+        false,
+      ],
       ['super admin', { id: 1, role: 'super_admin', jti: 'x' }, true],
     ] as const)(
       'canDeleteComments với %s là %s',
@@ -591,5 +597,150 @@ describe('PostsService - UC06', () => {
       expect(redisClient.set).not.toHaveBeenCalled();
       expect(postModel.increment).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('PostsService - UC19', () => {
+  let service: PostsService;
+  let postModel: { findAndCountAll: jest.Mock };
+  let cacheService: { wrap: jest.Mock };
+
+  const vi: RequestLanguage = { id: 1, code: 'vi', isDefault: true };
+
+  interface FindOptions {
+    where: Record<string | symbol, unknown>;
+    replacements?: Record<string, string>;
+    order: [unknown, string][];
+    limit: number;
+    offset: number;
+  }
+  const lastOptions = () =>
+    postModel.findAndCountAll.mock.calls[0][0] as FindOptions;
+
+  beforeEach(() => {
+    postModel = {
+      findAndCountAll: jest.fn().mockResolvedValue({ rows: [], count: 0 }),
+    };
+    cacheService = { wrap: jest.fn() };
+    service = new PostsService(
+      postModel as unknown as typeof PostTranslation,
+      {
+        findAll: jest.fn().mockResolvedValue([]),
+      } as unknown as typeof CategoryTranslation,
+      {} as typeof Comment,
+      {
+        findActive: jest.fn().mockResolvedValue([]),
+      } as unknown as LanguagesService,
+      cacheService as unknown as CacheService,
+      {} as RedisService,
+    );
+  });
+
+  describe('toBooleanSearchTerm', () => {
+    it('mỗi từ bắt buộc có trong kết quả (AND)', () => {
+      expect(toBooleanSearchTerm('cơ sở dữ liệu')).toBe('+cơ +sở +dữ +liệu');
+    });
+
+    it('bỏ toán tử của BOOLEAN MODE và gộp khoảng trắng', () => {
+      expect(toBooleanSearchTerm('+lập  -trình* "abc" (xy) <yz> ~zz @33')).toBe(
+        '+lập +trình +abc +xy +yz +zz +33',
+      );
+    });
+
+    it('tách từ ở dấu câu, giữ chữ có dấu và số', () => {
+      expect(toBooleanSearchTerm('Node.js 22, Angular-21')).toBe(
+        '+Node +js +22 +Angular +21',
+      );
+    });
+
+    it('giữ chữ có dấu gõ kiểu tổ hợp (NFD)', () => {
+      expect(toBooleanSearchTerm('lập'.normalize('NFD'))).toBe(
+        '+' + 'lập'.normalize('NFD'),
+      );
+    });
+
+    it('bỏ từ 1 ký tự vì ngắn hơn ngram_token_size', () => {
+      expect(toBooleanSearchTerm('C# và a b docker')).toBe('+và +docker');
+    });
+
+    it('không còn từ nào thì trả chuỗi rỗng', () => {
+      expect(toBooleanSearchTerm('+-"*')).toBe('');
+      expect(toBooleanSearchTerm('a b c')).toBe('');
+    });
+  });
+
+  it('chỉ tìm bản published ở ngôn ngữ đang chọn, khớp FULLTEXT ngram', async () => {
+    await service.search(vi, 'lập trình', 1, 10);
+
+    const options = lastOptions();
+    expect(options.where).toMatchObject({ languageId: 1, status: 'published' });
+    const conditions = options.where[Op.and] as { val: string }[];
+    expect(conditions).toHaveLength(1);
+    expect(conditions[0].val).toContain(
+      'MATCH (`PostTranslation`.`title`, `PostTranslation`.`excerpt`, `PostTranslation`.`content`)',
+    );
+    expect(conditions[0].val).toContain('AGAINST (:search IN BOOLEAN MODE)');
+  });
+
+  it('truyền từ khóa bằng replacement, không nối vào chuỗi SQL', async () => {
+    await service.search(vi, "docker' OR '1'='1", 1, 10);
+
+    const options = lastOptions();
+    expect(options.replacements).toEqual({ search: '+docker +OR' });
+    const conditions = options.where[Op.and] as { val: string }[];
+    expect(conditions[0].val).not.toContain('docker');
+  });
+
+  it('sắp liên quan nhất trước, trùng điểm thì mới nhất trước', async () => {
+    await service.search(vi, 'docker', 1, 10);
+
+    const [first, ...rest] = lastOptions().order;
+    expect((first[0] as { val: string }).val).toContain('AGAINST (:search');
+    expect(first[1]).toBe('DESC');
+    expect(rest).toEqual([
+      ['publishedAt', 'DESC'],
+      ['id', 'DESC'],
+    ]);
+  });
+
+  it('phân trang theo page và limit', async () => {
+    postModel.findAndCountAll.mockResolvedValue({ rows: [], count: 25 });
+
+    const result = await service.search(vi, 'docker', 3, 10);
+
+    expect(lastOptions()).toMatchObject({ limit: 10, offset: 20 });
+    expect(isPaginated(result)).toBe(true);
+    expect(result.meta).toEqual({
+      page: 3,
+      limit: 10,
+      total: 25,
+      totalPages: 3,
+    });
+  });
+
+  it('không còn từ nào để tìm thì trả rỗng, không truy vấn database', async () => {
+    const result = await service.search(vi, '+ a', 1, 10);
+
+    expect(postModel.findAndCountAll).not.toHaveBeenCalled();
+    expect(result.items).toEqual([]);
+    expect(result.meta.total).toBe(0);
+  });
+
+  it('không dùng cache', async () => {
+    await service.search(vi, 'docker', 1, 10);
+
+    expect(cacheService.wrap).not.toHaveBeenCalled();
+  });
+
+  it('findCards không có search thì không lọc FULLTEXT, không có replacement', async () => {
+    await service.findCards(vi, {
+      limit: 10,
+      offset: 0,
+      order: [['publishedAt', 'DESC']],
+    });
+
+    const options = lastOptions();
+    expect(options.where[Op.and]).toBeUndefined();
+    expect(options.replacements).toBeUndefined();
   });
 });
