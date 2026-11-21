@@ -89,6 +89,31 @@ describe('Response format 6.4 (e2e)', () => {
     });
   });
 
+  describe('Search', () => {
+    it('phân trang: có meta', async () => {
+      const res = await request(server())
+        .get('/api/v1/search')
+        .query({ q: 'lập trình' })
+        .expect(200);
+      expectSuccess(res.body);
+      expect(res.body.meta).toEqual(
+        expect.objectContaining({ page: 1, limit: 10, total: 0 }),
+      );
+    });
+
+    it('lỗi validate có field q', async () => {
+      const res = await request(server())
+        .get('/api/v1/search')
+        .query({ q: 'a' })
+        .expect(400);
+      expectError(res.body);
+      expect(res.body.code).toBe('VALIDATION_ERROR');
+      expect(res.body.errors).toEqual([
+        expect.objectContaining({ field: 'q' }),
+      ]);
+    });
+  });
+
   describe('Admin Languages', () => {
     it('thành công', async () => {
       const { token } = await tokenFor(ctx.app, 'super_admin');

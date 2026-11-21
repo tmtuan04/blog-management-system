@@ -4287,6 +4287,409 @@
           }
         }
       ]
+    },
+    {
+      "name": "09 - Search",
+      "description": "UC19 - Tìm kiếm toàn văn: FULLTEXT ngram trên tiêu đề, tóm tắt, nội dung của bản dịch published ở ngôn ngữ đang chọn, liên quan nhất trước.",
+      "item": [
+        {
+          "name": "UC19 - Tìm kiếm tiếng Việt có dấu",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Từ khóa thuộc dữ liệu seed ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success = true', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test('data là mảng', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('Có meta phân trang', () => {",
+                  "  pm.expect(body.meta).to.include({ page: 1, limit: 10 });",
+                  "  pm.expect(body.meta.total).to.be.a('number');",
+                  "  pm.expect(body.meta.totalPages).to.be.a('number');",
+                  "});",
+                  "pm.test('Có kết quả', () => pm.expect(body.data.length).to.be.above(0));",
+                  "pm.test('Kết quả đầu chứa từ khóa', () => {",
+                  "  const first = body.data[0];",
+                  "  const text = (first.title + ' ' + (first.excerpt || '')).toLowerCase();",
+                  "  pm.expect(text).to.include('lập trình');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search?q=lập trình",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "lập trình"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC19 - Tìm kiếm tiếng Anh",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Từ khóa thuộc dữ liệu seed ngôn ngữ 'en', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'en' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success = true', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test('data là mảng', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('Có meta phân trang', () => {",
+                  "  pm.expect(body.meta).to.include({ page: 1, limit: 10 });",
+                  "  pm.expect(body.meta.total).to.be.a('number');",
+                  "  pm.expect(body.meta.totalPages).to.be.a('number');",
+                  "});",
+                  "pm.test('Có kết quả', () => pm.expect(body.data.length).to.be.above(0));",
+                  "pm.test('Kết quả đầu chứa từ khóa', () => {",
+                  "  const first = body.data[0];",
+                  "  const text = (first.title + ' ' + (first.excerpt || '')).toLowerCase();",
+                  "  pm.expect(text).to.include('javascript');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search?q=javascript",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "javascript"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC19 - Nhiều từ: phải chứa đủ mọi từ",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Từ khóa thuộc dữ liệu seed ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success = true', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test('data là mảng', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('Có meta phân trang', () => {",
+                  "  pm.expect(body.meta).to.include({ page: 1, limit: 10 });",
+                  "  pm.expect(body.meta.total).to.be.a('number');",
+                  "  pm.expect(body.meta.totalPages).to.be.a('number');",
+                  "});",
+                  "pm.test('Có kết quả', () => pm.expect(body.data.length).to.be.above(0));",
+                  "pm.test('Kết quả đầu chứa từ khóa', () => {",
+                  "  const first = body.data[0];",
+                  "  const text = (first.title + ' ' + (first.excerpt || '')).toLowerCase();",
+                  "  pm.expect(text).to.include('cơ sở dữ liệu');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search?q=cơ sở dữ liệu",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "cơ sở dữ liệu"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC19 - Từ có chữ a/i (không bị stopword loại)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Từ khóa thuộc dữ liệu seed ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success = true', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test('data là mảng', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('Có meta phân trang', () => {",
+                  "  pm.expect(body.meta).to.include({ page: 1, limit: 10 });",
+                  "  pm.expect(body.meta.total).to.be.a('number');",
+                  "  pm.expect(body.meta.totalPages).to.be.a('number');",
+                  "});",
+                  "pm.test('Có kết quả', () => pm.expect(body.data.length).to.be.above(0));",
+                  "pm.test('Kết quả đầu chứa từ khóa', () => {",
+                  "  const first = body.data[0];",
+                  "  const text = (first.title + ' ' + (first.excerpt || '')).toLowerCase();",
+                  "  pm.expect(text).to.include('rest api');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search?q=REST API",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "REST API"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC19 - Không có kết quả",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Từ khóa thuộc dữ liệu seed ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('success = true', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test('data là mảng', () => pm.expect(body.data).to.be.an('array'));",
+                  "pm.test('Có meta phân trang', () => {",
+                  "  pm.expect(body.meta).to.include({ page: 1, limit: 10 });",
+                  "  pm.expect(body.meta.total).to.be.a('number');",
+                  "  pm.expect(body.meta.totalPages).to.be.a('number');",
+                  "});",
+                  "pm.test('data rỗng, total 0', () => {",
+                  "  pm.expect(body.data).to.eql([]);",
+                  "  pm.expect(body.meta.total).to.eql(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search?q=kubernetes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "kubernetes"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC19 - Validation q = 1 ký tự",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Từ khóa thuộc dữ liệu seed ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('VALIDATION_ERROR', () => pm.expect(body.code).to.eql('VALIDATION_ERROR'));",
+                  "pm.test('Lỗi ở field q', () => {",
+                  "  pm.expect(body.errors.map(e => e.field)).to.include('q');",
+                  "  pm.expect(body.errors[0].message).to.eql('Từ khóa cần từ 2 đến 100 ký tự.');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search?q=a",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "a"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC19 - Validation thiếu q",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Từ khóa thuộc dữ liệu seed ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('VALIDATION_ERROR', () => pm.expect(body.code).to.eql('VALIDATION_ERROR'));",
+                  "pm.test('Lỗi ở field q', () => {",
+                  "  pm.expect(body.errors.map(e => e.field)).to.include('q');",
+                  "  pm.expect(body.errors[0].message).to.eql('Từ khóa cần từ 2 đến 100 ký tự.');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": []
+            }
+          }
+        }
+      ]
     }
   ]
 }
