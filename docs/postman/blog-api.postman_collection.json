@@ -3386,7 +3386,910 @@
       ]
     },
     {
-      "name": "07 - Search",
+      "name": "07 - Public Categories",
+      "item": [
+        {
+          "name": "01 - List Categories VI",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/categories"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('success value', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test(\"data is an array\", () => pm.expect(body.data).to.be.an(\"array\"));",
+                  "pm.test(\"each category has postCount\", () => pm.expect(body.data.every(x => Number.isInteger(x.postCount))).to.eql(true));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "02 - List Categories EN",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/categories"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'en' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('success value', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test(\"data is an array\", () => pm.expect(body.data).to.be.an(\"array\"));",
+                  "pm.test(\"each category has postCount\", () => pm.expect(body.data.every(x => Number.isInteger(x.postCount))).to.eql(true));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "03 - Detail VI",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/categories/lap-trinh"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('success value', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test(\"Vietnamese category slug\", () => pm.expect(body.data.slug).to.eql(\"lap-trinh\"));",
+                  "pm.test(\"translations is an array\", () => pm.expect(body.data.translations).to.be.an(\"array\"));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "04 - Detail EN",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/categories/programming"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'en' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('success value', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test(\"English category slug\", () => pm.expect(body.data.slug).to.eql(\"programming\"));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "05 - Posts by Category VI",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/categories/lap-trinh/posts?page=1&limit=10"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('success value', () => pm.expect(body.success).to.eql(true));",
+                  "pm.test(\"posts is an array\", () => pm.expect(body.data).to.be.an(\"array\"));",
+                  "pm.test(\"pagination\", () => pm.expect(body.meta).to.include({page: 1, limit: 10}));",
+                  "pm.test(\"posts belong to category\", () => pm.expect(body.data.every(x => x.category && x.category.slug === \"lap-trinh\")).to.eql(true));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "06 - Invalid Page",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/categories/lap-trinh/posts?page=0&limit=10"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test('success value', () => pm.expect(body.success).to.eql(false));",
+                  "pm.test(\"validation error\", () => pm.expect(body.code).to.eql(\"VALIDATION_ERROR\"));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "07 - Invalid Limit",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/categories/lap-trinh/posts?page=1&limit=51"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "const body = pm.response.json();",
+                  "pm.test('success value', () => pm.expect(body.success).to.eql(false));",
+                  "pm.test(\"validation error\", () => pm.expect(body.code).to.eql(\"VALIDATION_ERROR\"));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "08 - Missing Category",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/categories/danh-muc-khong-ton-tai"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "const body = pm.response.json();",
+                  "pm.test('success value', () => pm.expect(body.success).to.eql(false));",
+                  "pm.test(\"not found\", () => pm.expect(body.code).to.eql(\"NOT_FOUND\"));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "09 - Missing Category Posts",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/categories/danh-muc-khong-ton-tai/posts?page=1&limit=10"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "const body = pm.response.json();",
+                  "pm.test('success value', () => pm.expect(body.success).to.eql(false));",
+                  "pm.test(\"not found\", () => pm.expect(body.code).to.eql(\"NOT_FOUND\"));"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "08 - Comments",
+      "item": [
+        {
+          "name": "UC08 - Lấy translationId của bài huong-dan-angular",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Slug thuộc ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.environment.set('commentTranslationId', body.data.translationId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/huong-dan-angular",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "huong-dan-angular"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Danh sách bình luận (khách)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Có meta phân trang, 20 mỗi trang', () => pm.expect(body.meta).to.include({ page: 1, limit: 20 }));",
+                  "pm.test('Mỗi bình luận gốc có replies, khách không xóa được', () => {",
+                  "  body.data.forEach((item) => {",
+                  "    pm.expect(item).to.include.keys('id', 'parentId', 'content', 'createdAt', 'author', 'canDelete', 'replies');",
+                  "    pm.expect(item.parentId).to.eql(null);",
+                  "    pm.expect(item.canDelete).to.eql(false);",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Bình luận khi chưa đăng nhập (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Bình luận từ Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Bình luận gốc",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Trả bình luận vừa tạo, đã bỏ khoảng trắng hai đầu', () => {",
+                  "  pm.expect(body.data.content).to.eql('Bài viết rất hay, cảm ơn tác giả! List<String> vẫn là văn bản thường.');",
+                  "  pm.expect(body.data.parentId).to.eql(null);",
+                  "  pm.expect(body.data.canDelete).to.eql(true);",
+                  "});",
+                  "pm.environment.set('commentId', body.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"  Bài viết rất hay, cảm ơn tác giả! List<String> vẫn là văn bản thường.  \"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Trả lời bình luận",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+                  "pm.test('parentId là bình luận gốc', () => pm.expect(body.data.parentId).to.eql(Number(pm.environment.get('commentId'))));",
+                  "pm.environment.set('replyId', body.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ownerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Cảm ơn bạn đã đọc!\",\n  \"parentId\": {{commentId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Bình luận có thẻ HTML (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Lỗi ở field content', () => {",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.errors.map((e) => e.field)).to.include('content');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"<img src=x onerror=alert(1)>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Trả lời một bình luận trả lời (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Lỗi ở field parentId', () => {",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.errors.map((e) => e.field)).to.include('parentId');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Chỉ trả lời 1 cấp\",\n  \"parentId\": {{replyId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Bình luận trên bản dịch không có (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"abc\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/999999/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "999999",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Xóa bình luận khi chưa đăng nhập (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/{{commentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments",
+                "{{commentId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Xóa bình luận gốc (xóa luôn trả lời)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('data = null', () => pm.expect(body.data).to.eql(null));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/{{commentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments",
+                "{{commentId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Trả lời đã bị xóa theo bình luận gốc (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/{{replyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments",
+                "{{replyId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Search",
       "description": "UC19 - Tìm kiếm toàn văn: FULLTEXT ngram trên tiêu đề, tóm tắt, nội dung của bản dịch published ở ngôn ngữ đang chọn, liên quan nhất trước.",
       "item": [
         {

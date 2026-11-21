@@ -13,6 +13,7 @@ import { CacheService } from '../../infra/redis/cache.service';
 import { RedisService } from '../../infra/redis/redis.service';
 
 import { CategoryTranslation } from '../categories/models/category-translation.model';
+import { canModeratePostComments } from '../comments/comment-permissions';
 import { Comment } from '../comments/models/comment.model';
 import { LanguagesService } from '../languages/languages.service';
 import { User } from '../users/models/user.model';
@@ -168,9 +169,7 @@ export class PostsService {
       readingMinutes: calculateReadingMinutes(translation.content),
       commentCount,
       availableLanguages,
-      canDeleteComments:
-        viewer !== undefined &&
-        (viewer.role === 'super_admin' || viewer.id === Number(post.userId)),
+      canDeleteComments: canModeratePostComments(viewer, Number(post.userId)),
     };
   }
 
