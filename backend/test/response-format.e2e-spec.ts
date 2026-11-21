@@ -301,6 +301,31 @@ describe('Response format 6.4 (e2e)', () => {
     });
   });
 
+  describe('Profile', () => {
+    it('thành công', async () => {
+      const { token } = await tokenFor(ctx.app, 'user');
+      const res = await request(server())
+        .get('/api/v1/profile')
+        .set(bearer(token))
+        .expect(200);
+      expectSuccess(res.body);
+      expect(res.body).not.toHaveProperty('meta');
+    });
+
+    it('lỗi validate có errors[] với field', async () => {
+      const { token } = await tokenFor(ctx.app, 'user');
+      const res = await request(server())
+        .patch('/api/v1/profile/password')
+        .set(bearer(token))
+        .send({ newPassword: 'NewPass123', confirmPassword: 'NewPass123' })
+        .expect(400);
+      expectError(res.body);
+      expect(res.body.errors).toEqual([
+        { field: 'currentPassword', message: expect.any(String) },
+      ]);
+    });
+  });
+
   describe('Uploads', () => {
     it('lỗi validate có errors[] với field', async () => {
       const { token } = await tokenFor(ctx.app, 'blog_owner');

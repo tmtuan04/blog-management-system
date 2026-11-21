@@ -25,6 +25,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { LanguagesModule } from './modules/languages/languages.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { ProfileModule } from './modules/profile/profile.module';
 import { UiTranslationsModule } from './modules/ui-translations/ui-translations.module';
 
 @Module({
@@ -63,6 +64,7 @@ import { UiTranslationsModule } from './modules/ui-translations/ui-translations.
     CommentsModule,
     LanguagesModule,
     PostsModule,
+    ProfileModule,
     UiTranslationsModule,
   ],
   providers: [
