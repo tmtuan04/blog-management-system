@@ -6,6 +6,17 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Hồ sơ cá nhân UC12 (A6), nhánh `feature/be-profile`:
+  - Module mới `ProfileModule` (`ProfileController`, `ProfileService`), mọi route cần đăng nhập, chỉ thao tác trên tài khoản của người đang đăng nhập.
+  - `GET /profile`: `fullName`, `email`, `avatar`, `role`, `hasPassword` (false với tài khoản OAuth chưa đặt mật khẩu). Không trả `passwordHash`.
+  - `PATCH /profile`: body `{ fullName }`, 2-150 ký tự sau khi trim (“Họ tên từ 2 đến 150 ký tự.”, dùng lại `FullNameField` của UC01). Gửi kèm `email` hoặc `role` → 400 `VALIDATION_ERROR` ở field đó, không đổi gì. Trả hồ sơ sau khi sửa.
+  - `POST /profile/avatar`: multipart field `file`, kiểm tra như `POST /uploads/images` (JPG/PNG/WEBP, MIME thật, tối đa 2MB), lưu vào `uploads/avatars/`, 200 trả `{ path, url }`. Lưu DB xong mới xóa ảnh cũ; lưu DB lỗi thì xóa ảnh vừa ghi. Avatar là URL ngoài (OAuth) thì không xóa gì.
+  - `PATCH /profile/password`: body `{ currentPassword?, newPassword, confirmPassword }`, mật khẩu mới theo UC01. Đã có mật khẩu thì `currentPassword` bắt buộc (“Vui lòng nhập trường này.”) và phải đúng (“Mật khẩu hiện tại không đúng.”), sai → 400 `errors[{ field: "currentPassword" }]`. Tài khoản OAuth chưa có mật khẩu thì đặt mới không cần `currentPassword`. Thành công thì thu hồi mọi refresh token như UC03.
+  - Đổi họ tên hoặc avatar thì xóa `cache:posts:` vì thẻ bài có `author { fullName, avatar }`; không xóa thì thẻ trong cache trỏ tới ảnh cũ đã xóa tới 5 phút.
+  - `UsersService.findById` thêm tùy chọn `{ withPassword }`, thêm `UsersService.updateProfile(id, { fullName?, avatar? })`.
+  - Test: unit mới `profile.service.spec.ts`, `users.service.spec.ts` thêm 2 test; e2e mới `test/profile.e2e-spec.ts` (401, 403 tài khoản bị khóa, `hasPassword`, trim họ tên, chặn email/role, avatar lưu và xóa file cũ, file giả mạo, quá 2MB, đổi mật khẩu và thu hồi refresh token, sai / thiếu mật khẩu hiện tại, tài khoản OAuth đặt mật khẩu, xóa cache bài viết); `response-format.e2e-spec.ts` thêm nhóm Profile. Postman folder mới `10 - Profile` (9 request, đăng nhập bằng tài khoản `{{regEmail}}` vừa đăng ký nên đổi mật khẩu không ảnh hưởng tài khoản seed), biến môi trường mới `userAccessToken`.
+  - Phase 3 doc: mục 3.5 thêm dòng xóa cache khi đổi họ tên / avatar; mục 4.4 ghi mã trả về của avatar, lỗi khi gửi `email`/`role`, thu hồi refresh token khi đổi mật khẩu; mục 8: A6 chuyển sang đã xong, thêm ghi chú 21/11.
+
 - Tìm kiếm toàn văn UC19 (A5), nhánh `feature/be-search`:
   - `GET /search` (public, `SearchController` trong `PostsModule`): `?q=` trim và chuẩn hóa NFC, 2-100 ký tự, sai hoặc thiếu → 400 `VALIDATION_ERROR` ở field `q` (“Từ khóa cần từ 2 đến 100 ký tự.”, khớp `invalid-feedback` của màn `public/search.html`). Phân trang như `GET /posts` (`limit` tối đa 50). Trả thẻ bài giống `GET /posts`.
   - Tìm bằng `MATCH (title, excerpt, content) AGAINST (:search IN BOOLEAN MODE)` trên FULLTEXT `ft_post_translations_search` (parser `ngram`), chỉ bản dịch `published` ở ngôn ngữ đang chọn, liên quan nhất trước rồi mới nhất trước. Từ khóa truyền bằng replacement, không nối chuỗi SQL.
