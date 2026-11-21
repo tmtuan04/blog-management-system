@@ -6,6 +6,14 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Bình luận UC08 (B4), nhánh `feature/be-comment`:
+  - Module mới `CommentsModule` (`CommentsController`, `CommentsService`). Không cache, luôn đọc dữ liệu mới nhất.
+  - `GET /post-translations/:id/comments` (public, optionalAuth): bình luận gốc mới nhất trước, phân trang mặc định 20, `limit` > 50 → 400; mỗi bình luận gốc kèm `replies` (cũ nhất trước), lấy chung một truy vấn cho cả trang. Mỗi bình luận có `id`, `parentId`, `content`, `createdAt`, `author { fullName, avatar, isPostAuthor }`, `canDelete`. Bản dịch không có hoặc chưa `published` → 404.
+  - `POST /post-translations/:id/comments` (đăng nhập): body `{ content, parentId? }`. `content` 1-1000 ký tự sau khi trim (“Bình luận phải có từ 1 đến 1000 ký tự.”), có thẻ HTML → 400 (“Bình luận chỉ được là văn bản thuần, không chứa thẻ HTML.”). `parentId` không phải bình luận gốc của cùng bản dịch → 400 ở field `parentId`. Bản dịch hoặc bình luận cha bị xóa đúng lúc đang lưu (lỗi khóa ngoại) vẫn trả 404 / 400 như trên, không thành 409. 201, trả bình luận vừa tạo.
+  - `DELETE /comments/:id` (đăng nhập): người viết, Blog Owner là tác giả bài, hoặc Super Admin; người khác → 403 `FORBIDDEN`, không có → 404. Xóa bình luận gốc thì xóa luôn trả lời (CASCADE).
+  - Quyền xóa dùng chung ở `modules/comments/comment-permissions.ts` (`canDeleteComment`, `canModeratePostComments`): tác giả bài chỉ có quyền xóa bình luận của người khác khi còn role `blog_owner` (ma trận phân quyền requirements mục 5).
+  - Test: unit `comments.service.spec.ts`, `create-comment.dto.spec.ts` (service phủ 100% dòng); e2e mới `test/comments.e2e-spec.ts`; `response-format.e2e-spec.ts` thêm nhóm Comments. Postman folder mới `08 - Comments` (11 request; biến môi trường `commentTranslationId`, `commentId`, `replyId`).
+
 - Danh mục công khai UC07 (C2), nhánh `feature/be-categories-public-c2`:
   - `CategoriesController` và `CategoriesService` thêm vào `CategoriesModule` (module import thêm `LanguagesModule`, `PostsModule`, model `PostTranslation`). Cả 3 route đều public.
   - `GET /categories`: mọi danh mục, sắp theo `id`. Mỗi dòng có `id`, `name`, `slug` theo ngôn ngữ đang chọn (thiếu thì dùng ngôn ngữ mặc định) và `postCount` (số bản dịch `published` ở ngôn ngữ đang chọn, đếm cho mọi danh mục bằng một truy vấn `GROUP BY`). Cache `cache:categories:list:{code}` 10 phút.
@@ -200,6 +208,8 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Changed
 
+- Phần nền: `containsHtml` (`common/utils/html-sanitize.ts`) chỉ coi là HTML khi có thẻ của phần tử HTML có thật (hoặc custom element có `-`) với thuộc tính đúng cú pháp, hoặc comment `<!--`. Trước đây mọi `<` + chữ cái + `>` phía sau (kể cả khác dòng) đều bị coi là thẻ, nên bình luận như `List<String>` hay `a<b thì c>d` bị 400. Hàm này hiện chỉ bình luận (UC08) dùng.
+- `canDeleteComments` ở `GET /posts/:slug` (UC06) dùng chung `canModeratePostComments`: tác giả bài đã bị hạ xuống `user` thì là `false` (ma trận phân quyền requirements mục 5).
 - `POST /admin/posts` bỏ `translations[]`, chỉ tạo bài + bản gốc trong một transaction (UC13, A3, theo góp ý của mentor). Trước đây bài, bản gốc và mọi bản dịch nằm chung một transaction nên chỉ một bản dịch lỗi (ví dụ trùng slug do hai request đồng thời) là mất cả bài, và lỗi DB không chỉ ra được tab nào. Nay màn viết bài (phase 4) lưu bài + bản gốc trước, rồi gọi `POST /admin/posts/:id/translations` cho từng tab: bản nào lỗi thì chỉ bản đó lỗi, báo đúng tab, các bản khác vẫn lưu. Gửi `translations` → 400 `Trường này không được phép`. Bỏ `prepareExtraTranslations` và các test của nó; e2e thêm test "một bản dịch lỗi không ảnh hưởng bài và các bản đã lưu", "thêm bản dịch ở ngôn ngữ gốc → 409". Phase 3 doc mục 4.5 cập nhật theo.
 - HTML phát hiện nhờ `extract-i18n.mjs`: nút xóa key ở `admin/ui-translations.html` dùng aria-label chung "Xóa key" (trước đây chứa tên key nên mỗi dòng một chữ khác nhau); `validation.email_taken` ở `admin/users.html` dùng cùng câu với `public/register.html`.
 - `docs/sample-data.md`: đường dẫn ảnh mẫu theo quy tắc upload (`uploads/images/<uuid>.png`); trang `contact`, `privacy` có thêm bản `en`.

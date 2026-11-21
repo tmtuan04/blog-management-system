@@ -539,6 +539,11 @@ describe('PostsService - UC06', () => {
       ['user thường', { id: 99, role: 'user', jti: 'x' }, false],
       ['blog owner khác', { id: 8, role: 'blog_owner', jti: 'x' }, false],
       ['tác giả bài', { id: 7, role: 'blog_owner', jti: 'x' }, true],
+      [
+        'tác giả bài đã bị hạ xuống user',
+        { id: 7, role: 'user', jti: 'x' },
+        false,
+      ],
       ['super admin', { id: 1, role: 'super_admin', jti: 'x' }, true],
     ] as const)(
       'canDeleteComments với %s là %s',

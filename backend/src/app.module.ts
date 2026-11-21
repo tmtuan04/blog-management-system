@@ -22,6 +22,7 @@ import { RedisModule } from './infra/redis/redis.module';
 import { UploadModule } from './infra/upload/upload.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { CommentsModule } from './modules/comments/comments.module';
 import { LanguagesModule } from './modules/languages/languages.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { UiTranslationsModule } from './modules/ui-translations/ui-translations.module';
@@ -59,6 +60,7 @@ import { UiTranslationsModule } from './modules/ui-translations/ui-translations.
     UploadModule,
     AuthModule,
     CategoriesModule,
+    CommentsModule,
     LanguagesModule,
     PostsModule,
     UiTranslationsModule,
