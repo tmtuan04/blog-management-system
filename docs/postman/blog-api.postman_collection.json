@@ -3754,6 +3754,539 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "08 - Comments",
+      "item": [
+        {
+          "name": "UC08 - Lấy translationId của bài huong-dan-angular",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Slug thuộc ngôn ngữ 'vi', không theo biến {{lang}} của môi trường",
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'vi' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.environment.set('commentTranslationId', body.data.translationId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/huong-dan-angular",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "posts",
+                "huong-dan-angular"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Danh sách bình luận (khách)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Có meta phân trang, 20 mỗi trang', () => pm.expect(body.meta).to.include({ page: 1, limit: 20 }));",
+                  "pm.test('Mỗi bình luận gốc có replies, khách không xóa được', () => {",
+                  "  body.data.forEach((item) => {",
+                  "    pm.expect(item).to.include.keys('id', 'parentId', 'content', 'createdAt', 'author', 'canDelete', 'replies');",
+                  "    pm.expect(item.parentId).to.eql(null);",
+                  "    pm.expect(item.canDelete).to.eql(false);",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Bình luận khi chưa đăng nhập (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Bình luận từ Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Bình luận gốc",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Trả bình luận vừa tạo, đã bỏ khoảng trắng hai đầu', () => {",
+                  "  pm.expect(body.data.content).to.eql('Bài viết rất hay, cảm ơn tác giả! List<String> vẫn là văn bản thường.');",
+                  "  pm.expect(body.data.parentId).to.eql(null);",
+                  "  pm.expect(body.data.canDelete).to.eql(true);",
+                  "});",
+                  "pm.environment.set('commentId', body.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"  Bài viết rất hay, cảm ơn tác giả! List<String> vẫn là văn bản thường.  \"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Trả lời bình luận",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+                  "pm.test('parentId là bình luận gốc', () => pm.expect(body.data.parentId).to.eql(Number(pm.environment.get('commentId'))));",
+                  "pm.environment.set('replyId', body.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ownerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Cảm ơn bạn đã đọc!\",\n  \"parentId\": {{commentId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Bình luận có thẻ HTML (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Lỗi ở field content', () => {",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.errors.map((e) => e.field)).to.include('content');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"<img src=x onerror=alert(1)>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Trả lời một bình luận trả lời (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Lỗi ở field parentId', () => {",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.errors.map((e) => e.field)).to.include('parentId');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Chỉ trả lời 1 cấp\",\n  \"parentId\": {{replyId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/{{commentTranslationId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "{{commentTranslationId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Bình luận trên bản dịch không có (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"abc\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/post-translations/999999/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "post-translations",
+                "999999",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Xóa bình luận khi chưa đăng nhập (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/{{commentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments",
+                "{{commentId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Xóa bình luận gốc (xóa luôn trả lời)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('data = null', () => pm.expect(body.data).to.eql(null));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/{{commentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments",
+                "{{commentId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC08 - Trả lời đã bị xóa theo bình luận gốc (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/{{replyId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "comments",
+                "{{replyId}}"
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

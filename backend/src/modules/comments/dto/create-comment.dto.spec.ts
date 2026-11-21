@@ -68,6 +68,13 @@ describe('CreateCommentDto - UC08', () => {
     ]);
   });
 
+  it.each(['Nên dùng List<String> thay vì mảng', 'nếu a<b thì c>d'])(
+    'văn bản thường có dấu < > (%s) vẫn hợp lệ',
+    async (content) => {
+      expect((await check({ content })).errors).toEqual([]);
+    },
+  );
+
   it('parentId là số nguyên dương hoặc không gửi', async () => {
     expect((await check({ content: 'a', parentId: 3 })).errors).toEqual([]);
     expect((await check({ content: 'a', parentId: null })).errors).toEqual([]);

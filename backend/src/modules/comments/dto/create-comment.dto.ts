@@ -1,4 +1,3 @@
-import { Transform } from 'class-transformer';
 import {
   IsInt,
   IsOptional,
@@ -9,6 +8,7 @@ import {
   registerDecorator,
 } from 'class-validator';
 import { containsHtml } from '../../../common/utils/html-sanitize';
+import { trim } from '../../posts/dto/post-fields';
 
 export const COMMENT_MIN_LENGTH = 1;
 export const COMMENT_MAX_LENGTH = 1000;
@@ -39,9 +39,7 @@ function NoHtml(options?: ValidationOptions) {
 /** POST /post-translations/:id/comments (UC08) */
 export class CreateCommentDto {
   /** Nội dung 1-1000 ký tự sau khi bỏ khoảng trắng hai đầu, văn bản thuần (không nhận HTML) */
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === 'string' ? value.trim() : value,
-  )
+  @trim
   // Decorator chạy từ dưới lên và mỗi field chỉ báo lỗi đầu tiên: kiểu → độ dài → HTML
   @NoHtml({ message: COMMENT_HTML_MESSAGE })
   @Length(COMMENT_MIN_LENGTH, COMMENT_MAX_LENGTH, {

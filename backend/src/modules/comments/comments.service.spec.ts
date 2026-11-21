@@ -1,7 +1,9 @@
+import { ForeignKeyConstraintError } from 'sequelize';
 import { AppException } from '../../common/errors';
 import type { AuthUser } from '../../common/types/request-context';
 import { isPaginated } from '../../common/utils/paginate';
-import { CommentsService, canDeleteComment } from './comments.service';
+import { canDeleteComment } from './comment-permissions';
+import { CommentsService } from './comments.service';
 import type { Comment } from './models/comment.model';
 import type { PostTranslation } from '../posts/models/post-translation.model';
 
@@ -91,6 +93,11 @@ describe('CommentsService - UC08', () => {
     it('người dùng thường không xóa được bình luận của người khác', () => {
       expect(canDeleteComment(asUser(6), 5, OWNER_ID)).toBe(false);
     });
+
+    it('tác giả bài đã bị hạ xuống user chỉ còn xóa được bình luận của mình', () => {
+      expect(canDeleteComment(asUser(OWNER_ID), 5, OWNER_ID)).toBe(false);
+      expect(canDeleteComment(asUser(OWNER_ID), OWNER_ID, OWNER_ID)).toBe(true);
+    });
   });
 
   describe('list', () => {
@@ -157,7 +164,7 @@ describe('CommentsService - UC08', () => {
       expect(commentModel.findAll).toHaveBeenCalledTimes(1);
       expect(commentModel.findAll).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { parentId: [3, 1] },
+          where: { postTranslationId: TRANSLATION_ID, parentId: [3, 1] },
           order: [
             ['createdAt', 'ASC'],
             ['id', 'ASC'],
@@ -330,6 +337,52 @@ describe('CommentsService - UC08', () => {
       expect(commentModel.create).not.toHaveBeenCalled();
     });
 
+    it('bản dịch bị xóa ngay trước khi lưu (lỗi khóa ngoại) thì 404', async () => {
+      commentModel.create.mockRejectedValue(new ForeignKeyConstraintError({}));
+      postTranslationModel.findOne
+        .mockResolvedValueOnce({
+          id: TRANSLATION_ID,
+          post: { userId: OWNER_ID },
+        })
+        .mockResolvedValueOnce(null);
+      await expect(
+        service.create(TRANSLATION_ID, { content: 'abc' }, user),
+      ).rejects.toMatchObject({ status: 404 });
+    });
+
+    it('bình luận cha bị xóa ngay trước khi lưu (lỗi khóa ngoại) thì 400 ở parentId', async () => {
+      commentModel.findByPk.mockResolvedValue(
+        row(1, 4, null, '2026-10-01T10:00:00Z'),
+      );
+      commentModel.create.mockRejectedValue(new ForeignKeyConstraintError({}));
+      const error = (await service
+        .create(TRANSLATION_ID, { content: 'abc', parentId: 1 }, user)
+        .catch((e: unknown) => e)) as AppException;
+      expect(error).toBeInstanceOf(AppException);
+      expect(error.getStatus()).toBe(400);
+      expect(error.errors).toEqual([
+        { field: 'parentId', message: expect.any(String) },
+      ]);
+    });
+
+    it('lỗi khác khi lưu thì ném lại nguyên lỗi', async () => {
+      const failure = new Error('db down');
+      commentModel.create.mockRejectedValue(failure);
+      await expect(
+        service.create(TRANSLATION_ID, { content: 'abc' }, user),
+      ).rejects.toBe(failure);
+    });
+
+    it('bình luận vừa tạo đã bị xóa theo bình luận cha thì 404', async () => {
+      commentModel.findByPk
+        .mockResolvedValueOnce(row(1, 4, null, '2026-10-01T10:00:00Z'))
+        .mockResolvedValueOnce(null);
+      commentModel.create.mockResolvedValue({ id: 11 });
+      await expect(
+        service.create(TRANSLATION_ID, { content: 'abc', parentId: 1 }, user),
+      ).rejects.toMatchObject({ status: 404 });
+    });
+
     it('bình luận của tác giả bài có isPostAuthor', async () => {
       commentModel.create.mockResolvedValue({ id: 12 });
       commentModel.findByPk.mockResolvedValue(
@@ -389,6 +442,7 @@ describe('CommentsService - UC08', () => {
     it.each([
       ['người dùng khác', asUser(6)],
       ['Blog Owner không phải tác giả bài', asUser(3, 'blog_owner')],
+      ['tác giả bài đã bị hạ xuống user', asUser(OWNER_ID)],
     ])('%s thì 403 và không xóa', async (_, viewer) => {
       const comment = stored(5);
       commentModel.findByPk.mockResolvedValue(comment);

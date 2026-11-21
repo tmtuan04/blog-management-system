@@ -6,6 +6,8 @@
  * DELETE /api/v1/comments/:id
  */
 
+import { JwtService } from '@nestjs/jwt';
+import { randomUUID } from 'crypto';
 import request from 'supertest';
 
 import { Category } from '../src/modules/categories/models/category.model';
@@ -382,14 +384,20 @@ describe('Comments - UC08 (e2e)', () => {
         { language: vi, slug: 'bai-viet' },
       ]);
       const { token } = await tokenFor(ctx.app, 'user');
-      for (const content of ['Dòng 1\nDòng 2', 'a'.repeat(1000), '3 < 5 > 2']) {
+      for (const content of [
+        'Dòng 1\nDòng 2',
+        'a'.repeat(1000),
+        '3 < 5 > 2',
+        'Nên dùng List<String> thay vì mảng',
+        'nếu a<b thì c>d',
+      ]) {
         await request(server())
           .post(listUrl(translation.id))
           .set(bearer(token))
           .send({ content })
           .expect(201);
       }
-      expect(await Comment.count()).toBe(3);
+      expect(await Comment.count()).toBe(5);
     });
 
     it('201: tác giả bài và Super Admin cũng bình luận được; bình luận của tác giả có isPostAuthor', async () => {
@@ -641,6 +649,30 @@ describe('Comments - UC08 (e2e)', () => {
           .expect(403);
         expect(res.body).toMatchObject({ success: false, code: 'FORBIDDEN' });
       }
+      expect(await Comment.count()).toBe(1);
+    });
+
+    it('403: tác giả bài đã bị hạ xuống user không xóa được bình luận của người khác', async () => {
+      const [translation] = await createTranslations([
+        { language: vi, slug: 'bai-viet' },
+      ]);
+      const { user: reader } = await tokenFor(ctx.app, 'user');
+      const comment = await addComment(translation.id, reader.id, 'abc');
+      // Token mang role mới sau khi Super Admin đổi role (UC14)
+      const demotedToken = await ctx.app
+        .get(JwtService)
+        .signAsync({ sub: author.id, role: 'user', jti: randomUUID() });
+
+      const list = await request(server())
+        .get(listUrl(translation.id))
+        .set(bearer(demotedToken))
+        .expect(200);
+      expect((list.body.data as ThreadBody[])[0].canDelete).toBe(false);
+
+      await request(server())
+        .delete(deleteUrl(Number(comment.id)))
+        .set(bearer(demotedToken))
+        .expect(403);
       expect(await Comment.count()).toBe(1);
     });
 

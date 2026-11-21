@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { ForeignKeyConstraintError } from 'sequelize';
 import { AppException } from '../../common/errors';
 import type { AuthUser } from '../../common/types/request-context';
 import { Paginated, paginate, toOffset } from '../../common/utils/paginate';
 import { Post } from '../posts/models/post.model';
 import { PostTranslation } from '../posts/models/post-translation.model';
 import { User } from '../users/models/user.model';
+import { canDeleteComment } from './comment-permissions';
 import { CommentQueryDto } from './dto/comment-query.dto';
 import { CommentDto, CommentThreadDto } from './dto/comment-response.dto';
 import {
@@ -25,23 +27,6 @@ const AUTHOR_INCLUDE = {
   attributes: ['id', 'fullName', 'avatar'],
   required: true,
 };
-
-/**
- * Quyền xóa bình luận (UC08): người viết, tác giả bài hoặc Super Admin.
- * Cùng quy tắc với `canDeleteComments` ở chi tiết bài (UC06).
- */
-export function canDeleteComment(
-  viewer: AuthUser | undefined,
-  commentUserId: number,
-  postOwnerId: number,
-): boolean {
-  return (
-    viewer !== undefined &&
-    (viewer.role === 'super_admin' ||
-      viewer.id === commentUserId ||
-      viewer.id === postOwnerId)
-  );
-}
 
 /** UC08 - Bình luận (phase 3 doc mục 4.3). Không cache: luôn đọc dữ liệu mới nhất */
 @Injectable()
@@ -76,7 +61,12 @@ export class CommentsService {
 
     const replies = rows.length
       ? await this.commentModel.findAll({
-          where: { parentId: rows.map((row) => Number(row.id)) },
+          // Thêm postTranslationId (kết quả không đổi) để dùng được index
+          // (post_translation_id, parent_id, created_at), không phải sort riêng
+          where: {
+            postTranslationId: translationId,
+            parentId: rows.map((row) => Number(row.id)),
+          },
           include: [AUTHOR_INCLUDE],
           order: [
             ['createdAt', 'ASC'],
@@ -113,32 +103,51 @@ export class CommentsService {
     dto: CreateCommentDto,
     user: AuthUser,
   ): Promise<CommentDto> {
-    const postOwnerId = await this.findPostOwnerId(translationId);
+    const parentId = dto.parentId ?? null;
+    // Hai truy vấn độc lập: chạy song song
+    const [postOwnerId, parent] = await Promise.all([
+      this.findPostOwnerId(translationId),
+      parentId === null ? null : this.commentModel.findByPk(parentId),
+    ]);
 
-    if (dto.parentId !== undefined && dto.parentId !== null) {
-      const parent = await this.commentModel.findByPk(dto.parentId);
-      if (
-        !parent ||
+    if (
+      parentId !== null &&
+      (!parent ||
         Number(parent.postTranslationId) !== translationId ||
-        (parent.parentId !== null && parent.parentId !== undefined)
-      ) {
-        throw AppException.validation([
-          { field: 'parentId', message: COMMENT_PARENT_MESSAGE },
-        ]);
-      }
+        (parent.parentId !== null && parent.parentId !== undefined))
+    ) {
+      throw this.invalidParent();
     }
 
-    const created = await this.commentModel.create({
-      postTranslationId: translationId,
-      userId: user.id,
-      parentId: dto.parentId ?? null,
-      content: dto.content,
-    });
-    // Tải lại kèm người viết để trả đủ tên và ảnh
+    let created: Comment;
+    try {
+      created = await this.commentModel.create({
+        postTranslationId: translationId,
+        userId: user.id,
+        parentId,
+        content: dto.content,
+      });
+    } catch (error) {
+      // Bản dịch hoặc bình luận cha bị xóa giữa lúc kiểm tra và lúc lưu:
+      // trả đúng lỗi như khi kiểm tra (404 hoặc 400), không để thành 409
+      if (error instanceof ForeignKeyConstraintError) {
+        await this.findPostOwnerId(translationId);
+        if (parentId !== null) {
+          throw this.invalidParent();
+        }
+      }
+      throw error;
+    }
+
+    // Tải lại kèm người viết để trả đủ tên và ảnh. Không còn thì bình luận
+    // vừa bị xóa theo bình luận cha (ON DELETE CASCADE)
     const comment = await this.commentModel.findByPk(created.id, {
       include: [AUTHOR_INCLUDE],
     });
-    return this.toDto(comment ?? created, postOwnerId, user);
+    if (!comment) {
+      throw AppException.notFound(COMMENT_NOT_FOUND);
+    }
+    return this.toDto(comment, postOwnerId, user);
   }
 
   /** DELETE /comments/:id. Các trả lời bị xóa theo (ON DELETE CASCADE) */
@@ -189,6 +198,12 @@ export class CommentsService {
       throw AppException.notFound(POST_NOT_FOUND);
     }
     return Number(translation.post!.userId);
+  }
+
+  private invalidParent(): AppException {
+    return AppException.validation([
+      { field: 'parentId', message: COMMENT_PARENT_MESSAGE },
+    ]);
   }
 
   private toDto(
