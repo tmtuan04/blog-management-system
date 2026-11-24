@@ -228,6 +228,8 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Changed
 
+- Phase 3 doc mục 8: B4 (Bình luận UC08, PR #59 merge 21/11) chuyển sang đã xong ở bảng đợt 8.2 và bảng việc 8.3. A5 ở bảng đợt 8.2 cũng chuyển sang đã xong cho khớp với 8.3. Thêm ghi chú 24/11: còn A7, B5, B6, C3, A8; B6 vẫn là việc đang chặn nhiều người nhất.
+
 - Chữ tĩnh trên giao diện (UI translation) chuyển từ CSDL sang file JSON của frontend theo góp ý của mentor, nhánh `feature/be-remove-ui-translations`:
   - Requirements 2.1 → 2.2: D5 đổi thành "chữ tĩnh nằm trong file JSON của frontend, mỗi ngôn ngữ một file, thiếu key hoặc thiếu file thì hiện theo ngôn ngữ mặc định", kèm lý do. UC17 đánh dấu đã bỏ (giữ mã, không đánh số lại UC18-UC20). UC16 bỏ quy tắc sao chép key khi thêm ngôn ngữ; chữ tĩnh của ngôn ngữ mới cần lập trình viên thêm file dịch. Sửa theo: thuật ngữ, phân công, phase 1 (bảng `ui_translations`), phase 2 (màn quản lý bản dịch giao diện), UC09, UC18, ma trận phân quyền, mục 6.6; mục 8 thêm "sửa chữ tĩnh qua màn quản trị".
   - Phase 3 doc 1.1 → 1.2: bỏ route, key Redis `cache:ui:{code}`, dòng xóa cache, seeder `07-ui-translations`, việc sao chép key ở `POST /admin/languages`; mục 5 ghi cách dùng `html/i18n/`; mục 8 thêm ghi chú 22/11. Phase 2 doc 1.5 → 1.6: bỏ màn `admin/ui-translations.html`, mục 7 ghi `data-i18n` được gom vào `html/i18n/`. `database.dbml`, `sample-data.md` bỏ bảng `ui_translations`.

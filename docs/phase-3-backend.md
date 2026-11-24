@@ -459,7 +459,7 @@ Gộp cột "Chờ" của cả ba người. Việc trong cùng một đợt làm
 | --- | --- | --- | --- |
 | 1 | A1 (**đã xong**) | Ngay từ đầu | Mọi việc còn lại |
 | 2 | A2 (**đã xong**), A3 (**đã xong**), B1 (**đã xong**), B2 (**đã xong**), B3 (**đã xong**), B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
-| 3 | A4 (**đã xong**), A5, A6 (**đã xong**), A7, B4, B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
+| 3 | A4 (**đã xong**), A5 (**đã xong**), A6 (**đã xong**), A7, B4 (**đã xong**), B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
 | 4 | C2 (**đã xong**) | B3 và C1 đã merge | |
 | 5 | C3 (kiểm tra tổng) | A4 và B6 đã merge. Nên đợi mọi việc Must khác merge để kiểm tra một lần | A8, các PR sửa lỗi của A và B |
 | 6 | A8 | C3 đã merge | Kết thúc phase: merge `dev` → `master` |
@@ -479,6 +479,8 @@ Cập nhật 20/11: C2 xong, C chỉ còn C3. Việc đang chặn nhiều ngư�
 Cập nhật 21/11: A6 xong. Việc đang chặn nhiều người nhất vẫn là **B6** (chặn C3).
 
 Cập nhật 22/11: theo góp ý của mentor, bỏ UC17 (requirements 2.2, D5). Xóa module `ui-translations` (phần B2), bảng `ui_translations`, seeder `07-ui-translations`; chữ tĩnh chuyển sang `html/i18n/*.json`. Không ảnh hưởng việc nào đang làm.
+
+Cập nhật 24/11: ghi lại trạng thái B4 (đã merge ngày 21/11, PR #59) và A5 ở bảng đợt. Việc chưa xong: A7, B5, B6, C3, A8. Việc đang chặn nhiều người nhất vẫn là **B6** (chặn C3, qua đó chặn A8).
 
 ### 8.3. Việc của từng người
 
@@ -502,7 +504,7 @@ Cập nhật 22/11: theo góp ý của mentor, bỏ UC17 (requirements 2.2, D5).
 | B1 (**đã xong**) | Seeders (mục 5), script `extract-i18n.mjs` | A1 | **Merge sớm** vì A3, C1 cần dữ liệu |
 | B2 (**đã xong**) | Ngôn ngữ UC16 (admin, mở rộng module mẫu) + bản dịch giao diện UC17 (admin + `GET /ui-translations/:code`) | A1 | UC17 bỏ ở 1.2 (requirements 2.2): đã xóa module `ui-translations` |
 | B3 (**đã xong**) | Danh mục UC15 (admin) | A1 | Tạo module `categories`. C2 thêm route public vào đây |
-| B4 | Bình luận UC08 | A1, B1 | Quyền xóa cần biết tác giả bài qua `post_translations → posts.user_id` |
+| B4 (**đã xong**) | Bình luận UC08 | A1, B1 | Quyền xóa cần biết tác giả bài qua `post_translations → posts.user_id` |
 | B5 | Người dùng UC14 | A2 | Thu hồi refresh token dùng hàm của A2 |
 | B6 | Trang tĩnh UC11 + UC18 | A1 | |
 
