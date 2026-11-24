@@ -11,7 +11,7 @@ Nguồn chuẩn: `docs/phase-2-html.md` mục 7. Trước khi viết class mới
 
 - Mỗi khối sẽ thành component Angular được bọc bằng `<!-- component: ten -->` ... `<!-- /component: ten -->`.
 - Mọi chữ tĩnh gắn `data-i18n="<nhóm>.<tên>"`; chữ trong thuộc tính dùng `data-i18n-<thuộc tính>`. Dữ liệu lấy từ CSDL (tiêu đề bài, tên danh mục, tên người dùng) thì không gắn.
-- Thêm, sửa, bỏ key `data-i18n`: vào `backend/` chạy `npm run i18n:extract`, dịch key thiếu `en` trong `backend/database/seed-data/ui-translations.json`, rồi `npm run i18n:check`.
+- Thêm, sửa, bỏ key `data-i18n`: trong `html/` chạy `npm run i18n:extract`, dịch key thiếu `en` trong `html/i18n/en.json`, rồi `npm run i18n:check`. Chữ tĩnh không lưu trong CSDL (requirements D5).
 - Link và đường dẫn tài nguyên luôn tương đối, đúng hoa/thường như tên file, không bắt đầu bằng `/` (site nằm dưới `/blog-management-system/` trên GitHub Pages).
 - Ảnh có `alt`, ô nhập có `<label>`, nút chỉ có icon có `aria-label`.
 - Header, footer, offcanvas chép giống nhau ở mọi trang: sửa ở `_templates/` thì sửa cả các file trong `public/` hoặc `admin/` trong cùng thay đổi.
