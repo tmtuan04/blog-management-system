@@ -1,6 +1,6 @@
 ---
 name: new-html-page
-description: Dựng một màn HTML mới trong html/ từ template có sẵn (admin, public, auth), kèm component SCSS, data-i18n, trạng thái demo, rồi cập nhật mục lục và seed UI translation. Dùng khi được giao làm một trang hoặc một màn giao diện mới của phase 2.
+description: Dựng một màn HTML mới trong html/ từ template có sẵn (admin, public, auth), kèm component SCSS, data-i18n, trạng thái demo, rồi cập nhật mục lục và file dịch `html/i18n/`. Dùng khi được giao làm một trang hoặc một màn giao diện mới của phase 2.
 ---
 
 # Làm một màn HTML mới
@@ -30,7 +30,7 @@ description: Dựng một màn HTML mới trong html/ từ template có sẵn (a
 
 1. Dựng khung bằng class Bootstrap và component có sẵn, bọc từng khối bằng comment `<!-- component: ... -->`.
 2. Dữ liệu giả lấy theo `docs/sample-data.md`, có cả dữ liệu "khó": tiêu đề dài, chuỗi không dấu rất dài, mục không có ảnh.
-3. Gắn `data-i18n` cho mọi chữ tĩnh. Tìm key đã có trước khi đặt key mới (Grep trong `backend/database/seed-data/ui-translations.json`).
+3. Gắn `data-i18n` cho mọi chữ tĩnh. Tìm key đã có trước khi đặt key mới (Grep trong `html/i18n/vi.json`).
 4. Khai báo trạng thái demo trên `<body>` (`data-demo-states`, `data-demo-auths`) và đánh dấu khối theo trạng thái. Mọi trạng thái ghi trong docs mục 5 đều phải xem được qua thanh demo.
 5. Component mới: một file `html/scss/components/_ten.scss`, đăng ký trong `html/scss/main.scss`.
 
@@ -40,12 +40,11 @@ description: Dựng một màn HTML mới trong html/ từ template có sẵn (a
 cd html
 npm run build
 npm run check-links
-cd ../backend
 npm run i18n:extract
 npm run i18n:check
 ```
 
-`i18n:extract` thêm key mới vào `backend/database/seed-data/ui-translations.json`; dịch các key thiếu `en` rồi chạy lại `i18n:check`.
+`i18n:extract` thêm key mới vào `html/i18n/vi.json`; dịch các key thiếu `en` trong `html/i18n/en.json` rồi chạy lại `i18n:check`.
 
 Sau đó cập nhật:
 

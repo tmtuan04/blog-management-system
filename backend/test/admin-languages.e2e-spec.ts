@@ -4,7 +4,6 @@ import { Category } from '../src/modules/categories/models/category.model';
 import { Language } from '../src/modules/languages/models/language.model';
 import { PostTranslation } from '../src/modules/posts/models/post-translation.model';
 import { Post } from '../src/modules/posts/models/post.model';
-import { UiTranslation } from '../src/modules/ui-translations/models/ui-translation.model';
 import { TestContext, createTestApp } from './helpers/app';
 import { bearer, tokenFor } from './helpers/auth';
 import { resetDatabase } from './helpers/db';
@@ -124,14 +123,7 @@ describe('Admin Languages (e2e)', () => {
   });
 
   describe('POST /admin/languages', () => {
-    it('201 và sao chép UI translation của ngôn ngữ mặc định sang ngôn ngữ mới', async () => {
-      const [vi, en] = [await languageId('vi'), await languageId('en')];
-      await UiTranslation.bulkCreate([
-        { languageId: vi, key: 'menu.home', value: 'Trang chủ' },
-        { languageId: vi, key: 'menu.about', value: 'Giới thiệu' },
-        { languageId: en, key: 'menu.home', value: 'Home' },
-      ]);
-
+    it('201, trim tên, mặc định đang hoạt động', async () => {
       const res = await request(server())
         .post(api())
         .set(bearer(token))
@@ -146,14 +138,6 @@ describe('Admin Languages (e2e)', () => {
         isActive: true,
         postTranslationCount: 0,
       });
-      const copied = await UiTranslation.findAll({
-        where: { languageId: res.body.data.id as number },
-        order: [['key', 'ASC']],
-      });
-      expect(copied.map(({ key, value }) => ({ key, value }))).toEqual([
-        { key: 'menu.about', value: 'Giới thiệu' },
-        { key: 'menu.home', value: 'Trang chủ' },
-      ]);
     });
 
     it('ngôn ngữ mới hiện ngay ở GET /languages (cache đã xóa)', async () => {
@@ -307,7 +291,7 @@ describe('Admin Languages (e2e)', () => {
   });
 
   describe('DELETE /admin/languages/:id', () => {
-    it('xóa ngôn ngữ chưa dùng, cascade tên danh mục và UI translation', async () => {
+    it('xóa ngôn ngữ chưa dùng, cascade tên danh mục', async () => {
       const ja = await Language.create({ code: 'ja', name: '日本語' });
       const category = await Category.create({});
       await CategoryTranslation.create({
@@ -315,11 +299,6 @@ describe('Admin Languages (e2e)', () => {
         languageId: ja.id,
         name: '旅行',
         slug: 'ryoko',
-      });
-      await UiTranslation.create({
-        languageId: ja.id,
-        key: 'menu.home',
-        value: 'ホーム',
       });
 
       const res = await request(server())
@@ -335,9 +314,6 @@ describe('Admin Languages (e2e)', () => {
       expect(
         await CategoryTranslation.count({ where: { languageId: ja.id } }),
       ).toBe(0);
-      expect(await UiTranslation.count({ where: { languageId: ja.id } })).toBe(
-        0,
-      );
     });
 
     it('400 khi xóa ngôn ngữ mặc định', async () => {

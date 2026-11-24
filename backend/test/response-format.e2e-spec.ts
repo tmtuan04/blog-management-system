@@ -176,43 +176,6 @@ describe('Response format 6.4 (e2e)', () => {
     });
   });
 
-  describe('UI Translations', () => {
-    it('thành công', async () => {
-      const res = await request(server())
-        .get('/api/v1/ui-translations/vi')
-        .expect(200);
-      expectSuccess(res.body);
-    });
-
-    it('phân trang có meta', async () => {
-      const { token } = await tokenFor(ctx.app, 'super_admin');
-      const res = await request(server())
-        .get('/api/v1/admin/ui-translations')
-        .set(bearer(token))
-        .expect(200);
-      expectSuccess(res.body);
-      expect(Array.isArray(res.body.data)).toBe(true);
-      expect(res.body.meta).toEqual({
-        page: 1,
-        limit: 50,
-        total: 0,
-        totalPages: 0,
-      });
-    });
-
-    it('lỗi validate', async () => {
-      const { token } = await tokenFor(ctx.app, 'super_admin');
-      const res = await request(server())
-        .post('/api/v1/admin/ui-translations')
-        .set(bearer(token))
-        .send({})
-        .expect(400);
-      expectError(res.body);
-      expect(res.body.code).toBe('VALIDATION_ERROR');
-      expect(res.body.errors.length).toBeGreaterThan(0);
-    });
-  });
-
   describe('Auth', () => {
     it('thành công', async () => {
       const { token } = await tokenFor(ctx.app, 'user');
