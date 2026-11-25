@@ -147,7 +147,7 @@ Các phần trong mục này là phần nền. Sửa phần nền thì A phải 
 ```
 
 - `ValidationPipe` có `exceptionFactory` chuyển lỗi của `class-validator` thành `errors[]`. Field lồng nhau viết dạng `translations.0.title`.
-- `code` là phần thêm vào format 6.4 (quyết định Q2 ở mục 10). Phase 4 dựa vào `code` để hiện thông báo theo ngôn ngữ đang chọn. Danh sách mã đặt trong `common/errors.ts`, ví dụ: `VALIDATION_ERROR`, `UNAUTHORIZED`, `TOKEN_EXPIRED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `TOO_MANY_REQUESTS`, `INVALID_CREDENTIALS`, `ACCOUNT_LOCKED`, `RESET_TOKEN_INVALID`, `OAUTH_NO_EMAIL`, `LANGUAGE_IN_USE`, `CATEGORY_IN_USE`, `LAST_SUPER_ADMIN`.
+- `code` là phần thêm vào format 6.4 (quyết định Q2 ở mục 10). Phase 4 dựa vào `code` để hiện thông báo theo ngôn ngữ đang chọn. Danh sách mã đặt trong `common/errors.ts`, ví dụ: `VALIDATION_ERROR`, `UNAUTHORIZED`, `TOKEN_EXPIRED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `TOO_MANY_REQUESTS`, `INVALID_CREDENTIALS`, `ACCOUNT_LOCKED`, `RESET_TOKEN_INVALID`, `OAUTH_NO_EMAIL`, `OAUTH_FAILED`, `OAUTH_CODE_INVALID`, `LANGUAGE_IN_USE`, `CATEGORY_IN_USE`, `LAST_SUPER_ADMIN`.
 - Lỗi 500 chỉ trả `"Lỗi hệ thống"`, không trả stack. Chi tiết ghi vào log.
 - Lỗi unique của Sequelize (`SequelizeUniqueConstraintError`) đổi thành 409. Lỗi khóa ngoại RESTRICT đổi thành 409, kèm mã lỗi theo ngữ cảnh do service tự ném.
 
@@ -247,8 +247,8 @@ Mọi route có prefix `/api/v1`. Cột "Quyền": `public` (không cần đăng
 | POST | `/auth/reset-password` | public | UC03 | `reset-password` | Body `{ token, password, confirmPassword }`. Token sai hoặc hết hạn → 400 `RESET_TOKEN_INVALID`. Thành công: xóa token, thu hồi mọi refresh token |
 | GET | `/auth/me` | auth | UC02 | header | Thông tin user + role, để frontend hiện menu theo role |
 | GET | `/auth/google`, `/auth/github` | public | UC20 | `login`, `register` | Chuyển hướng sang provider |
-| GET | `/auth/google/callback`, `/auth/github/callback` | public | UC20 | | Xử lý theo UC20 rồi chuyển hướng về `${FRONTEND_URL}/oauth/callback?code=...`. Lỗi thì `?error=OAUTH_NO_EMAIL` (hoặc `ACCOUNT_LOCKED`) |
-| POST | `/auth/oauth/exchange` | public | UC20 | | Body `{ code }`. Đổi mã dùng một lần (60 giây) lấy cặp token. Không đưa token lên URL |
+| GET | `/auth/google/callback`, `/auth/github/callback` | public | UC20 | | Xử lý theo UC20 rồi chuyển hướng về `${FRONTEND_URL}/oauth/callback?code=...`. Chỉ nhận email **đã xác minh** bên provider (liên kết theo email nên email chưa xác minh cho phép chiếm tài khoản). Lỗi thì `?error=`: `OAUTH_NO_EMAIL` (không có email đã xác minh), `ACCOUNT_LOCKED`, `OAUTH_FAILED` (người dùng hủy, provider lỗi, hoặc tài khoản trùng email đã liên kết một tài khoản khác của cùng provider) |
+| POST | `/auth/oauth/exchange` | public | UC20 | | Body `{ code }`. Đổi mã dùng một lần (60 giây) lấy `{ accessToken, refreshToken, user }` như login. Không đưa token lên URL. Mã sai, hết hạn hoặc đã dùng → 400 `OAUTH_CODE_INVALID`. Bị khóa → 403 `ACCOUNT_LOCKED` |
 
 ### 4.2. Trang đọc blog
 
@@ -494,7 +494,7 @@ Cập nhật 24/11: ghi lại trạng thái B4 (đã merge ngày 21/11, PR #59) 
 | A4 (**đã xong**) | Chi tiết bài UC06: `/posts/:slug`, `/related`, tăng lượt xem | A3 | `/related` trả 404 khi slug không có ở ngôn ngữ đang chọn, giống `/posts/:slug` |
 | A5 (**đã xong**) | Tìm kiếm UC19 (Should) | A3 | Test với cả từ khóa tiếng Việt có dấu |
 | A6 (**đã xong**) | Hồ sơ cá nhân UC12 (Should, mục 4.4) | A2 | Chuyển từ B sang ở bản 1.1. Avatar dùng lại `UploadModule` |
-| A7 | OAuth UC20 Google, Github (Should) | A2 | Cần đăng ký app OAuth (requirements mục 9) trước ngày làm |
+| A7 (**đang làm**: GitHub xong cả route, e2e, Postman; còn Google) | OAuth UC20 Google, Github (Should) | A2 | Cần đăng ký app OAuth (requirements mục 9) trước ngày làm |
 | A8 | Duyệt lỗi C báo ở C3 thuộc phần nền, hoàn thiện Swagger, kiểm tra độ phủ chung, merge `dev` → `master` | C3 | |
 
 #### B
@@ -594,6 +594,7 @@ Cả nhóm chốt các mục này trước khi bắt đầu A1. Cột "Đề xu�
 
 - Giao diện Angular và việc nối API vào giao diện (phase 4).
 - Facebook OAuth (requirements UC20 ghi "làm nếu còn thời gian").
+- Tham số `state` của OAuth (chống CSRF lúc đăng nhập: kẻ xấu đăng nhập nạn nhân vào tài khoản của kẻ xấu). `state: true` của passport cần session mà backend không dùng session; muốn làm thì viết state store bằng Redis.
 - Dọn ảnh không còn dùng: ảnh trong nội dung bài, ảnh đã upload nhưng không lưu bài.
 - Giữ slug cũ hoặc redirect khi đổi tiêu đề.
 - Ghi log ra file, monitoring. Chỉ log ra console.
