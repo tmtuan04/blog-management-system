@@ -26,6 +26,7 @@ import { CommentsModule } from './modules/comments/comments.module';
 import { LanguagesModule } from './modules/languages/languages.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { ProfileModule } from './modules/profile/profile.module';
+import { AdminUsersModule } from './modules/users/admin-users.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { ProfileModule } from './modules/profile/profile.module';
     LanguagesModule,
     PostsModule,
     ProfileModule,
+    AdminUsersModule,
   ],
   providers: [
     // Thứ tự guard: rate limit → xác thực → phân quyền
