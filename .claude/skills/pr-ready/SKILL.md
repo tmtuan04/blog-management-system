@@ -45,12 +45,11 @@ Soát bằng cách đọc diff:
 cd html
 npm run build
 npm run check-links
-cd ../backend
 npm run i18n:check
 ```
 
 - Sau `npm run build`, `css/main.css` còn thay đổi chưa commit nghĩa là CSS trong nhánh đang cũ.
-- `i18n:check` lỗi: chạy `npm run i18n:extract`, dịch key thiếu `en`, chạy lại.
+- `i18n:check` lỗi: chạy `npm run i18n:extract`, dịch key thiếu `en` trong `html/i18n/en.json`, chạy lại.
 - Sửa template dùng chung thì kiểm tra các trang chép lại header, footer, offcanvas đã được sửa theo.
 
 ## 4. Changelog

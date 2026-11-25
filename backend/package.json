@@ -23,8 +23,6 @@
     "db:migrate:undo:all": "sequelize-cli db:migrate:undo:all",
     "db:seed": "sequelize-cli db:seed:all",
     "db:seed:undo": "sequelize-cli db:seed:undo:all",
-    "i18n:extract": "node scripts/extract-i18n.mjs",
-    "i18n:check": "node scripts/extract-i18n.mjs --check",
     "db:test:migrate": "sequelize-cli db:migrate --env test"
   },
   "dependencies": {
@@ -49,6 +47,7 @@
     "mysql2": "^3.24.6",
     "nodemailer": "^10.2.1",
     "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
@@ -69,6 +68,7 @@
     "@types/multer": "^2.3.0",
     "@types/node": "^24.0.0",
     "@types/nodemailer": "^8.0.2",
+    "@types/passport-github2": "^1.2.9",
     "@types/passport-jwt": "^4.0.1",
     "@types/sanitize-html": "^2.16.2",
     "@types/supertest": "^7.0.0",

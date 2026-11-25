@@ -1,3 +1,5 @@
+import type { Sequelize } from 'sequelize-typescript';
+import { OauthAccount } from './models/oauth-account.model';
 import { Role } from './models/role.model';
 import { User } from './models/user.model';
 import { UsersService } from './users.service';
@@ -13,9 +15,20 @@ describe('UsersService', () => {
     update: jest.fn(),
   };
   const roleModel = { findOne: jest.fn() };
+  const oauthModel = {
+    findOne: jest.fn(),
+    count: jest.fn(),
+    create: jest.fn(),
+  };
+  const transaction = { id: 'tx' };
+  const sequelize = {
+    transaction: jest.fn((work: (t: unknown) => unknown) => work(transaction)),
+  };
   const service = new UsersService(
     userModel as unknown as typeof User,
     roleModel as unknown as typeof Role,
+    oauthModel as unknown as typeof OauthAccount,
+    sequelize as unknown as Sequelize,
   );
 
   beforeEach(() => jest.clearAllMocks());
@@ -93,5 +106,76 @@ describe('UsersService', () => {
       { passwordHash: 'h2' },
       { where: { id: 2 } },
     );
+  });
+  describe('OAuth (UC20)', () => {
+    const link = {
+      provider: 'github' as const,
+      providerUserId: '42',
+      providerEmail: 'a@b.com',
+    };
+
+    it('findByOauth tìm theo provider + provider user id, kèm user và role', async () => {
+      const user = { id: 3 };
+      oauthModel.findOne.mockResolvedValue({ user });
+      await expect(service.findByOauth('github', '42')).resolves.toBe(user);
+      expect(oauthModel.findOne).toHaveBeenCalledWith({
+        where: { provider: 'github', providerUserId: '42' },
+        include: [{ model: User, include: [Role] }],
+      });
+    });
+
+    it('findByOauth chưa liên kết thì trả null', async () => {
+      oauthModel.findOne.mockResolvedValue(null);
+      await expect(service.findByOauth('github', '42')).resolves.toBeNull();
+    });
+
+    it('hasOauth đếm theo user + provider', async () => {
+      oauthModel.count.mockResolvedValueOnce(1).mockResolvedValueOnce(0);
+      await expect(service.hasOauth(3, 'github')).resolves.toBe(true);
+      await expect(service.hasOauth(3, 'github')).resolves.toBe(false);
+      expect(oauthModel.count).toHaveBeenCalledWith({
+        where: { userId: 3, provider: 'github' },
+      });
+    });
+
+    it('linkOauth ghi một dòng oauth_accounts', async () => {
+      await service.linkOauth(3, link);
+      expect(oauthModel.create).toHaveBeenCalledWith(
+        { userId: 3, ...link },
+        { transaction: undefined },
+      );
+    });
+
+    it('createFromOauth tạo user role user, chưa có mật khẩu, và liên kết trong cùng transaction', async () => {
+      const role = { id: 1, code: 'user' };
+      roleModel.findOne.mockResolvedValue(role);
+      userModel.create.mockResolvedValue({ id: 9 });
+
+      const user = await service.createFromOauth({
+        ...link,
+        fullName: 'An',
+        email: 'a@b.com',
+        avatar: 'https://avatars.githubusercontent.com/u/42',
+      });
+
+      expect(roleModel.findOne).toHaveBeenCalledWith({
+        where: { code: 'user' },
+      });
+      expect(userModel.create).toHaveBeenCalledWith(
+        {
+          fullName: 'An',
+          email: 'a@b.com',
+          passwordHash: null,
+          avatar: 'https://avatars.githubusercontent.com/u/42',
+          roleId: 1,
+        },
+        { transaction },
+      );
+      expect(oauthModel.create).toHaveBeenCalledWith(
+        { userId: 9, ...link },
+        { transaction },
+      );
+      expect(user.role).toBe(role);
+    });
   });
 });

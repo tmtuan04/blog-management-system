@@ -6,7 +6,6 @@ import { AppException, ErrorCode } from '../../common/errors';
 import { CachePrefix } from '../../common/utils/redis-keys';
 import { CacheService } from '../../infra/redis/cache.service';
 import { PostTranslation } from '../posts/models/post-translation.model';
-import { UiTranslation } from '../ui-translations/models/ui-translation.model';
 import { AdminLanguageDto } from './dto/admin-language-response.dto';
 import { CreateLanguageDto, UpdateLanguageDto } from './dto/save-language.dto';
 import { Language } from './models/language.model';
@@ -19,8 +18,6 @@ import { Language } from './models/language.model';
 export class AdminLanguagesService {
   constructor(
     @InjectModel(Language) private readonly languageModel: typeof Language,
-    @InjectModel(UiTranslation)
-    private readonly uiTranslationModel: typeof UiTranslation,
     @InjectModel(PostTranslation)
     private readonly postTranslationModel: typeof PostTranslation,
     private readonly sequelize: Sequelize,
@@ -60,33 +57,11 @@ export class AdminLanguagesService {
       ]);
     }
 
-    const language = await this.sequelize.transaction(async (transaction) => {
-      const created = await this.languageModel.create(
-        { code: dto.code, name: dto.name, isActive: dto.isActive ?? true },
-        { transaction },
-      );
-      // Sao chép mọi key của ngôn ngữ mặc định, giữ nguyên giá trị để admin dịch dần
-      const defaultLanguage = await this.languageModel.findOne({
-        where: { isDefault: true },
-        transaction,
-      });
-      if (defaultLanguage) {
-        const rows = await this.uiTranslationModel.findAll({
-          attributes: ['key', 'value'],
-          where: { languageId: defaultLanguage.id },
-          raw: true,
-          transaction,
-        });
-        await this.uiTranslationModel.bulkCreate(
-          rows.map(({ key, value }) => ({
-            languageId: created.id,
-            key,
-            value,
-          })),
-          { transaction },
-        );
-      }
-      return created;
+    // Chữ tĩnh của ngôn ngữ mới nằm ở file dịch của frontend (requirements D5)
+    const language = await this.languageModel.create({
+      code: dto.code,
+      name: dto.name,
+      isActive: dto.isActive ?? true,
     });
 
     await this.cache.invalidate(CachePrefix.all);
@@ -154,7 +129,7 @@ export class AdminLanguagesService {
         `Ngôn ngữ đang có ${total} bản dịch bài viết. Bạn có thể tắt ngôn ngữ để ẩn khỏi trang public.`,
       );
     }
-    // category_translations, ui_translations, page_translations xóa theo khóa ngoại CASCADE
+    // category_translations, page_translations xóa theo khóa ngoại CASCADE
     await language.destroy();
     await this.cache.invalidate(CachePrefix.all);
   }

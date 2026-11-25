@@ -1,30 +1,34 @@
-// Xuất danh sách key UI translation từ html/ cho seeder 07-ui-translations (phase 3 doc mục 5).
-// Chạy trong backend/:
-//   npm run i18n:extract   cập nhật database/seed-data/ui-translations.json
+// Đồng bộ file dịch chữ tĩnh i18n/vi.json, i18n/en.json với các key data-i18n trong html/ (requirements D5).
+// Phase 4 chép hai file này sang src/assets/i18n/ của Angular.
+// Chạy trong html/:
+//   npm run i18n:extract   cập nhật i18n/vi.json và i18n/en.json
 //   npm run i18n:check     chỉ kiểm tra, file lệch với HTML hoặc còn key thiếu `en` thì exit 1
 //
 // Nguồn key:
 // - data-i18n="key"              giá trị vi = chữ bên trong phần tử
 // - data-i18n-<thuộc tính>="key"  giá trị vi = thuộc tính <thuộc tính> của cùng phần tử
 // - data-loading-i18n="key"      giá trị vi = data-loading-text (mặc định lấy từ js/demo-state.js)
-// - html/js/*.js: cặp { text: '...', i18n: '...' } mà script gán data-i18n lúc chạy
+// - js/*.js: cặp { text: '...', i18n: '...' } mà script gán data-i18n lúc chạy
 // Không quét _templates/ vì đó là khung để copy, không phải trang thật.
 //
-// Giá trị `vi` lấy lại từ HTML mỗi lần chạy. Giá trị `en` dịch tay trong file JSON và được giữ nguyên;
-// key mới có `en: null` để người dịch điền.
+// File dịch dạng lồng nhau theo dấu chấm của key (`menu.home` → { "menu": { "home": ... } }), key sắp theo
+// thứ tự chữ cái. Giá trị `vi` lấy lại từ HTML mỗi lần chạy. Giá trị `en` dịch tay trong en.json và được giữ
+// nguyên; key mới chưa có trong en.json thì script báo "Thiếu en", giao diện dùng tạm giá trị vi.
 //
-// Chữ trong HTML có dữ liệu demo (số lượng, tên người, tên file) thì thêm trường `sample` vào key đó và viết
-// `vi`, `en` bằng tay với tham số `{{ten}}`, ví dụ "Trả lời {{name}}...". Key có `sample` thì script giữ
-// nguyên `vi`, chỉ ghi chữ trong HTML vào `sample` và báo khi chữ đó đổi để người viết xem lại mẫu.
+// Chữ trong HTML có dữ liệu demo (số lượng, tên người, tên file) thì sửa tay giá trị trong vi.json và en.json
+// thành mẫu có tham số `{{ten}}`, ví dụ "Trả lời {{name}}...". Giá trị vi có tham số thì script giữ nguyên,
+// chỉ kiểm tra chữ trong HTML vẫn khớp mẫu (mỗi `{{ten}}` khớp một đoạn chữ bất kỳ) và báo khi lệch.
+// Bản en phải có đúng các tham số như bản vi.
 
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const BACKEND = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const HTML_DIR = resolve(BACKEND, '..', 'html');
-const OUTPUT = join(BACKEND, 'database', 'seed-data', 'ui-translations.json');
-const SKIP_DIRS = new Set(['node_modules', '_templates', 'scripts']);
+const HTML_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const I18N_DIR = join(HTML_DIR, 'i18n');
+const LANGUAGES = ['vi', 'en'];
+const fileOf = (code) => join(I18N_DIR, `${code}.json`);
+const SKIP_DIRS = new Set(['node_modules', '_templates', 'scripts', 'i18n']);
 const KEY_PATTERN = /^[a-z0-9_]+(\.[a-z0-9_]+)+$/;
 const VOID_TAGS = new Set([
   'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr',
@@ -172,37 +176,105 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-// Gộp với file cũ: giữ bản dịch `en` và mẫu có tham số, cập nhật chữ lấy từ HTML
-const previous = existsSync(OUTPUT) ? JSON.parse(readFileSync(OUTPUT, 'utf8')) : {};
-const htmlText = (entry) => entry.sample ?? entry.vi;
-const next = {};
-for (const key of [...entries.keys()].sort()) {
-  const { vi } = entries.get(key);
-  const old = previous[key];
-  next[key] = old?.sample !== undefined
-    ? { vi: old.vi, en: old.en ?? null, sample: vi }
-    : { vi, en: old?.en ?? null };
+// File dịch lồng nhau ↔ Map key phẳng
+function flatten(node, prefix, out, file) {
+  for (const [name, value] of Object.entries(node)) {
+    const key = prefix ? `${prefix}.${name}` : name;
+    if (typeof value === 'string') out.set(key, value);
+    else if (value && typeof value === 'object' && !Array.isArray(value)) flatten(value, key, out, file);
+    else errors.push(`${file}: key "${key}" phải là chuỗi hoặc nhóm key`);
+  }
+  return out;
 }
 
-const added = Object.keys(next).filter((key) => !(key in previous));
-const removed = Object.keys(previous).filter((key) => !(key in next));
-const changed = Object.keys(next).filter((key) => key in previous && htmlText(previous[key]) !== htmlText(next[key]));
-const missingEn = Object.keys(next).filter((key) => !next[key].en);
-const json = `${JSON.stringify(next, null, 2)}\n`;
-const upToDate = existsSync(OUTPUT) && readFileSync(OUTPUT, 'utf8') === json;
+function nest(map) {
+  const root = {};
+  for (const key of [...map.keys()].sort()) {
+    const parts = key.split('.');
+    let node = root;
+    for (const part of parts.slice(0, -1)) {
+      if (typeof node[part] === 'string') errors.push(`key "${key}" trùng với key "${parts.slice(0, parts.indexOf(part) + 1).join('.')}"`);
+      node = node[part] ??= {};
+    }
+    const last = parts.at(-1);
+    if (typeof node[last] === 'object') errors.push(`key "${key}" là tiền tố của key khác`);
+    node[last] = map.get(key);
+  }
+  return root;
+}
 
-console.log(`${Object.keys(next).length} key (${added.length} mới, ${removed.length} bỏ, ${changed.length} đổi chữ vi).`);
-for (const [label, keys] of [['Mới', added], ['Bỏ (không còn trong HTML)', removed], ['Đổi chữ vi', changed], ['Thiếu en', missingEn]]) {
+function readTranslations(code) {
+  const file = fileOf(code);
+  return existsSync(file) ? flatten(JSON.parse(readFileSync(file, 'utf8')), '', new Map(), rel(file)) : new Map();
+}
+
+const PARAM = /\{\{\s*(\w+)\s*\}\}/g;
+const paramsOf = (text) => [...text.matchAll(PARAM)].map((match) => match[1]).sort().join(',');
+// Mẫu có tham số → regex khớp chữ trong HTML, mỗi tham số khớp một đoạn chữ bất kỳ
+const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function matchesTemplate(template, text) {
+  // split với nhóm bắt: phần chẵn là chữ thường, phần lẻ là tên tham số
+  const pattern = template.split(PARAM).map((part, i) => (i % 2 ? '.+?' : escapeRegExp(part))).join('');
+  return new RegExp(`^${pattern}$`).test(text);
+}
+
+const previousVi = readTranslations('vi');
+const previousEn = readTranslations('en');
+const nextVi = new Map();
+const nextEn = new Map();
+const templateMismatch = [];
+const paramMismatch = [];
+for (const key of [...entries.keys()].sort()) {
+  const { vi: htmlText } = entries.get(key);
+  const oldVi = previousVi.get(key);
+  if (oldVi !== undefined && paramsOf(oldVi)) {
+    nextVi.set(key, oldVi);
+    if (!matchesTemplate(oldVi, htmlText)) templateMismatch.push(`${key} (HTML: "${htmlText}", mẫu: "${oldVi}")`);
+  } else {
+    nextVi.set(key, htmlText);
+  }
+  const en = previousEn.get(key);
+  if (en) {
+    nextEn.set(key, en);
+    if (paramsOf(en) !== paramsOf(nextVi.get(key))) paramMismatch.push(key);
+  }
+}
+
+const added = [...nextVi.keys()].filter((key) => !previousVi.has(key));
+const removed = [...new Set([...previousVi.keys(), ...previousEn.keys()])].filter((key) => !nextVi.has(key));
+const changed = [...nextVi.keys()].filter((key) => previousVi.has(key) && previousVi.get(key) !== nextVi.get(key));
+const missingEn = [...nextVi.keys()].filter((key) => !nextEn.has(key));
+const output = { vi: nextVi, en: nextEn };
+const json = Object.fromEntries(LANGUAGES.map((code) => [code, `${JSON.stringify(nest(output[code]), null, 2)}\n`]));
+if (errors.length > 0) {
+  errors.forEach((error) => console.error(error));
+  process.exit(1);
+}
+const stale = LANGUAGES.filter((code) => !existsSync(fileOf(code)) || readFileSync(fileOf(code), 'utf8') !== json[code]);
+
+console.log(`${nextVi.size} key (${added.length} mới, ${removed.length} bỏ, ${changed.length} đổi chữ vi).`);
+for (const [label, keys] of [
+  ['Mới', added],
+  ['Bỏ (không còn trong HTML)', removed],
+  ['Đổi chữ vi', changed],
+  ['Thiếu en', missingEn],
+  ['Chữ trong HTML không khớp mẫu có tham số, sửa tay vi.json / en.json', templateMismatch],
+  ['Bản en khác tham số với bản vi', paramMismatch],
+]) {
   if (keys.length > 0) console.log(`${label}: ${keys.join(', ')}`);
 }
 
+const problems = missingEn.length + templateMismatch.length + paramMismatch.length;
 if (checkOnly) {
-  if (!upToDate || missingEn.length > 0) {
-    console.error(`\n${relative(BACKEND, OUTPUT)} chưa khớp với html/. Chạy npm run i18n:extract rồi dịch các key thiếu en.`);
+  if (stale.length > 0 || problems > 0) {
+    console.error('\nFile dịch trong i18n/ chưa khớp với html/. Chạy npm run i18n:extract rồi sửa các mục ở trên.');
     process.exit(1);
   }
-  console.log('File UI translation đã khớp với html/.');
-} else if (!upToDate) {
-  writeFileSync(OUTPUT, json);
-  console.log(`Đã ghi ${relative(BACKEND, OUTPUT)}.`);
+  console.log('File dịch trong i18n/ đã khớp với html/.');
+} else {
+  mkdirSync(I18N_DIR, { recursive: true });
+  for (const code of stale) {
+    writeFileSync(fileOf(code), json[code]);
+    console.log(`Đã ghi ${rel(fileOf(code))}.`);
+  }
 }

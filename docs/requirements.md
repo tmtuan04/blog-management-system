@@ -2,7 +2,7 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 2.1 (dự án do 3 người thực hiện) |
+| Phiên bản | 2.2 (dự án do 3 người thực hiện) |
 | Ngày tạo | 01/10/2026 |
 | Thời gian thực hiện | Khoảng 9 tuần, chia thành 5 phase (xem mục 1.5) |
 | Nhân sự | 3 người, A làm chủ đạo (~45%), B (~40%), C (~15%) (xem mục 1.4) |
@@ -41,7 +41,7 @@ Xây dựng hệ thống Blog đa ngôn ngữ, gồm trang đọc blog cho ngư�
 | Bản dịch bài viết (Post translation) | Nội dung của post ở một ngôn ngữ: tiêu đề, slug, tóm tắt, nội dung, trạng thái, lượt xem. Mỗi post có tối đa một bản dịch cho mỗi ngôn ngữ |
 | Category | Danh mục bài viết, dùng chung cho mọi ngôn ngữ, tên được dịch theo từng ngôn ngữ |
 | Language | Ngôn ngữ do Super Admin quản lý (ví dụ `vi`, `en`) |
-| UI translation | Bản dịch chữ tĩnh trên giao diện (menu, nút bấm, footer...) |
+| UI translation | Bản dịch chữ tĩnh trên giao diện (menu, nút bấm, footer...), nằm trong file JSON của frontend, mỗi ngôn ngữ một file (xem D5) |
 | Page | Trang nội dung tĩnh (Giới thiệu, Liên hệ, Chính sách bảo mật). Danh sách trang cố định, mỗi trang có nội dung riêng cho từng ngôn ngữ (xem UC18) |
 | Slug | Chuỗi định danh trên URL, sinh từ tiêu đề, ví dụ `huong-dan-angular` |
 | Access token | JWT ngắn hạn dùng để gọi API |
@@ -54,7 +54,7 @@ Nhóm gồm 3 thành viên. A làm chủ đạo, khoảng 45% khối lượng: p
 | Thành viên | Khối lượng | Phụ trách |
 | --- | --- | --- |
 | A - Nền tảng + Auth + Bài viết | ~45% | Thiết kế ERD, migrations; khung backend NestJS (cấu trúc module, interceptor format response, exception filter xử lý lỗi, guard xác thực và phân quyền, upload file, lọc HTML, Redis, Swagger); khung Angular (module, routing, interceptors, guards, cơ chế đa ngôn ngữ, layout, component dùng chung: phân trang, hộp xác nhận, rich text editor); xác thực (UC01-UC04); OAuth (UC20); chi tiết bài viết (UC06); quản lý bài viết và bản dịch (UC13); tìm kiếm toàn văn (UC19); deploy (phase 5) |
-| B - Quản trị + Bình luận | ~40% | Tài liệu mô tả bảng, seeders; bình luận (UC08); xem trang tĩnh (UC11); hồ sơ cá nhân (UC12); quản lý người dùng (UC14), danh mục (UC15), ngôn ngữ (UC16), bản dịch giao diện (UC17), trang tĩnh (UC18); làm lại deploy trên máy ảo mới để kiểm tra tài liệu |
+| B - Quản trị + Bình luận | ~40% | Tài liệu mô tả bảng, seeders; bình luận (UC08); xem trang tĩnh (UC11); hồ sơ cá nhân (UC12); quản lý người dùng (UC14), danh mục (UC15), ngôn ngữ (UC16), trang tĩnh (UC18); làm lại deploy trên máy ảo mới để kiểm tra tài liệu |
 | C - Trang đọc + Tiện ích | ~15% | Review ERD, chạy thử migrate/seed/rollback; trang chủ (UC05), bài theo danh mục (UC07); đổi ngôn ngữ (UC09, phần bộ chọn ngôn ngữ, dùng cơ chế đa ngôn ngữ A dựng trong khung); đổi giao diện sáng/tối (UC10); component thông báo (toast); kiểm tra responsive, sáng/tối, trình duyệt ở phase 2 và phase 4; chuẩn bị máy ảo, hệ điều hành ở phase 5 |
 
 - Ở phase 3 và phase 4, A dựng khung trước. B và C bắt đầu code sau khi khung được merge, làm theo mẫu module có sẵn và dùng lại các component dùng chung (rich text editor, phân trang, hộp xác nhận).
@@ -78,7 +78,7 @@ Các phase làm lần lượt. Một phase chỉ kết thúc khi đạt hết "�
 
 Công việc:
 
-- Thiết kế ERD trên dbdiagram.io cho các bảng: `roles`, `users`, `oauth_accounts`, `languages`, `categories`, `category_translations`, `posts`, `post_translations`, `comments`, `ui_translations`, `pages`, `page_translations`.
+- Thiết kế ERD trên dbdiagram.io cho các bảng: `roles`, `users`, `oauth_accounts`, `languages`, `categories`, `category_translations`, `posts`, `post_translations`, `comments`, `pages`, `page_translations`.
 - Viết tài liệu mô tả từng bảng: cột, kiểu dữ liệu, ràng buộc, index, khóa ngoại và hành vi khi xóa (ví dụ xóa bài thì xóa luôn bình luận).
 - Viết migrations Sequelize, gồm cả FULLTEXT index (parser `ngram`) cho bảng `post_translations`.
 - Viết seeders theo mục 6.6.
@@ -105,12 +105,12 @@ Màn hình cần làm:
 - Bộ SCSS dùng chung; layout trang public (header, footer), trang auth và trang quản trị (sidebar).
 - Trang public: trang chủ, chi tiết bài viết (kèm bình luận), bài theo danh mục, kết quả tìm kiếm, trang tĩnh, trang 404.
 - Tài khoản: đăng ký, đăng nhập, quên mật khẩu, đặt lại mật khẩu, hồ sơ cá nhân.
-- Trang quản trị: danh sách bài viết, form thêm/sửa bài viết (có tab cho từng ngôn ngữ), quản lý người dùng, quản lý danh mục, quản lý ngôn ngữ, quản lý bản dịch giao diện, danh sách trang tĩnh, sửa trang tĩnh.
+- Trang quản trị: danh sách bài viết, form thêm/sửa bài viết (có tab cho từng ngôn ngữ), quản lý người dùng, quản lý danh mục, quản lý ngôn ngữ, danh sách trang tĩnh, sửa trang tĩnh.
 
 | Người | Màn hình |
 | --- | --- |
 | A | Bộ SCSS dùng chung; layout trang public, auth và trang quản trị; thẻ bài viết, trang chủ, chi tiết bài viết (kèm bình luận); danh sách bài viết, form thêm/sửa bài viết, rich text editor; trang mục lục và duyệt kiểm tra tổng |
-| B | Kết quả tìm kiếm, trang tĩnh, trang 404; đăng ký, đăng nhập, quên mật khẩu, đặt lại mật khẩu, hồ sơ cá nhân; quản lý người dùng, danh mục, ngôn ngữ, bản dịch giao diện, danh sách trang tĩnh, sửa trang tĩnh |
+| B | Kết quả tìm kiếm, trang tĩnh, trang 404; đăng ký, đăng nhập, quên mật khẩu, đặt lại mật khẩu, hồ sơ cá nhân; quản lý người dùng, danh mục, ngôn ngữ, danh sách trang tĩnh, sửa trang tĩnh |
 | C | Toast; bài theo danh mục; kiểm tra toàn bộ màn hình theo điều kiện hoàn thành (responsive, sáng/tối, trình duyệt) |
 
 Đầu ra: thư mục `html/` chứa các file HTML và SCSS.
@@ -225,7 +225,7 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 | UC06 | Xem chi tiết bài viết (View post detail) | Guest, Authenticated User | Must | A | |
 | UC07 | Xem bài viết theo danh mục (View posts by category) | Guest, Authenticated User | Must | C | |
 | UC08 | Bình luận (Comment) | Authenticated User | Must | B | |
-| UC09 | Đổi ngôn ngữ (Change blog language) | Guest, Authenticated User | Must | C | Dùng API ngôn ngữ (UC16) và API bản dịch giao diện (UC17). A dựng cơ chế đa ngôn ngữ trong khung Angular, C làm bộ chọn ngôn ngữ và nối vào |
+| UC09 | Đổi ngôn ngữ (Change blog language) | Guest, Authenticated User | Must | C | Dùng API ngôn ngữ (UC16); chữ tĩnh dịch bằng file JSON ở frontend (D5). A dựng cơ chế đa ngôn ngữ trong khung Angular, C làm bộ chọn ngôn ngữ và nối vào |
 | UC10 | Đổi giao diện sáng/tối (Change theme) | Guest, Authenticated User | Should | C | Mở rộng |
 | UC11 | Xem trang tĩnh (Giới thiệu, Liên hệ, Chính sách bảo mật) | Guest, Authenticated User | Must | B | |
 | UC12 | Quản lý hồ sơ cá nhân | Authenticated User | Should | B | Bổ sung, đề bài không ghi |
@@ -233,7 +233,7 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 | UC14 | Quản lý người dùng (Manage users) | Super Admin | Must | B | |
 | UC15 | Quản lý danh mục (Manage categories) | Super Admin | Must | B | |
 | UC16 | Quản lý ngôn ngữ (Manage languages) | Super Admin | Must | B | |
-| UC17 | Quản lý bản dịch giao diện (Manage UI translations) | Super Admin | Must | B | Cần để đổi được menu và chữ tĩnh theo ngôn ngữ |
+| UC17 | ~~Quản lý bản dịch giao diện (Manage UI translations)~~ | - | Đã bỏ | - | Bỏ ở 2.2 theo góp ý của mentor: chữ tĩnh dịch bằng file JSON ở frontend (D5). Giữ mã để không đánh số lại UC18-UC20 |
 | UC18 | Quản lý trang tĩnh (Manage pages) | Super Admin | Must | B | Chỉ sửa nội dung của các trang có sẵn, không đổi bố cục giao diện |
 | UC19 | Tìm kiếm toàn văn (Full text search) | Guest, Authenticated User | Should | A | Mở rộng |
 | UC20 | Đăng nhập bằng OAuth (Google, Github, Facebook) | Guest | Should | A | Mở rộng, làm Google và Github trước |
@@ -324,7 +324,7 @@ Mức độ ưu tiên theo MoSCoW: **Must** (bắt buộc), **Should** (nên có
 - Khi đổi ngôn ngữ, toàn bộ nội dung sau phải đổi theo:
   - Danh sách bài viết: chỉ còn các bài có bản dịch `published` ở ngôn ngữ mới, hiện theo bản dịch đó.
   - Tên danh mục.
-  - Menu, nút bấm, footer và mọi chữ tĩnh khác (UI translations).
+  - Menu, nút bấm, footer và mọi chữ tĩnh khác (UI translations, lấy từ file dịch của frontend).
   - Nội dung các trang tĩnh (Giới thiệu, Liên hệ, Chính sách bảo mật).
 - Nếu đang ở trang chi tiết bài viết khi đổi ngôn ngữ: bài có bản dịch `published` ở ngôn ngữ mới thì chuyển sang bản dịch đó (`/posts/:slug` theo slug mới), nếu không thì chuyển về trang chủ.
 - Nếu đang ở trang danh mục khi đổi ngôn ngữ: chuyển sang slug của danh mục đó ở ngôn ngữ mới.
@@ -421,14 +421,12 @@ Mỗi bài viết gồm phần dùng chung cho mọi ngôn ngữ và các bản 
 - Hệ thống luôn có đúng 1 ngôn ngữ mặc định. Chọn ngôn ngữ khác làm mặc định thì ngôn ngữ cũ tự bỏ mặc định.
 - Không được xóa hoặc tắt ngôn ngữ mặc định.
 - Không xóa được ngôn ngữ đang có bản dịch bài viết (kể cả khi là ngôn ngữ gốc của bài), chỉ được tắt. Ngôn ngữ đã tắt sẽ ẩn khỏi bộ chọn ngôn ngữ, các bản dịch ở ngôn ngữ đó không hiện ra ngoài trang public, và không chọn được làm ngôn ngữ gốc hay thêm bản dịch mới ở ngôn ngữ đó.
-- Khi thêm ngôn ngữ mới, hệ thống sao chép toàn bộ key UI translation từ ngôn ngữ mặc định sang (giữ nguyên giá trị để admin dịch dần).
+- Thêm ngôn ngữ mới chỉ dịch được nội dung (bài viết, danh mục, trang tĩnh). Chữ tĩnh của ngôn ngữ đó cần lập trình viên thêm file dịch ở frontend; chưa có file thì chữ tĩnh hiện theo ngôn ngữ mặc định.
 
-**UC17 - Quản lý bản dịch giao diện**
+**UC17 - Quản lý bản dịch giao diện (đã bỏ ở 2.2)**
 
-- Hiện dạng bảng: mỗi dòng là một key (ví dụ `menu.home`), mỗi cột là một ngôn ngữ.
-- Thêm key mới, sửa giá trị, xóa key (xóa ở mọi ngôn ngữ).
-- Tìm theo key hoặc theo giá trị.
-- Ngôn ngữ nào thiếu giá trị của một key thì frontend hiện giá trị của ngôn ngữ mặc định.
+- Không còn màn quản trị và API cho chữ tĩnh. Chữ tĩnh nằm trong file JSON của frontend, mỗi ngôn ngữ một file, quản lý cùng mã nguồn (xem D5).
+- Thư viện i18n của frontend tra key theo ngôn ngữ đang chọn; ngôn ngữ nào thiếu key hoặc chưa có file thì hiện giá trị của ngôn ngữ mặc định.
 
 **UC18 - Quản lý trang tĩnh**
 
@@ -469,14 +467,15 @@ Trang tĩnh là trang chỉ gồm chữ và hình, nội dung ít thay đổi v�
 
 - Không phải công cụ thiết kế trang (page builder): không kéo thả, không đổi bố cục, màu sắc, font chữ hay CSS của trang. Mọi trang tĩnh dùng chung một khung giao diện do frontend làm sẵn.
 - Không tạo trang mới, không xóa trang, không đổi key hoặc URL.
-- Không sửa chữ trên menu, footer hay nút bấm, kể cả tên của các link dẫn tới trang tĩnh. Phần đó sửa ở UC17.
+- Không sửa chữ trên menu, footer hay nút bấm, kể cả tên của các link dẫn tới trang tĩnh. Phần đó nằm trong file dịch của frontend (D5).
 - Không lưu lịch sử các lần sửa.
 
-*Phân biệt UC17 và UC18:*
+*Phân biệt chữ tĩnh và UC18:*
 
-| | UC17 - Bản dịch giao diện | UC18 - Trang tĩnh |
+| | Chữ tĩnh (file dịch của frontend) | UC18 - Trang tĩnh |
 | --- | --- | --- |
 | Sửa cái gì | Chữ ngắn cố định trên giao diện: menu, nút bấm, footer, thông báo | Nội dung dài của một trang riêng |
+| Ai sửa | Lập trình viên, sửa file JSON rồi deploy lại frontend | Super Admin, qua màn quản trị |
 | Dạng dữ liệu | Mỗi key là một chuỗi văn bản thuần | Tiêu đề và nội dung rich text |
 | Ví dụ | `menu.about` = "Giới thiệu" | Toàn bộ nội dung của trang `/pages/about` |
 
@@ -495,7 +494,7 @@ Trang tĩnh là trang chỉ gồm chữ và hình, nội dung ít thay đổi v�
 | Xóa mọi bình luận | | | | X |
 | Hồ sơ cá nhân, đăng xuất | | X | X | X |
 | Quản lý bài viết của mình | | | X | X |
-| Quản lý người dùng, danh mục, ngôn ngữ, bản dịch, trang tĩnh | | | | X |
+| Quản lý người dùng, danh mục, ngôn ngữ, trang tĩnh | | | | X |
 
 Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quyền của Blog Owner.
 
@@ -563,7 +562,7 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 ### 6.6. Dữ liệu
 
 - CSDL dùng `utf8mb4` / `utf8mb4_unicode_ci` để lưu đúng tiếng Việt và emoji.
-- Có seeder dữ liệu mẫu: 3 role (`user`, `blog_owner`, `super_admin`), 1 Super Admin, 2 Blog Owner, 2 ngôn ngữ (`vi` mặc định, `en`), 5 danh mục, khoảng 30 bài viết (có cả bài gốc `vi` và bài gốc `en`, một phần bài đã có bản dịch sang ngôn ngữ còn lại, trong đó có bản dịch đang `draft`), các UI translation cơ bản, 3 trang tĩnh (`about`, `contact`, `privacy`) có nội dung cho cả `vi` và `en`.
+- Có seeder dữ liệu mẫu: 3 role (`user`, `blog_owner`, `super_admin`), 1 Super Admin, 2 Blog Owner, 2 ngôn ngữ (`vi` mặc định, `en`), 5 danh mục, khoảng 30 bài viết (có cả bài gốc `vi` và bài gốc `en`, một phần bài đã có bản dịch sang ngôn ngữ còn lại, trong đó có bản dịch đang `draft`), 3 trang tĩnh (`about`, `contact`, `privacy`) có nội dung cho cả `vi` và `en`.
 
 ---
 
@@ -575,7 +574,7 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 | D2 | Guest có được đọc bài không? | Có. Guest đọc được, chỉ bình luận mới cần đăng nhập | Blog công khai thì hợp lý hơn. Đề chỉ ghi các chức năng của User mà không cấm Guest đọc |
 | D3 | Bài tiếng Việt và tiếng Anh có liên kết với nhau không? | Có. Mỗi post có một ngôn ngữ gốc và có thể dịch ra nhiều ngôn ngữ (bảng `post_translations`). Ở mỗi ngôn ngữ chỉ hiện các bài có bản dịch `published` ở ngôn ngữ đó, không fallback về bản gốc | Đổi ngôn ngữ thì đọc các blog của ngôn ngữ đó, đang đọc một bài thì chuyển được sang bản dịch của chính bài đó |
 | D4 | Danh mục có tách riêng theo ngôn ngữ không? | Dùng chung, chỉ dịch tên | Tránh trùng lặp, admin quản lý dễ hơn |
-| D5 | Chữ tĩnh (menu, nút) lưu ở đâu? | Lưu trong CSDL (bảng `ui_translations`), frontend tải qua API | Admin thêm ngôn ngữ mới mà không cần sửa code hay build lại frontend |
+| D5 | Chữ tĩnh (menu, nút) lưu ở đâu? | Trong file JSON của frontend, mỗi ngôn ngữ một file (`vi.json`, `en.json`), dùng thư viện i18n của Angular. Thiếu key hoặc thiếu file thì hiện theo ngôn ngữ mặc định. Không có bảng, API hay màn quản trị cho chữ tĩnh (bản 2.1 trở về trước lưu trong bảng `ui_translations`, đổi ở 2.2 theo góp ý của mentor) | Key do template quyết định: thêm hay xóa key qua màn quản trị mà template không dùng thì không có tác dụng hoặc làm hỏng giao diện. Để key và bản dịch cùng chỗ với code thì quản lý bằng git, kiểm tra thiếu key lúc build, trang không phải chờ API mới hiện chữ. Đổi lại, thêm ngôn ngữ mới thì cần thêm file dịch và deploy lại frontend |
 | D6 | Bình luận có cần duyệt không? | Không, hiện ngay. Owner và Admin có quyền xóa | Đơn giản, phù hợp quy mô dự án |
 | D7 | Bình luận có trả lời lồng nhau không? | Có, tối đa 1 cấp | Cân bằng giữa trải nghiệm và độ phức tạp |
 | D8 | Có xóa người dùng không? | Không xóa cứng, chỉ khóa tài khoản | Giữ toàn vẹn dữ liệu bài viết và bình luận |
@@ -597,6 +596,7 @@ Super Admin cũng có quyền viết bài, vì Super Admin kế thừa mọi quy
 - Lên lịch đăng bài.
 - Công cụ thiết kế trang (page builder), tùy chỉnh bố cục hoặc màu sắc riêng cho từng trang tĩnh.
 - Dịch tự động bài viết (máy dịch, AI).
+- Sửa chữ tĩnh trên giao diện (menu, nút bấm, footer) qua màn quản trị (xem D5).
 - Đánh dấu bản dịch đã lỗi thời khi bản gốc được sửa.
 - Đổi ngôn ngữ gốc của bài sau khi tạo.
 - Deploy lên cloud hoặc hosting thật, dùng tên miền thật và chứng chỉ HTTPS thật (chỉ deploy lên máy ảo, xem phase 5).

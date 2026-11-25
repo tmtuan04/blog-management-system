@@ -14,7 +14,11 @@ Mở file HTML bằng Live Server của VS Code. Trước khi commit chạy `npm
 
 ```bash
 npm run check-links   # báo link chết, sai hoa/thường, đường dẫn bắt đầu bằng "/"
+npm run i18n:extract  # thêm / bỏ key data-i18n trong i18n/vi.json, i18n/en.json
+npm run i18n:check    # báo key thiếu en hoặc file dịch lệch với HTML
 ```
+
+Chữ tĩnh của giao diện nằm trong `i18n/vi.json`, `i18n/en.json` (requirements D5), phase 4 chép sang `src/assets/i18n/` của Angular. Sửa chữ hoặc thêm `data-i18n` thì chạy `npm run i18n:extract`, dịch các key thiếu `en` trong `i18n/en.json`, rồi chạy `npm run i18n:check`. Chữ có dữ liệu demo (số lượng, tên người) thì sửa tay giá trị trong cả hai file thành mẫu có tham số `{{ten}}` (xem comment đầu `scripts/extract-i18n.mjs`).
 
 ## Deploy
 
@@ -93,7 +97,6 @@ Bản deploy: <https://tmtuan04.github.io/blog-management-system/>, trang đầu
 | Bình luận | `.comment-form` (`__user`, `__input`, `__footer`, `__buttons`; `--reply` cho ô trả lời), `.comment-login` (khách), `.comment-list` > `.comment` (`__header`, `__author`, `__name`, `__badge`, `__content`, `__actions`, `__action`, `__replies`). Mẫu ở [public/post-detail.html](public/post-detail.html) |
 | Trang hồ sơ | `.profile` (cột 680px; `__section`, `__section-title`, `__section-desc`, `__avatar`, `__avatar-hint`, `__avatar-error`). Mẫu ở [public/profile.html](public/profile.html) |
 | Bảng ngôn ngữ | `.language-table` (`__code` chip mã ISO, `__count`, `__actions`). Mẫu ở [admin/languages.html](admin/languages.html) |
-| Bảng bản dịch giao diện | `.ui-translation-filter` (`__search`, `__summary`), `.ui-translation-table` (`__key`, `__value`, `__cell` là nút bấm để sửa, `__cell--missing` ô chưa có giá trị, `__legend`, `__edit` + `__edit-actions` + `__hint` khi sửa tại chỗ, `__actions`). Mẫu ở [admin/ui-translations.html](admin/ui-translations.html) |
 | Form sửa trang tĩnh | `.page-edit` (cột 680px; `__back`, `__info` + `__info-label` + `__code` cho key/URL chỉ đọc); tab ngôn ngữ dùng lại `.translation-tabs`. Mẫu ở [admin/page-edit.html](admin/page-edit.html) |
 | Chip danh mục | `.category-chips` (một hàng cuộn ngang) hoặc `.category-chips--wrap`; `.category-chip`, `.is-active` + `aria-current="page"`, số bài trong `.category-chip__count` |
 | Trang danh mục | `.category-head` (`__title`): tên danh mục lớn căn giữa + dòng số bài, đặt sau `.category-chips`. Mẫu ở [public/category.html](public/category.html) |

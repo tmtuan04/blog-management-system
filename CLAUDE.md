@@ -19,11 +19,10 @@ Chạy trong `backend/`:
 - `npm run test`, `npm run test -- <tên>`: unit test.
 - `npm run test:e2e`, `npm run test:e2e -- <tên>`: e2e, cần `docker compose up -d` (MySQL + Redis thật).
 - `npm run test:cov`: báo lỗi nếu tầng service dưới 70%.
-- `npm run i18n:extract`, `npm run i18n:check`: đồng bộ key `data-i18n` của `html/` với seed UI translation.
 
 Không gọi `npx jest` trực tiếp: Jest cần `--experimental-vm-modules`, chỉ các script `npm run test*` có sẵn cờ này.
 
-Chạy trong `html/`: `npm run build` (SCSS thành `css/main.css`, file này được commit), `npm run check-links`.
+Chạy trong `html/`: `npm run build` (SCSS thành `css/main.css`, file này được commit), `npm run check-links`, `npm run i18n:extract` / `npm run i18n:check` (đồng bộ key `data-i18n` với file dịch `html/i18n/vi.json`, `en.json`).
 
 ## Tài liệu là nguồn chuẩn
 

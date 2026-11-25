@@ -1,6 +1,6 @@
 # Danh sách màn hình phase 2
 
-Tổng cộng **20 màn**: A 5 màn (đã xong 5), B 14 màn (đã xong 14), C 1 màn (đã xong 1). Nguồn: [docs/phase-2-html.md](../docs/phase-2-html.md) mục 5 và 8.
+Tổng cộng **19 màn**: A 5 màn (đã xong 5), B 13 màn (đã xong 13), C 1 màn (đã xong 1). Màn "Quản lý bản dịch giao diện" (`admin/ui-translations.html`, B5) đã bỏ cùng UC17 ở requirements 2.2. Nguồn: [docs/phase-2-html.md](../docs/phase-2-html.md) mục 5 và 8.
 
 Quy ước: mỗi việc (A1, B1...) là **một nhánh và một PR** vào `dev`. Việc có nhiều màn thì các màn đó nằm chung một nhánh. Tên nhánh theo dạng `feature/html-<phần>`.
 
@@ -20,9 +20,9 @@ Cột "Chờ": việc của người khác phải merge vào `dev` rồi mới b
 | A5 | **Sửa bài viết** ✅ | `admin/post-edit.html` | Sửa bài, mỗi ngôn ngữ một tab, thêm hoặc xóa bản dịch | `feature/html-post-edit` | |
 | A6 | *(không phải màn)* Sửa lỗi phần dùng chung | | Duyệt và sửa các lỗi C báo ở C3 mà đụng tới phần dùng chung, bật chặn link chết trong workflow deploy | `feature/html-index-review` | C3 |
 
-## B: 14 màn
+## B: 13 màn
 
-### Quản trị (6 màn)
+### Quản trị (5 màn)
 
 | Việc | Màn | File | Mô tả ngắn | Nhánh | Chờ |
 |---|---|---|---|---|---|
@@ -30,8 +30,7 @@ Cột "Chờ": việc của người khác phải merge vào `dev` rồi mới b
 | B1 | **Quản lý trang tĩnh** ✅ | `admin/pages.html` | Danh sách trang Giới thiệu, Liên hệ, Chính sách bảo mật: ngôn ngữ đã có nội dung, trạng thái hiển thị, nút "Sửa" | *(chung nhánh trên)* | |
 | B2 | **Quản lý người dùng** ✅ | `admin/users.html` | Bảng người dùng, đổi vai trò, khóa/mở khóa, tạo tài khoản | `feature/html-admin-users-languages` | |
 | B2 | **Quản lý ngôn ngữ** ✅ | `admin/languages.html` | Bảng ngôn ngữ, đặt ngôn ngữ mặc định, bật/tắt, thêm/sửa | *(chung nhánh trên)* | |
-| B5 | **Quản lý bản dịch giao diện** ✅ | `admin/ui-translations.html` | Bảng key và bản dịch theo từng ngôn ngữ, sửa ngay trong ô | `feature/html-admin-translations-page-edit` | A3 |
-| B5 | **Sửa trang tĩnh** ✅ | `admin/page-edit.html` | Sửa nội dung trang tĩnh, mỗi ngôn ngữ một tab, có trình soạn thảo | *(chung nhánh trên)* | A3 |
+| B5 | **Sửa trang tĩnh** ✅ | `admin/page-edit.html` | Sửa nội dung trang tĩnh, mỗi ngôn ngữ một tab, có trình soạn thảo | `feature/html-admin-translations-page-edit` | A3 |
 
 ### Tài khoản (5 màn)
 

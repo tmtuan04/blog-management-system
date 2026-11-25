@@ -28,7 +28,6 @@ Nguồn chuẩn: `docs/phase-3-backend.md` mục 3 (khung), 4 (bảng route), 7 
 | Bài viết, bản dịch bài | `posts` và `categories` |
 | Danh mục | `categories` và `posts` |
 | Ngôn ngữ | toàn bộ `cache:` |
-| UI translation | `ui` |
 
 Bảng đầy đủ ở `docs/phase-3-backend.md` mục 3.5.
 
