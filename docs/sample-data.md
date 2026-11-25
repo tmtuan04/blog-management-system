@@ -87,16 +87,7 @@ Quy ước: `NULL` = không có giá trị; `true`/`false` = `TINYINT(1)` 1/0 tr
 
 > Comment 2 là trả lời (1 cấp) của comment 1. Mỗi bản dịch có luồng bình luận riêng.
 
-## 10. `ui_translations`
-
-| id | language_id | key        | value      | created_at          | updated_at          |
-|----|-------------|------------|------------|---------------------|---------------------|
-| 1  | 1 (vi)      | menu.home  | Trang chủ  | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
-| 2  | 2 (en)      | menu.home  | Home       | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
-| 3  | 1 (vi)      | menu.about | Giới thiệu | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
-| 4  | 2 (en)      | menu.about | About      | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
-
-## 11. `pages`
+## 10. `pages`
 
 | id | key     | is_visible | created_at          | updated_at          |
 |----|---------|------------|---------------------|---------------------|
@@ -104,7 +95,7 @@ Quy ước: `NULL` = không có giá trị; `true`/`false` = `TINYINT(1)` 1/0 tr
 | 2  | contact | true       | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
 | 3  | privacy | true       | 2026-08-01 00:00:00 | 2026-08-01 00:00:00 |
 
-## 12. `page_translations`
+## 11. `page_translations`
 
 | id | page_id | language_id | title              | content                            | created_at          | updated_at          |
 |----|---------|-------------|--------------------|------------------------------------|---------------------|---------------------|

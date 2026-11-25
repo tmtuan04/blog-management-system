@@ -39,7 +39,7 @@ export const envValidationSchema = Joi.object({
   MAIL_PASSWORD: Joi.string().allow('').required(),
   MAIL_FROM: Joi.string().required(),
 
-  // OAuth (UC20, việc A6): chưa bắt buộc cho tới khi làm A6
+  // OAuth (UC20, việc A7): không bắt buộc, để máy chưa đăng ký app OAuth vẫn chạy được backend
   GOOGLE_CLIENT_ID: Joi.string().allow('').default(''),
   GOOGLE_CLIENT_SECRET: Joi.string().allow('').default(''),
   GOOGLE_CALLBACK_URL: Joi.string().allow('').default(''),

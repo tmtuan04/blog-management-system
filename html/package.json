@@ -4,7 +4,9 @@
   "scripts": {
     "build": "sass scss/main.scss css/main.css --load-path=node_modules --style=compressed --no-source-map --quiet-deps --silence-deprecation=import",
     "watch": "sass scss/main.scss css/main.css --load-path=node_modules --watch --quiet-deps --silence-deprecation=import",
-    "check-links": "node scripts/check-links.mjs"
+    "check-links": "node scripts/check-links.mjs",
+    "i18n:extract": "node scripts/extract-i18n.mjs",
+    "i18n:check": "node scripts/extract-i18n.mjs --check"
   },
   "dependencies": {
     "bootstrap": "5.3.8"

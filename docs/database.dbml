@@ -9,6 +9,7 @@ Project blog_management_system {
     - Mỗi post có 1 ngôn ngữ gốc và có thể dịch ra nhiều ngôn ngữ khác (D3): phần dùng chung ở posts, phần theo ngôn ngữ ở post_translations.
     - Category dùng chung, chỉ dịch tên (D4).
     - Refresh token, token reset mật khẩu, rate limit, đếm lượt xem lưu trong Redis, không có bảng.
+    - Chữ tĩnh trên giao diện (UI translation) nằm trong file JSON của frontend, không có bảng (D5). Bảng ui_translations đã bỏ ở requirements 2.2.
   '''
 }
 
@@ -167,22 +168,6 @@ Table comments {
   }
 }
 
-// ============ UI translations ============
-
-Table ui_translations {
-  id int [pk, increment]
-  language_id int [not null]
-  key varchar(150) [not null, note: 'Ví dụ menu.home']
-  value text [not null]
-  created_at datetime [not null, default: `CURRENT_TIMESTAMP`]
-  updated_at datetime [not null, default: `CURRENT_TIMESTAMP`]
-
-  indexes {
-    (language_id, key) [unique]
-  }
-
-  Note: 'Thêm ngôn ngữ mới thì copy toàn bộ key từ ngôn ngữ mặc định.'
-}
 
 // ============ Static pages ============
 
@@ -228,8 +213,6 @@ Ref category_tr_language: category_translations.language_id > languages.id [dele
 Ref comment_post_tr: comments.post_translation_id > post_translations.id [delete: cascade] // xóa bản dịch (hoặc cả bài) thì xóa bình luận
 Ref comment_user: comments.user_id > users.id [delete: restrict]
 Ref comment_parent: comments.parent_id > comments.id [delete: cascade] // xóa cha thì xóa trả lời
-
-Ref ui_tr_language: ui_translations.language_id > languages.id [delete: cascade]
 
 Ref page_tr_page: page_translations.page_id > pages.id [delete: cascade]
 Ref page_tr_language: page_translations.language_id > languages.id [delete: cascade]
@@ -287,13 +270,6 @@ Records comments(id, post_translation_id, user_id, parent_id, content) {
   1, 1, 4, null, 'Bài viết rất hay!'
   2, 1, 2, 1, 'Cảm ơn bạn đã đọc.'
   3, 2, 4, null, 'Great tutorial!'
-}
-
-Records ui_translations(id, language_id, key, value) {
-  1, 1, 'menu.home', 'Trang chủ'
-  2, 2, 'menu.home', 'Home'
-  3, 1, 'menu.about', 'Giới thiệu'
-  4, 2, 'menu.about', 'About'
 }
 
 Records pages(id, key, is_visible) {

@@ -6,6 +6,7 @@ import { AppConfig } from '../../config/configuration';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { GithubStrategy } from './strategies/github.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { TokenService } from './token.service';
 import { UserStatusService } from './user-status.service';
@@ -31,7 +32,13 @@ import { UserStatusService } from './user-status.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, TokenService, JwtStrategy, UserStatusService],
+  providers: [
+    AuthService,
+    TokenService,
+    JwtStrategy,
+    GithubStrategy,
+    UserStatusService,
+  ],
   exports: [JwtModule, TokenService, UserStatusService],
 })
 export class AuthModule {}

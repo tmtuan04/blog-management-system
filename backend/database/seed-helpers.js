@@ -7,7 +7,7 @@ const SEED_IMAGE_DIR = path.join(__dirname, 'seed-data', 'images');
 
 /**
  * Seeder dữ liệu demo (tài khoản mật khẩu chung, bài viết mẫu) không chạy ở production.
- * Dữ liệu hệ thống (roles, languages, ui_translations, pages) vẫn nạp bình thường.
+ * Dữ liệu hệ thống (roles, languages, pages) vẫn nạp bình thường.
  */
 function skipInProduction(seeder) {
   if (process.env.NODE_ENV !== 'production') {

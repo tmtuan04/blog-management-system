@@ -2,8 +2,8 @@
 
 | Mục | Nội dung |
 | --- | --- |
-| Phiên bản | 1.1 (theo requirements 2.1) |
-| Ngày tạo | 23/10/2026, cập nhật 27/10/2026 (chia lại việc, mục 8), 05/11/2026 (thứ tự theo đợt và trạng thái việc, mục 8.2) |
+| Phiên bản | 1.2 (theo requirements 2.2) |
+| Ngày tạo | 23/10/2026, cập nhật 27/10/2026 (chia lại việc, mục 8), 05/11/2026 (thứ tự theo đợt và trạng thái việc, mục 8.2), 22/11/2026 (bỏ UC17, chữ tĩnh chuyển sang file dịch của frontend) |
 | Thời gian | ~2,5 tuần (13 ngày làm việc, 26/10 - 11/11/2026) |
 | Phân công | A ~50%, B ~35%, C ~15% (mục 8) |
 | Đầu vào | [requirements.md](requirements.md) (mục 1.5 - Phase 3, mục 3 - 7), [database.dbml](database.dbml), [sample-data.md](sample-data.md), các màn HTML của phase 2 (danh sách field, trạng thái lỗi, key `data-i18n`) |
@@ -97,7 +97,6 @@ backend/
 │       ├── users/               # UC14 + model User, Role, OauthAccount
 │       ├── profile/             # UC12
 │       ├── languages/           # UC16
-│       ├── ui-translations/     # UC17
 │       ├── categories/          # UC15 (admin), UC07 (public)
 │       ├── posts/               # UC13 (admin), UC05, UC06, UC07, UC19 (public)
 │       ├── comments/            # UC08
@@ -148,7 +147,7 @@ Các phần trong mục này là phần nền. Sửa phần nền thì A phải 
 ```
 
 - `ValidationPipe` có `exceptionFactory` chuyển lỗi của `class-validator` thành `errors[]`. Field lồng nhau viết dạng `translations.0.title`.
-- `code` là phần thêm vào format 6.4 (quyết định Q2 ở mục 10). Phase 4 dựa vào `code` để hiện thông báo theo ngôn ngữ đang chọn. Danh sách mã đặt trong `common/errors.ts`, ví dụ: `VALIDATION_ERROR`, `UNAUTHORIZED`, `TOKEN_EXPIRED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `TOO_MANY_REQUESTS`, `INVALID_CREDENTIALS`, `ACCOUNT_LOCKED`, `RESET_TOKEN_INVALID`, `OAUTH_NO_EMAIL`, `LANGUAGE_IN_USE`, `CATEGORY_IN_USE`, `LAST_SUPER_ADMIN`.
+- `code` là phần thêm vào format 6.4 (quyết định Q2 ở mục 10). Phase 4 dựa vào `code` để hiện thông báo theo ngôn ngữ đang chọn. Danh sách mã đặt trong `common/errors.ts`, ví dụ: `VALIDATION_ERROR`, `UNAUTHORIZED`, `TOKEN_EXPIRED`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `TOO_MANY_REQUESTS`, `INVALID_CREDENTIALS`, `ACCOUNT_LOCKED`, `RESET_TOKEN_INVALID`, `OAUTH_NO_EMAIL`, `OAUTH_FAILED`, `OAUTH_CODE_INVALID`, `LANGUAGE_IN_USE`, `CATEGORY_IN_USE`, `LAST_SUPER_ADMIN`.
 - Lỗi 500 chỉ trả `"Lỗi hệ thống"`, không trả stack. Chi tiết ghi vào log.
 - Lỗi unique của Sequelize (`SequelizeUniqueConstraintError`) đổi thành 409. Lỗi khóa ngoại RESTRICT đổi thành 409, kèm mã lỗi theo ngữ cảnh do service tự ném.
 
@@ -163,7 +162,7 @@ Các phần trong mục này là phần nền. Sửa phần nền thì A phải 
 ### 3.3. Ngôn ngữ của request
 
 - `LanguageMiddleware` đọc `Accept-Language` (lấy mã đầu tiên, ví dụ `en-US,en;q=0.9` → `en`), tìm trong danh sách ngôn ngữ đang hoạt động (cache Redis). Không có thì dùng ngôn ngữ mặc định.
-- `@CurrentLanguage()` trả `{ id, code, isDefault }`. Mọi API public dùng ngôn ngữ này, không nhận `?lang=`. Ngoại lệ là `GET /ui-translations` và các API admin có tham số ngôn ngữ riêng.
+- `@CurrentLanguage()` trả `{ id, code, isDefault }`. Mọi API public dùng ngôn ngữ này, không nhận `?lang=`. Ngoại lệ là các API admin có tham số ngôn ngữ riêng.
 
 ### 3.4. Phân trang
 
@@ -186,7 +185,6 @@ Tên key đặt trong `common/utils/redis-keys.ts`, không viết chuỗi key r�
 | `cache:posts:*` | JSON response | 5 phút | UC05, UC07, bài đọc nhiều |
 | `cache:categories:*` | JSON response | 10 phút | Danh sách danh mục public |
 | `cache:languages:active` | JSON | 10 phút | Middleware, bộ chọn ngôn ngữ |
-| `cache:ui:{code}` | JSON | 10 phút | UC17 public |
 | `throttle:*` | Bộ đếm của `@nestjs/throttler` | Theo rule | Rate limit |
 
 Cache bị xóa khi dữ liệu liên quan thay đổi (requirements 6.2). `CacheService.invalidate('cache:posts:')` xóa theo prefix bằng `SCAN`, không dùng `KEYS`:
@@ -196,7 +194,6 @@ Cache bị xóa khi dữ liệu liên quan thay đổi (requirements 6.2). `Cach
 | Bài viết, bản dịch bài (thêm, sửa, xóa, đổi trạng thái) | `cache:posts:`, `cache:categories:` (vì số bài theo danh mục đổi) |
 | Danh mục | `cache:categories:`, `cache:posts:` (vì tên danh mục nằm trong thẻ bài) |
 | Ngôn ngữ | `cache:` (toàn bộ) |
-| UI translation | `cache:ui:` |
 | Họ tên, avatar của tài khoản (UC12) | `cache:posts:` (vì thẻ bài có `author { fullName, avatar }`, avatar cũ bị xóa file) |
 | Khóa tài khoản | `auth:user-active:{userId}` |
 
@@ -250,8 +247,8 @@ Mọi route có prefix `/api/v1`. Cột "Quyền": `public` (không cần đăng
 | POST | `/auth/reset-password` | public | UC03 | `reset-password` | Body `{ token, password, confirmPassword }`. Token sai hoặc hết hạn → 400 `RESET_TOKEN_INVALID`. Thành công: xóa token, thu hồi mọi refresh token |
 | GET | `/auth/me` | auth | UC02 | header | Thông tin user + role, để frontend hiện menu theo role |
 | GET | `/auth/google`, `/auth/github` | public | UC20 | `login`, `register` | Chuyển hướng sang provider |
-| GET | `/auth/google/callback`, `/auth/github/callback` | public | UC20 | | Xử lý theo UC20 rồi chuyển hướng về `${FRONTEND_URL}/oauth/callback?code=...`. Lỗi thì `?error=OAUTH_NO_EMAIL` (hoặc `ACCOUNT_LOCKED`) |
-| POST | `/auth/oauth/exchange` | public | UC20 | | Body `{ code }`. Đổi mã dùng một lần (60 giây) lấy cặp token. Không đưa token lên URL |
+| GET | `/auth/google/callback`, `/auth/github/callback` | public | UC20 | | Xử lý theo UC20 rồi chuyển hướng về `${FRONTEND_URL}/oauth/callback?code=...`. Chỉ nhận email **đã xác minh** bên provider (liên kết theo email nên email chưa xác minh cho phép chiếm tài khoản). Lỗi thì `?error=`: `OAUTH_NO_EMAIL` (không có email đã xác minh), `ACCOUNT_LOCKED`, `OAUTH_FAILED` (người dùng hủy, provider lỗi, hoặc tài khoản trùng email đã liên kết một tài khoản khác của cùng provider) |
+| POST | `/auth/oauth/exchange` | public | UC20 | | Body `{ code }`. Đổi mã dùng một lần (60 giây) lấy `{ accessToken, refreshToken, user }` như login. Không đưa token lên URL. Mã sai, hết hạn hoặc đã dùng → 400 `OAUTH_CODE_INVALID`. Bị khóa → 403 `ACCOUNT_LOCKED` |
 
 ### 4.2. Trang đọc blog
 
@@ -266,7 +263,6 @@ Mọi route có prefix `/api/v1`. Cột "Quyền": `public` (không cần đăng
 | GET | `/categories/:slug/posts` | public | UC07 | C | `category` | Như `GET /posts`, lọc theo danh mục. Cache |
 | GET | `/search` | public | UC19 | A | `search` | `?q=` 2-100 ký tự (trim trước khi kiểm tra), sai → 400. `MATCH ... AGAINST (? IN BOOLEAN MODE)` trên FULLTEXT `ngram`, sắp theo độ liên quan, phân trang. Chỉ bản `published` ở ngôn ngữ đang chọn. Nhiều từ thì kết quả phải chứa đủ mọi từ (mỗi từ thêm `+`); tách từ ở mọi ký tự không phải chữ hoặc số nên toán tử BOOLEAN MODE bị bỏ; từ 1 ký tự bị bỏ vì ngắn hơn `ngram_token_size`. Gõ không dấu vẫn khớp bài có dấu (collation `utf8mb4_unicode_ci`). Không cache. Index không dùng stopword (mục 11) |
 | GET | `/languages` | public | UC09, UC16 | B | header | Ngôn ngữ đang hoạt động: `code`, `name`, `isDefault`. Cache |
-| GET | `/ui-translations/:code` | public | UC09, UC17 | B | mọi màn | Object `{ key: value }` của ngôn ngữ `code`, đã gộp sẵn giá trị của ngôn ngữ mặc định cho các key bị thiếu. Mã không có hoặc đã tắt → 404. Cache |
 | GET | `/pages` | public | UC11 | B | footer, header | Trang đang hiển thị: `key`, `title` theo ngôn ngữ đang chọn (thiếu thì dùng ngôn ngữ mặc định) |
 | GET | `/pages/:key` | public | UC11 | B | `page` | Tiêu đề + nội dung theo ngôn ngữ đang chọn, thiếu thì dùng ngôn ngữ mặc định. Trang ẩn hoặc key không có → 404 |
 
@@ -335,19 +331,12 @@ Mọi route có quyền `admin`.
 | Method | Route | Ghi chú |
 | --- | --- | --- |
 | GET | `/admin/languages` | Mọi ngôn ngữ + `postTranslationCount` |
-| POST | `/admin/languages` | Body `{ code, name, isActive }` (`name` tối đa 50 ký tự, `isActive` không gửi thì là `true`). `code` theo ISO 639-1 (kiểm tra bằng danh sách mã trong `common/iso-639-1.ts`), trùng → 409. Trong cùng transaction: sao chép mọi `ui_translations` của ngôn ngữ mặc định sang ngôn ngữ mới |
+| POST | `/admin/languages` | Body `{ code, name, isActive }` (`name` tối đa 50 ký tự, `isActive` không gửi thì là `true`). `code` theo ISO 639-1 (kiểm tra bằng danh sách mã trong `common/iso-639-1.ts`), trùng → 409 |
 | PATCH | `/admin/languages/:id` | Body `{ name?, isActive? }`. Không đổi `code`. Tắt ngôn ngữ mặc định → 400 |
 | PATCH | `/admin/languages/:id/default` | Đặt làm mặc định, bỏ mặc định ngôn ngữ cũ trong cùng transaction. Ngôn ngữ đang tắt → 400 |
-| DELETE | `/admin/languages/:id` | Ngôn ngữ mặc định → 400. Đang có bản dịch bài (kể cả là ngôn ngữ gốc) → 409 `LANGUAGE_IN_USE`. Xóa được thì cascade `category_translations`, `ui_translations`, `page_translations` |
+| DELETE | `/admin/languages/:id` | Ngôn ngữ mặc định → 400. Đang có bản dịch bài (kể cả là ngôn ngữ gốc) → 409 `LANGUAGE_IN_USE`. Xóa được thì cascade `category_translations`, `page_translations` |
 
-**Bản dịch giao diện (UC17)**
-
-| Method | Route | Ghi chú |
-| --- | --- | --- |
-| GET | `/admin/ui-translations` | `?q=` (tìm theo key hoặc giá trị), phân trang theo key (50 / trang). Mỗi dòng: `key`, `values: { vi: "...", en: null }`. `values` chỉ gồm các ngôn ngữ đang hoạt động (mỗi ngôn ngữ một cột của màn phase 2) |
-| POST | `/admin/ui-translations` | Body `{ key, values: { vi, en } }`. `key` dạng `nhom.ten` (`^[a-z0-9_]+(\.[a-z0-9_]+)+$`), trùng → 409. `key` tối đa 100 ký tự, mỗi giá trị tối đa 255 ký tự. Giá trị của ngôn ngữ mặc định bắt buộc (thiếu → 400 ở `values.<code>`); mã không phải ngôn ngữ đang hoạt động → 400 |
-| PUT | `/admin/ui-translations/:key/:code` | Body `{ value }`. Sửa một ô (màn phase 2 sửa tại chỗ từng ô). Giá trị rỗng ở ngôn ngữ không mặc định thì xóa dòng (frontend sẽ dùng giá trị mặc định); rỗng ở ngôn ngữ mặc định → 400. Key hoặc ngôn ngữ không có, đã tắt → 404 |
-| DELETE | `/admin/ui-translations/:key` | Xóa key ở mọi ngôn ngữ |
+**Bản dịch giao diện (UC17)**: đã bỏ ở 1.2 (requirements 2.2, quyết định D5). Không còn bảng `ui_translations`, route `GET /ui-translations/:code`, `/admin/ui-translations` và key Redis `cache:ui:`. Chữ tĩnh nằm trong `html/i18n/<code>.json`, phase 4 chép sang `src/assets/i18n/` của Angular.
 
 **Trang tĩnh (UC18)**
 
@@ -371,8 +360,9 @@ Theo requirements 6.6 và [sample-data.md](sample-data.md). Chạy bằng `npm r
 | `04-categories` | 5 danh mục, có tên `vi` và `en` (1 danh mục chỉ có tên `vi` để test việc dùng tên mặc định) |
 | `05-posts` | ~30 bài: gốc `vi` và gốc `en`, một phần có bản dịch sang ngôn ngữ còn lại, có bản dịch `draft` và `archived`. Nội dung có đủ các định dạng của editor. Thumbnail copy từ `html/assets/img/` vào `uploads/images/` |
 | `06-comments` | Bình luận và trả lời 1 cấp trên vài bản dịch, cả `vi` lẫn `en` |
-| `07-ui-translations` | Mọi key `data-i18n` trong `html/` (hiện có ~320 key), giá trị `vi` lấy từ chữ trong HTML, giá trị `en` dịch tay. Dùng script `scripts/extract-i18n.mjs` để xuất danh sách key và chữ tiếng Việt, tránh gõ tay sót key |
 | `08-pages` | `about`, `contact`, `privacy` có nội dung `vi` và `en` |
+
+Seeder `07-ui-translations` đã bỏ ở 1.2. Chữ tĩnh nằm trong `html/i18n/vi.json`, `html/i18n/en.json`; `npm run i18n:extract` thêm key `data-i18n` mới vào các file này (giá trị `vi` lấy từ chữ trong HTML), `npm run i18n:check` báo key thiếu hoặc thừa.
 
 Seeder hiệu năng riêng `npm run db:seed:perf` (C viết ở C3): sinh 10.000 bài để đo yêu cầu "dưới 500ms" ở requirements 6.2. Không chạy chung với seeder thường.
 
@@ -413,7 +403,7 @@ Seeder hiệu năng riêng `npm run db:seed:perf` (C viết ở C3): sinh 10.000
 
 ### 7.1. Đặt tên
 
-- Route dạng kebab-case, danh từ số nhiều: `/admin/ui-translations`, `/post-translations/:id/comments`.
+- Route dạng kebab-case, danh từ số nhiều: `/admin/categories`, `/post-translations/:id/comments`.
 - JSON dạng camelCase (`fullName`, `publishedAt`). Model map sang cột snake_case bằng `underscored: true`.
 - Ngôn ngữ trong route và body dùng `code` (`vi`, `en`), không dùng `id`. Phase 4 chỉ cần biết mã ngôn ngữ.
 - Ngày giờ trả theo ISO 8601 UTC (`2026-09-01T01:00:00.000Z`). Sequelize đặt `timezone: '+00:00'`.
@@ -421,7 +411,7 @@ Seeder hiệu năng riêng `npm run db:seed:perf` (C viết ở C3): sinh 10.000
 ### 7.2. Controller, service, DTO
 
 - Controller chỉ nhận request, gọi service và đặt `@ResponseMessage`. Không truy vấn database trong controller.
-- Thao tác ghi nhiều bảng chạy trong `sequelize.transaction()`: tạo bài + bản gốc, đổi ngôn ngữ mặc định, thêm ngôn ngữ + sao chép UI translation, lưu trang tĩnh.
+- Thao tác ghi nhiều bảng chạy trong `sequelize.transaction()`: tạo bài + bản gốc, đổi ngôn ngữ mặc định, lưu trang tĩnh.
 - Mỗi DTO có message lỗi tiếng Việt cho từng ràng buộc. Câu chữ lấy theo `invalid-feedback` của màn HTML tương ứng để phase 4 hiện giống phase 2.
 - Không trả model thô: `password_hash` và các cột nội bộ không bao giờ có trong response. Dùng hàm map hoặc `ClassSerializerInterceptor` + `@Exclude`.
 - Truy vấn danh sách không có N+1: dùng `include` hoặc truy vấn gộp, kiểm tra bằng log SQL khi dev.
@@ -454,7 +444,7 @@ Cách đọc các bảng trong mục này:
 | Người | Khối lượng | Phần việc |
 | --- | --- | --- |
 | A | ~50% | Khung backend, xác thực (UC01-UC04), quản lý bài viết (UC13), chi tiết bài (UC06), tìm kiếm (UC19), hồ sơ cá nhân (UC12), OAuth (UC20), hoàn thiện cuối phase |
-| B | ~35% | Seeders, ngôn ngữ (UC16), bản dịch giao diện (UC17), danh mục (UC15), bình luận (UC08), người dùng (UC14), trang tĩnh (UC11, UC18) |
+| B | ~35% | Seeders, ngôn ngữ (UC16), danh mục (UC15), bình luận (UC08), người dùng (UC14), trang tĩnh (UC11, UC18) |
 | C | ~15% | Chạy thử migrate/seed/rollback, trang chủ (UC05), bài theo danh mục (UC07), kiểm tra tổng và đo hiệu năng |
 
 So với bản 1.0 (A ~45%, B ~40%), hồ sơ cá nhân UC12 chuyển từ B sang A (việc A6). UC12 dùng lại nhiều phần của A: upload ảnh (A1), đổi mật khẩu theo ràng buộc UC01 (A2), `hasPassword` cho tài khoản OAuth (A7). A1, A2 đã merge ngày 26/10, sớm hơn lịch 3 ngày, nên A còn thời gian nhận thêm.
@@ -469,7 +459,7 @@ Gộp cột "Chờ" của cả ba người. Việc trong cùng một đợt làm
 | --- | --- | --- | --- |
 | 1 | A1 (**đã xong**) | Ngay từ đầu | Mọi việc còn lại |
 | 2 | A2 (**đã xong**), A3 (**đã xong**), B1 (**đã xong**), B2 (**đã xong**), B3 (**đã xong**), B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
-| 3 | A4 (**đã xong**), A5, A6 (**đã xong**), A7, B4, B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
+| 3 | A4 (**đã xong**), A5 (**đã xong**), A6 (**đã xong**), A7, B4 (**đã xong**), B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
 | 4 | C2 (**đã xong**) | B3 và C1 đã merge | |
 | 5 | C3 (kiểm tra tổng) | A4 và B6 đã merge. Nên đợi mọi việc Must khác merge để kiểm tra một lần | A8, các PR sửa lỗi của A và B |
 | 6 | A8 | C3 đã merge | Kết thúc phase: merge `dev` → `master` |
@@ -488,6 +478,10 @@ Cập nhật 20/11: C2 xong, C chỉ còn C3. Việc đang chặn nhiều ngư�
 
 Cập nhật 21/11: A6 xong. Việc đang chặn nhiều người nhất vẫn là **B6** (chặn C3).
 
+Cập nhật 22/11: theo góp ý của mentor, bỏ UC17 (requirements 2.2, D5). Xóa module `ui-translations` (phần B2), bảng `ui_translations`, seeder `07-ui-translations`; chữ tĩnh chuyển sang `html/i18n/*.json`. Không ảnh hưởng việc nào đang làm.
+
+Cập nhật 24/11: ghi lại trạng thái B4 (đã merge ngày 21/11, PR #59) và A5 ở bảng đợt. Việc chưa xong: A7, B5, B6, C3, A8. Việc đang chặn nhiều người nhất vẫn là **B6** (chặn C3, qua đó chặn A8).
+
 ### 8.3. Việc của từng người
 
 #### A
@@ -500,7 +494,7 @@ Cập nhật 21/11: A6 xong. Việc đang chặn nhiều người nhất vẫn l
 | A4 (**đã xong**) | Chi tiết bài UC06: `/posts/:slug`, `/related`, tăng lượt xem | A3 | `/related` trả 404 khi slug không có ở ngôn ngữ đang chọn, giống `/posts/:slug` |
 | A5 (**đã xong**) | Tìm kiếm UC19 (Should) | A3 | Test với cả từ khóa tiếng Việt có dấu |
 | A6 (**đã xong**) | Hồ sơ cá nhân UC12 (Should, mục 4.4) | A2 | Chuyển từ B sang ở bản 1.1. Avatar dùng lại `UploadModule` |
-| A7 | OAuth UC20 Google, Github (Should) | A2 | Cần đăng ký app OAuth (requirements mục 9) trước ngày làm |
+| A7 (**đang làm**: GitHub xong cả route, e2e, Postman; còn Google) | OAuth UC20 Google, Github (Should) | A2 | Cần đăng ký app OAuth (requirements mục 9) trước ngày làm |
 | A8 | Duyệt lỗi C báo ở C3 thuộc phần nền, hoàn thiện Swagger, kiểm tra độ phủ chung, merge `dev` → `master` | C3 | |
 
 #### B
@@ -508,9 +502,9 @@ Cập nhật 21/11: A6 xong. Việc đang chặn nhiều người nhất vẫn l
 | # | Việc | Chờ | Ghi chú |
 | --- | --- | --- | --- |
 | B1 (**đã xong**) | Seeders (mục 5), script `extract-i18n.mjs` | A1 | **Merge sớm** vì A3, C1 cần dữ liệu |
-| B2 (**đã xong**) | Ngôn ngữ UC16 (admin, mở rộng module mẫu) + bản dịch giao diện UC17 (admin + `GET /ui-translations/:code`) | A1 | Thêm ngôn ngữ thì sao chép UI translation |
+| B2 (**đã xong**) | Ngôn ngữ UC16 (admin, mở rộng module mẫu) + bản dịch giao diện UC17 (admin + `GET /ui-translations/:code`) | A1 | UC17 bỏ ở 1.2 (requirements 2.2): đã xóa module `ui-translations` |
 | B3 (**đã xong**) | Danh mục UC15 (admin) | A1 | Tạo module `categories`. C2 thêm route public vào đây |
-| B4 | Bình luận UC08 | A1, B1 | Quyền xóa cần biết tác giả bài qua `post_translations → posts.user_id` |
+| B4 (**đã xong**) | Bình luận UC08 | A1, B1 | Quyền xóa cần biết tác giả bài qua `post_translations → posts.user_id` |
 | B5 | Người dùng UC14 | A2 | Thu hồi refresh token dùng hàm của A2 |
 | B6 | Trang tĩnh UC11 + UC18 | A1 | |
 
@@ -589,7 +583,7 @@ Cả nhóm chốt các mục này trước khi bắt đầu A1. Cột "Đề xu�
 | # | Vấn đề | Đề xuất | Lý do |
 | --- | --- | --- | --- |
 | Q1 | Refresh token gửi qua body hay cookie httpOnly? | Body + frontend lưu `localStorage` | Đúng với requirements UC04 ("xóa token đang lưu ở frontend"); không phải xử lý CSRF và cookie khi phase 5 truy cập bằng IP không có HTTPS. Đổi lại phải lọc XSS kỹ (mục 3.7) |
-| Q2 | Message lỗi theo ngôn ngữ nào? | `message` tiếng Việt như ví dụ ở 6.4, thêm trường `code` vào response lỗi | Swagger và Postman dễ đọc; phase 4 hiện thông báo theo ngôn ngữ đang chọn bằng cách map `code` sang key UI translation `error.*`. Cần sửa requirements 6.4 để ghi thêm `code` |
+| Q2 | Message lỗi theo ngôn ngữ nào? | `message` tiếng Việt như ví dụ ở 6.4, thêm trường `code` vào response lỗi | Swagger và Postman dễ đọc; phase 4 hiện thông báo theo ngôn ngữ đang chọn bằng cách map `code` sang key `error.*` trong file dịch của frontend. Cần sửa requirements 6.4 để ghi thêm `code` |
 | Q3 | Thumbnail upload cùng form bài viết hay upload riêng? | Upload riêng (`POST /uploads/images`), bài viết chỉ nhận đường dẫn | Editor cũng cần chèn ảnh (UC13, UC18), dùng chung một API; form bài viết vẫn là JSON |
 | Q4 | Sửa tiêu đề thì có đổi slug không? | Có, sinh lại slug | Requirements ghi slug "tự sinh từ tiêu đề". Link cũ sẽ ra 404; giữ slug cũ hoặc redirect thì nằm ngoài phạm vi |
 | Q5 | Nhánh chính tên `main` (requirements 6.5) hay `master`? | Giữ `master` + `dev` như phase 2, sửa requirements 6.5 | Repo và GitHub Pages đang chạy trên `master` |
@@ -600,6 +594,7 @@ Cả nhóm chốt các mục này trước khi bắt đầu A1. Cột "Đề xu�
 
 - Giao diện Angular và việc nối API vào giao diện (phase 4).
 - Facebook OAuth (requirements UC20 ghi "làm nếu còn thời gian").
+- Tham số `state` của OAuth (chống CSRF lúc đăng nhập: kẻ xấu đăng nhập nạn nhân vào tài khoản của kẻ xấu). `state: true` của passport cần session mà backend không dùng session; muốn làm thì viết state store bằng Redis.
 - Dọn ảnh không còn dùng: ảnh trong nội dung bài, ảnh đã upload nhưng không lưu bài.
 - Giữ slug cũ hoặc redirect khi đổi tiêu đề.
 - Ghi log ra file, monitoring. Chỉ log ra console.

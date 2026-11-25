@@ -26,7 +26,7 @@ import { CommentsModule } from './modules/comments/comments.module';
 import { LanguagesModule } from './modules/languages/languages.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { ProfileModule } from './modules/profile/profile.module';
-import { UiTranslationsModule } from './modules/ui-translations/ui-translations.module';
+import { AdminUsersModule } from './modules/users/admin-users.module';
 
 @Module({
   imports: [
@@ -65,7 +65,7 @@ import { UiTranslationsModule } from './modules/ui-translations/ui-translations.
     LanguagesModule,
     PostsModule,
     ProfileModule,
-    UiTranslationsModule,
+    AdminUsersModule,
   ],
   providers: [
     // Thứ tự guard: rate limit → xác thực → phân quyền

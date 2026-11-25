@@ -942,17 +942,20 @@
           }
         },
         {
-          "name": "UC16 - Ngôn ngữ đang tắt không có ở API public (404)",
+          "name": "UC16 - Ngôn ngữ đang tắt không có ở API public",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('404 và success = false', () => {",
-                  "  pm.response.to.have.status(404);",
-                  "  pm.expect(pm.response.json().success).to.eql(false);",
-                  "  pm.expect(pm.response.json().code).to.eql('NOT_FOUND');",
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Không có ngôn ngữ fr đang tắt', () => {",
+                  "  const codes = pm.response.json().data.map((language) => language.code);",
+                  "  pm.expect(codes).to.not.include('fr');",
                   "});"
                 ]
               }
@@ -965,13 +968,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/ui-translations/fr",
+              "raw": "{{baseUrl}}/languages",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "ui-translations",
-                "fr"
+                "languages"
               ]
             }
           }
@@ -1847,616 +1849,6 @@
                 "admin",
                 "posts",
                 "{{postId}}"
-              ]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "04 - UI Translations",
-      "description": "UC17 (B2). Cần chạy 00 - Auth trước. Các request ghi dùng key postman.sample và xóa key đó ở cuối nên dữ liệu seed không đổi.",
-      "auth": {
-        "type": "bearer",
-        "bearer": [
-          {
-            "key": "token",
-            "value": "{{adminAccessToken}}",
-            "type": "string"
-          }
-        ]
-      },
-      "item": [
-        {
-          "name": "UC17 - Bản dịch giao diện của một ngôn ngữ",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('200 và success = true', () => {",
-                  "  pm.response.to.have.status(200);",
-                  "  pm.expect(pm.response.json().success).to.eql(true);",
-                  "});",
-                  "pm.test('data là object key → value', () => {",
-                  "  const data = pm.response.json().data;",
-                  "  pm.expect(data).to.be.an('object');",
-                  "  pm.expect(data['menu.home']).to.be.a('string');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/ui-translations/en",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ui-translations",
-                "en"
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Ngôn ngữ không có (404)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('404 và success = false', () => {",
-                  "  pm.response.to.have.status(404);",
-                  "  pm.expect(pm.response.json().success).to.eql(false);",
-                  "  pm.expect(pm.response.json().code).to.eql('NOT_FOUND');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/ui-translations/xx",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "ui-translations",
-                "xx"
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Danh sách khi chưa đăng nhập (401)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('401 và success = false', () => {",
-                  "  pm.response.to.have.status(401);",
-                  "  pm.expect(pm.response.json().success).to.eql(false);",
-                  "  pm.expect(pm.response.json().code).to.eql('UNAUTHORIZED');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations"
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Danh sách bản dịch giao diện",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('200 và success = true', () => {",
-                  "  pm.response.to.have.status(200);",
-                  "  pm.expect(pm.response.json().success).to.eql(true);",
-                  "});",
-                  "pm.test('Có meta phân trang, mỗi dòng có key và values', () => {",
-                  "  const body = pm.response.json();",
-                  "  pm.expect(body.meta).to.include.keys('page', 'limit', 'total', 'totalPages');",
-                  "  pm.expect(body.data[0]).to.include.keys('key', 'values');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations?page=1&limit=50",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "50"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Tìm theo key hoặc giá trị",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('200 và success = true', () => {",
-                  "  pm.response.to.have.status(200);",
-                  "  pm.expect(pm.response.json().success).to.eql(true);",
-                  "});",
-                  "pm.test('Có key menu.home', () => {",
-                  "  pm.expect(pm.response.json().data.some((row) => row.key === 'menu.home')).to.eql(true);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations?q=menu.home",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations"
-              ],
-              "query": [
-                {
-                  "key": "q",
-                  "value": "menu.home"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Thêm key",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('201 và success = true', () => {",
-                  "  pm.response.to.have.status(201);",
-                  "  pm.expect(pm.response.json().success).to.eql(true);",
-                  "});",
-                  "pm.test('Ô để trống trả null', () => {",
-                  "  pm.expect(pm.response.json().data.values.en).to.eql(null);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"key\": \"postman.sample\",\n  \"values\": {\n    \"vi\": \"Mẫu Postman\",\n    \"en\": \"\"\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations"
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Thêm key trùng (409)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('409 và success = false', () => {",
-                  "  pm.response.to.have.status(409);",
-                  "  pm.expect(pm.response.json().success).to.eql(false);",
-                  "  pm.expect(pm.response.json().code).to.eql('CONFLICT');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"key\": \"postman.sample\",\n  \"values\": {\n    \"vi\": \"Mẫu Postman\"\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations"
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Thêm key sai dạng (400)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('400 và success = false', () => {",
-                  "  pm.response.to.have.status(400);",
-                  "  pm.expect(pm.response.json().success).to.eql(false);",
-                  "  pm.expect(pm.response.json().code).to.eql('VALIDATION_ERROR');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"key\": \"Postman Sample\",\n  \"values\": {\n    \"vi\": \"Mẫu Postman\"\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations"
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Thêm key thiếu giá trị mặc định (400)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('400 và success = false', () => {",
-                  "  pm.response.to.have.status(400);",
-                  "  pm.expect(pm.response.json().success).to.eql(false);",
-                  "  pm.expect(pm.response.json().code).to.eql('VALIDATION_ERROR');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"key\": \"postman.other\",\n  \"values\": {\n    \"en\": \"Other\"\n  }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations"
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Sửa giá trị một ô",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('200 và success = true', () => {",
-                  "  pm.response.to.have.status(200);",
-                  "  pm.expect(pm.response.json().success).to.eql(true);",
-                  "});",
-                  "pm.test('Đã lưu giá trị en', () => {",
-                  "  pm.expect(pm.response.json().data.values.en).to.eql('Postman sample');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"value\": \"Postman sample\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations/postman.sample/en",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations",
-                "postman.sample",
-                "en"
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Để trống ô ngôn ngữ không mặc định",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('200 và success = true', () => {",
-                  "  pm.response.to.have.status(200);",
-                  "  pm.expect(pm.response.json().success).to.eql(true);",
-                  "});",
-                  "pm.test('Ô en về null', () => {",
-                  "  pm.expect(pm.response.json().data.values.en).to.eql(null);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"value\": \"\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations/postman.sample/en",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations",
-                "postman.sample",
-                "en"
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Để trống ô ngôn ngữ mặc định (400)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('400 và success = false', () => {",
-                  "  pm.response.to.have.status(400);",
-                  "  pm.expect(pm.response.json().success).to.eql(false);",
-                  "  pm.expect(pm.response.json().code).to.eql('VALIDATION_ERROR');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"value\": \"\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations/postman.sample/vi",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations",
-                "postman.sample",
-                "vi"
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Xóa key",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('200 và success = true', () => {",
-                  "  pm.response.to.have.status(200);",
-                  "  pm.expect(pm.response.json().success).to.eql(true);",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations/postman.sample",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations",
-                "postman.sample"
-              ]
-            }
-          }
-        },
-        {
-          "name": "UC17 - Xóa key không có (404)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('404 và success = false', () => {",
-                  "  pm.response.to.have.status(404);",
-                  "  pm.expect(pm.response.json().success).to.eql(false);",
-                  "  pm.expect(pm.response.json().code).to.eql('NOT_FOUND');",
-                  "});"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/admin/ui-translations/postman.sample",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "ui-translations",
-                "postman.sample"
               ]
             }
           }
@@ -5111,6 +4503,266 @@
               "path": [
                 "auth",
                 "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - OAuth",
+      "description": "UC20 GitHub (A7). Các request trong folder chạy được bằng Postman CLI mà không cần GitHub thật.\n\nĐăng nhập GitHub thành công phải làm trên trình duyệt:\n1. Điền GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET trong backend/.env, chạy backend.\n2. Mở {{baseUrl}}/auth/github trên trình duyệt, đăng nhập GitHub.\n3. Trình duyệt về ${FRONTEND_URL}/oauth/callback?code=... (chưa có frontend thì trang báo lỗi, chỉ cần chép code trên thanh địa chỉ).\n4. Trong 60 giây: đặt biến môi trường oauthCode = code vừa chép, chạy request \"UC20 - Đổi mã lấy token\". oauthCode rỗng thì request này tự bỏ qua.",
+      "item": [
+        {
+          "name": "UC20 - Chuyển sang GitHub (302)",
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('302 chuyển hướng', () => pm.response.to.have.status(302));",
+                  "const location = pm.response.headers.get('Location') || '';",
+                  "pm.test('Sang trang đăng nhập GitHub', () => pm.expect(location).to.match(/^https:\\/\\/github\\.com\\/login\\/oauth\\/authorize\\?/));",
+                  "pm.test('Xin scope user:email', () => pm.expect(location).to.include('scope=user%3Aemail'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/github",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "github"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC20 - Người dùng hủy trên GitHub (302 ?error=OAUTH_FAILED)",
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('302 chuyển hướng', () => pm.response.to.have.status(302));",
+                  "const location = pm.response.headers.get('Location') || '';",
+                  "pm.test('Về frontend kèm ?error=OAUTH_FAILED, không có code', () => {",
+                  "  pm.expect(location).to.include('/oauth/callback?error=OAUTH_FAILED');",
+                  "  pm.expect(location).to.not.include('code=');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/github/callback?error=access_denied",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "github",
+                "callback"
+              ],
+              "query": [
+                {
+                  "key": "error",
+                  "value": "access_denied"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC20 - Đổi mã sai hoặc hết hạn (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "});",
+                  "pm.test('code = OAUTH_CODE_INVALID', () => pm.expect(pm.response.json().code).to.eql('OAUTH_CODE_INVALID'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"ma-khong-ton-tai\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/oauth/exchange",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "oauth",
+                "exchange"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC20 - Đổi mã thiếu code (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "});",
+                  "pm.test('Lỗi ở field code', () => pm.expect(pm.response.json().errors[0].field).to.eql('code'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/oauth/exchange",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "oauth",
+                "exchange"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC20 - Đổi mã lấy token (thủ công, cần oauthCode)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Mã chỉ có khi đăng nhập GitHub thật trên trình duyệt (xem mô tả folder)",
+                  "if (!pm.environment.get('oauthCode')) {",
+                  "  console.log('Bỏ qua: chưa đặt biến oauthCode');",
+                  "  pm.execution.skipRequest();",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "const data = pm.response.json().data;",
+                  "pm.test('Có cặp token và user', () => {",
+                  "  pm.expect(data.accessToken).to.be.a('string');",
+                  "  pm.expect(data.refreshToken).to.be.a('string');",
+                  "  pm.expect(data.user.email).to.be.a('string');",
+                  "});",
+                  "pm.test('Không có passwordHash', () => pm.expect(JSON.stringify(data)).to.not.include('password'));",
+                  "// Mã chỉ dùng một lần",
+                  "pm.environment.set('oauthCode', '');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"{{oauthCode}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/oauth/exchange",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "oauth",
+                "exchange"
               ]
             }
           }

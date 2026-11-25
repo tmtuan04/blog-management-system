@@ -33,7 +33,6 @@ export const RedisKeys = {
     limit: number,
   ) => `cache:posts:category:${code}:${categoryId}:${page}:${limit}`,
   languagesActive: () => 'cache:languages:active',
-  uiTranslations: (code: string) => `cache:ui:${code}`,
 } as const;
 
 /** Prefix dùng với CacheService.invalidate() */
@@ -42,7 +41,6 @@ export const CachePrefix = {
   posts: 'cache:posts:',
   categories: 'cache:categories:',
   languages: 'cache:languages:',
-  ui: 'cache:ui:',
 } as const;
 
 /** TTL (giây) */
@@ -50,7 +48,6 @@ export const CacheTtl = {
   posts: 5 * 60,
   categories: 10 * 60,
   languages: 10 * 60,
-  ui: 10 * 60,
   userActive: 60,
   view: 60 * 60,
   oauthCode: 60,

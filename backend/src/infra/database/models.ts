@@ -6,7 +6,6 @@ import { PageTranslation } from '../../modules/pages/models/page-translation.mod
 import { Page } from '../../modules/pages/models/page.model';
 import { PostTranslation } from '../../modules/posts/models/post-translation.model';
 import { Post } from '../../modules/posts/models/post.model';
-import { UiTranslation } from '../../modules/ui-translations/models/ui-translation.model';
 import { OauthAccount } from '../../modules/users/models/oauth-account.model';
 import { Role } from '../../modules/users/models/role.model';
 import { User } from '../../modules/users/models/user.model';
@@ -22,7 +21,6 @@ export const MODELS = [
   Post,
   PostTranslation,
   Comment,
-  UiTranslation,
   Page,
   PageTranslation,
 ];
