@@ -235,6 +235,15 @@ describe("AdminUsersService", () => {
       });
     });
 
+    it("bản ghi vừa tạo chưa có avatar (undefined) thì vẫn trả avatar: null", async () => {
+      users.emailExists.mockResolvedValue(false);
+      users.create.mockResolvedValue(row({ id: 9, avatar: undefined }));
+
+      const result = await service.create(dto, ACTOR_ID);
+
+      expect(result).toHaveProperty("avatar", null);
+    });
+
     it("hai request cùng email chạy song song: lỗi UNIQUE của DB cũng thành 409", async () => {
       users.emailExists.mockResolvedValue(false);
       users.create.mockRejectedValue(new UniqueConstraintError({}));
@@ -330,6 +339,25 @@ describe("AdminUsersService", () => {
         lock: "UPDATE",
       });
       expect(target.update).not.toHaveBeenCalled();
+    });
+
+    it("khóa dòng role super_admin trước khi đếm để hai request hạ quyền xếp hàng, không deadlock", async () => {
+      const target = row({ id: 5, roleCode: "super_admin" });
+      userModel.findByPk.mockResolvedValue(target);
+      userModel.findAll.mockResolvedValue([{ id: 1 }, { id: 5 }]);
+      roleModel.findOne.mockResolvedValue({ id: 2, code: "blog_owner" });
+
+      await service.changeRole(5, { role: "blog_owner" }, ACTOR_ID);
+
+      expect(roleModel.findOne).toHaveBeenNthCalledWith(1, {
+        attributes: ["id"],
+        where: { id: 3 },
+        transaction,
+        lock: "UPDATE",
+      });
+      expect(roleModel.findOne.mock.invocationCallOrder[0]).toBeLessThan(
+        userModel.findAll.mock.invocationCallOrder[0],
+      );
     });
 
     it("còn Super Admin khác đang hoạt động thì hạ quyền được", async () => {
@@ -492,6 +520,16 @@ describe("AdminUsersService", () => {
         { transaction },
       );
       expect(tokens.revokeAll).toHaveBeenCalledWith(5);
+      // Khóa dòng role super_admin trước khi đếm, như khi hạ quyền
+      expect(roleModel.findOne).toHaveBeenCalledWith({
+        attributes: ["id"],
+        where: { id: 3 },
+        transaction,
+        lock: "UPDATE",
+      });
+      expect(roleModel.findOne.mock.invocationCallOrder[0]).toBeLessThan(
+        userModel.findAll.mock.invocationCallOrder[0],
+      );
     });
 
     it("khóa tài khoản đã khóa: không ghi lại nhưng vẫn thu hồi token để gọi lại được khi Redis từng lỗi", async () => {

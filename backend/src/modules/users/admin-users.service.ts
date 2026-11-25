@@ -181,9 +181,14 @@ export class AdminUsersService {
   }
 
   /**
-   * Hệ thống luôn phải còn ít nhất 1 Super Admin đang hoạt động. Đọc có khóa dòng
-   * (`FOR UPDATE`) để hai Super Admin cùng hạ quyền hoặc khóa nhau không cùng qua được.
-   * Gọi khi `target` là Super Admin sắp bị hạ quyền hoặc khóa.
+   * Hệ thống luôn phải còn ít nhất 1 Super Admin đang hoạt động. Gọi khi `target` là
+   * Super Admin sắp bị hạ quyền hoặc khóa.
+   *
+   * Khóa dòng `roles` của super_admin trước để các request này xếp hàng: request sau
+   * chờ request trước commit rồi mới đếm. Nếu chỉ khóa các dòng `users`, hai Super Admin
+   * hạ quyền nhau cùng lúc sẽ deadlock trên index `role_id` (khóa khoảng của
+   * `FOR UPDATE` chặn `UPDATE role_id` của bên kia), MySQL hủy một bên và trả 500.
+   * Câu đếm vẫn phải đọc có khóa để thấy bản đã commit, không phải snapshot cũ.
    */
   private async assertNotLastSuperAdmin(
     target: User,
@@ -192,6 +197,12 @@ export class AdminUsersService {
     if (!target.isActive) {
       return; // Super Admin đã bị khóa không tính vào số còn lại
     }
+    await this.roleModel.findOne({
+      attributes: ['id'],
+      where: { id: target.roleId },
+      transaction,
+      lock: transaction.LOCK.UPDATE,
+    });
     const active = await this.userModel.findAll({
       attributes: ['id'],
       where: { roleId: target.roleId, isActive: true },
@@ -235,7 +246,8 @@ export class AdminUsersService {
       id: user.id,
       fullName: user.fullName,
       email: user.email,
-      avatar: user.avatar,
+      // Bản ghi vừa tạo không có avatar trong dataValues (undefined), JSON sẽ mất key
+      avatar: user.avatar ?? null,
       role: user.role!.code,
       isActive: user.isActive,
       isSelf: user.id === actorId,
