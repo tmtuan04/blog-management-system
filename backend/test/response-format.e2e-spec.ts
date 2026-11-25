@@ -202,6 +202,28 @@ describe('Response format 6.4 (e2e)', () => {
     });
   });
 
+  describe('OAuth', () => {
+    it('lỗi nghiệp vụ có code riêng', async () => {
+      const res = await request(server())
+        .post('/api/v1/auth/oauth/exchange')
+        .send({ code: 'khong-ton-tai' })
+        .expect(400);
+      expectError(res.body);
+      expect(res.body.code).toBe('OAUTH_CODE_INVALID');
+    });
+
+    it('lỗi validate có errors[] với field', async () => {
+      const res = await request(server())
+        .post('/api/v1/auth/oauth/exchange')
+        .send({})
+        .expect(400);
+      expectError(res.body);
+      expect(res.body.errors).toEqual([
+        { field: 'code', message: expect.any(String) },
+      ]);
+    });
+  });
+
   describe('Comments', () => {
     let translationId: number;
 

@@ -4,7 +4,8 @@ import { MailService } from '../../infra/mail/mail.service';
 import { RedisService } from '../../infra/redis/redis.service';
 import { User } from '../users/models/user.model';
 import { UsersService } from '../users/users.service';
-import { AuthService } from './auth.service';
+import { AuthService, oauthFullName } from './auth.service';
+import { OauthProfile } from './oauth.types';
 import { TokenService } from './token.service';
 
 describe('AuthService', () => {
@@ -23,6 +24,10 @@ describe('AuthService', () => {
     findByEmail: jest.fn(),
     findById: jest.fn(),
     updatePassword: jest.fn(),
+    findByOauth: jest.fn(),
+    hasOauth: jest.fn(),
+    linkOauth: jest.fn(),
+    createFromOauth: jest.fn(),
   };
   const tokens = {
     issue: jest.fn().mockResolvedValue({ accessToken: 'a', refreshToken: 'r' }),
@@ -280,6 +285,232 @@ describe('AuthService', () => {
       users.findById.mockResolvedValue(null);
       const error = await errorOf(service.me(1));
       expect(error.getStatus()).toBe(401);
+    });
+  });
+
+  describe('oauthLogin (UC20)', () => {
+    const profileOf = (
+      overrides: Partial<OauthProfile> = {},
+    ): OauthProfile => ({
+      provider: 'github',
+      providerUserId: '42',
+      email: 'an@test.local',
+      fullName: 'An Nguyễn',
+      avatar: 'https://avatars.githubusercontent.com/u/42',
+      ...overrides,
+    });
+    const link = {
+      provider: 'github',
+      providerUserId: '42',
+      providerEmail: 'an@test.local',
+    };
+
+    it('đã liên kết: dùng tài khoản đó, lưu mã 60 giây vào Redis', async () => {
+      users.findByOauth.mockResolvedValue(userOf({ id: 7 }));
+
+      const code = await service.oauthLogin(profileOf());
+
+      expect(code).toMatch(/^[\w-]{43}$/);
+      expect(users.findByOauth).toHaveBeenCalledWith('github', '42');
+      expect(users.findByEmail).not.toHaveBeenCalled();
+      expect(users.createFromOauth).not.toHaveBeenCalled();
+      expect(client.set).toHaveBeenCalledWith(
+        `auth:oauth-code:${code}`,
+        '7',
+        'EX',
+        60,
+      );
+    });
+
+    it('chưa liên kết, trùng email: liên kết vào tài khoản đó', async () => {
+      users.findByOauth.mockResolvedValue(null);
+      users.findByEmail.mockResolvedValue(userOf({ id: 3 }));
+      users.hasOauth.mockResolvedValue(false);
+
+      await service.oauthLogin(profileOf());
+
+      expect(users.findByEmail).toHaveBeenCalledWith('an@test.local');
+      expect(users.linkOauth).toHaveBeenCalledWith(3, link);
+      expect(users.createFromOauth).not.toHaveBeenCalled();
+      expect(client.set).toHaveBeenCalledWith(
+        expect.any(String),
+        '3',
+        'EX',
+        60,
+      );
+    });
+
+    it('chưa có tài khoản: tạo mới với tên và ảnh từ provider', async () => {
+      users.findByOauth.mockResolvedValue(null);
+      users.findByEmail.mockResolvedValue(null);
+      users.createFromOauth.mockResolvedValue(userOf({ id: 11 }));
+
+      await service.oauthLogin(profileOf());
+
+      expect(users.createFromOauth).toHaveBeenCalledWith({
+        ...link,
+        email: 'an@test.local',
+        fullName: 'An Nguyễn',
+        avatar: 'https://avatars.githubusercontent.com/u/42',
+      });
+      expect(users.linkOauth).not.toHaveBeenCalled();
+    });
+
+    it('URL ảnh dài hơn cột avatar (255) thì bỏ ảnh', async () => {
+      users.findByOauth.mockResolvedValue(null);
+      users.findByEmail.mockResolvedValue(null);
+      users.createFromOauth.mockResolvedValue(userOf());
+
+      await service.oauthLogin(
+        profileOf({ avatar: `https://x.test/${'a'.repeat(250)}` }),
+      );
+
+      expect(users.createFromOauth).toHaveBeenCalledWith(
+        expect.objectContaining({ avatar: null }),
+      );
+    });
+
+    it('không có email đã xác minh: 400 OAUTH_NO_EMAIL, không đụng database', async () => {
+      const error = await errorOf(
+        service.oauthLogin(profileOf({ email: null })),
+      );
+      expect(error.getStatus()).toBe(400);
+      expect(error.code).toBe('OAUTH_NO_EMAIL');
+      expect(users.findByOauth).not.toHaveBeenCalled();
+      expect(client.set).not.toHaveBeenCalled();
+    });
+
+    it('tài khoản đã liên kết bị khóa: 403 ACCOUNT_LOCKED, không cấp mã', async () => {
+      users.findByOauth.mockResolvedValue(userOf({ isActive: false }));
+      const error = await errorOf(service.oauthLogin(profileOf()));
+      expect(error.code).toBe('ACCOUNT_LOCKED');
+      expect(client.set).not.toHaveBeenCalled();
+    });
+
+    it('trùng email với tài khoản bị khóa: 403, không ghi liên kết', async () => {
+      users.findByOauth.mockResolvedValue(null);
+      users.findByEmail.mockResolvedValue(userOf({ isActive: false }));
+      const error = await errorOf(service.oauthLogin(profileOf()));
+      expect(error.code).toBe('ACCOUNT_LOCKED');
+      expect(users.linkOauth).not.toHaveBeenCalled();
+    });
+
+    it('trùng email nhưng tài khoản đã liên kết GitHub khác: 409 OAUTH_FAILED', async () => {
+      users.findByOauth.mockResolvedValue(null);
+      users.findByEmail.mockResolvedValue(userOf({ id: 3 }));
+      users.hasOauth.mockResolvedValue(true);
+
+      const error = await errorOf(service.oauthLogin(profileOf()));
+
+      expect(error.getStatus()).toBe(409);
+      expect(error.code).toBe('OAUTH_FAILED');
+      expect(users.hasOauth).toHaveBeenCalledWith(3, 'github');
+      expect(users.linkOauth).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('oauthFullName', () => {
+    it('dùng tên bên provider, cắt còn 150 ký tự', () => {
+      expect(oauthFullName(' An ', 'x@y.z')).toBe('An');
+      expect(oauthFullName('a'.repeat(200), 'x@y.z')).toHaveLength(150);
+    });
+
+    it('tên dưới 2 ký tự thì dùng phần trước @ của email', () => {
+      expect(oauthFullName('', 'octocat@github.test')).toBe('octocat');
+      expect(oauthFullName('A', 'octocat@github.test')).toBe('octocat');
+    });
+
+    it('cả hai đều quá ngắn thì dùng tên mặc định', () => {
+      expect(oauthFullName('', 'a@b.c')).toBe('Người dùng');
+    });
+  });
+
+  describe('oauthRedirectUrl (UC20)', () => {
+    const base = 'http://localhost:4200/oauth/callback';
+    const profile: OauthProfile = {
+      provider: 'github',
+      providerUserId: '42',
+      email: 'an@test.local',
+      fullName: 'An',
+      avatar: null,
+    };
+
+    it('người dùng hủy hoặc GitHub lỗi (profile null): ?error=OAUTH_FAILED', async () => {
+      await expect(service.oauthRedirectUrl(null)).resolves.toBe(
+        `${base}?error=OAUTH_FAILED`,
+      );
+    });
+
+    it('thành công: ?code=', async () => {
+      users.findByOauth.mockResolvedValue(userOf());
+      const url = await service.oauthRedirectUrl(profile);
+      expect(url.startsWith(`${base}?code=`)).toBe(true);
+      expect(url.slice(`${base}?code=`.length)).toMatch(/^[\w-]{43}$/);
+    });
+
+    it('lỗi nghiệp vụ: ?error=<mã lỗi>', async () => {
+      await expect(
+        service.oauthRedirectUrl({ ...profile, email: null }),
+      ).resolves.toBe(`${base}?error=OAUTH_NO_EMAIL`);
+
+      users.findByOauth.mockResolvedValue(userOf({ isActive: false }));
+      await expect(service.oauthRedirectUrl(profile)).resolves.toBe(
+        `${base}?error=ACCOUNT_LOCKED`,
+      );
+    });
+
+    it('lỗi không lường trước (database...): ?error=OAUTH_FAILED và ghi log', async () => {
+      users.findByOauth.mockRejectedValue(new Error('db down'));
+      const logSpy = jest
+        .spyOn(service['logger'], 'error')
+        .mockImplementation(() => undefined);
+
+      await expect(service.oauthRedirectUrl(profile)).resolves.toBe(
+        `${base}?error=OAUTH_FAILED`,
+      );
+      expect(logSpy).toHaveBeenCalled();
+      logSpy.mockRestore();
+    });
+  });
+
+  describe('exchangeOauthCode (UC20)', () => {
+    it('mã đúng: xóa mã (GETDEL) và trả token + user', async () => {
+      client.getdel.mockResolvedValue('7');
+      users.findById.mockResolvedValue(userOf({ id: 7 }));
+
+      const result = await service.exchangeOauthCode('abc');
+
+      expect(client.getdel).toHaveBeenCalledWith('auth:oauth-code:abc');
+      expect(tokens.issue).toHaveBeenCalledWith({ id: 7, role: 'user' });
+      expect(result).toMatchObject({
+        accessToken: 'a',
+        refreshToken: 'r',
+        user: { id: 7, email: 'an@test.local', role: 'user' },
+      });
+      expect(result.user).not.toHaveProperty('passwordHash');
+    });
+
+    it('mã sai, hết hạn hoặc đã dùng: 400 OAUTH_CODE_INVALID', async () => {
+      client.getdel.mockResolvedValue(null);
+      const error = await errorOf(service.exchangeOauthCode('abc'));
+      expect(error.getStatus()).toBe(400);
+      expect(error.code).toBe('OAUTH_CODE_INVALID');
+      expect(tokens.issue).not.toHaveBeenCalled();
+    });
+
+    it('user đã bị xóa: 400 OAUTH_CODE_INVALID', async () => {
+      client.getdel.mockResolvedValue('7');
+      users.findById.mockResolvedValue(null);
+      const error = await errorOf(service.exchangeOauthCode('abc'));
+      expect(error.code).toBe('OAUTH_CODE_INVALID');
+    });
+
+    it('bị khóa giữa callback và lúc đổi mã: 403 ACCOUNT_LOCKED', async () => {
+      client.getdel.mockResolvedValue('7');
+      users.findById.mockResolvedValue(userOf({ isActive: false }));
+      const error = await errorOf(service.exchangeOauthCode('abc'));
+      expect(error.code).toBe('ACCOUNT_LOCKED');
+      expect(tokens.issue).not.toHaveBeenCalled();
     });
   });
 });
