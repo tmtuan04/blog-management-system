@@ -39,7 +39,7 @@ import { OauthExchangeDto } from './dto/oauth-exchange.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { GithubAuthGuard } from './guards/github-auth.guard';
+import { GithubAuthGuard } from './guards/oauth-auth.guard';
 import { OauthProfile } from './oauth.types';
 
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
