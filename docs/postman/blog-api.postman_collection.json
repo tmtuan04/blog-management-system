@@ -4511,7 +4511,7 @@
     },
     {
       "name": "11 - OAuth",
-      "description": "UC20 GitHub (A7). Các request trong folder chạy được bằng Postman CLI mà không cần GitHub thật.\n\nĐăng nhập GitHub thành công phải làm trên trình duyệt:\n1. Điền GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET trong backend/.env, chạy backend.\n2. Mở {{baseUrl}}/auth/github trên trình duyệt, đăng nhập GitHub.\n3. Trình duyệt về ${FRONTEND_URL}/oauth/callback?code=... (chưa có frontend thì trang báo lỗi, chỉ cần chép code trên thanh địa chỉ).\n4. Trong 60 giây: đặt biến môi trường oauthCode = code vừa chép, chạy request \"UC20 - Đổi mã lấy token\". oauthCode rỗng thì request này tự bỏ qua.",
+      "description": "UC20 GitHub, Google (A7). Các request trong folder chạy được bằng Postman CLI mà không cần GitHub / Google thật.\n\nĐăng nhập thành công phải làm trên trình duyệt:\n1. Điền GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET (hoặc GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET) trong backend/.env, chạy backend.\n2. Mở {{baseUrl}}/auth/github (hoặc {{baseUrl}}/auth/google) trên trình duyệt, đăng nhập. Google chỉ chạy với callback localhost; app Google đang ở chế độ Testing nên email phải có trong danh sách Test users.\n3. Trình duyệt về ${FRONTEND_URL}/oauth/callback?code=... (chưa có frontend thì trang báo lỗi, chỉ cần chép code trên thanh địa chỉ).\n4. Trong 60 giây: đặt biến môi trường oauthCode = code vừa chép, chạy request \"UC20 - Đổi mã lấy token\". oauthCode rỗng thì request này tự bỏ qua.",
       "item": [
         {
           "name": "UC20 - Chuyển sang GitHub (302)",
@@ -4585,6 +4585,90 @@
               "path": [
                 "auth",
                 "github",
+                "callback"
+              ],
+              "query": [
+                {
+                  "key": "error",
+                  "value": "access_denied"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC20 - Chuyển sang Google (302)",
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('302 chuyển hướng', () => pm.response.to.have.status(302));",
+                  "const location = pm.response.headers.get('Location') || '';",
+                  "pm.test('Sang trang đăng nhập Google', () => pm.expect(location).to.match(/^https:\\/\\/accounts\\.google\\.com\\/o\\/oauth2\\/v2\\/auth\\?/));",
+                  "pm.test('Xin scope profile email', () => pm.expect(location).to.include('scope=profile%20email'));",
+                  "pm.test('Luôn hiện màn chọn tài khoản', () => pm.expect(location).to.include('prompt=select_account'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/google",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "google"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC20 - Người dùng hủy trên Google (302 ?error=OAUTH_FAILED)",
+          "protocolProfileBehavior": {
+            "followRedirects": false
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('302 chuyển hướng', () => pm.response.to.have.status(302));",
+                  "const location = pm.response.headers.get('Location') || '';",
+                  "pm.test('Về frontend kèm ?error=OAUTH_FAILED, không có code', () => {",
+                  "  pm.expect(location).to.include('/oauth/callback?error=OAUTH_FAILED');",
+                  "  pm.expect(location).to.not.include('code=');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/google/callback?error=access_denied",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "google",
                 "callback"
               ],
               "query": [
@@ -4704,7 +4788,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// Mã chỉ có khi đăng nhập GitHub thật trên trình duyệt (xem mô tả folder)",
+                  "// Mã chỉ có khi đăng nhập GitHub / Google thật trên trình duyệt (xem mô tả folder)",
                   "if (!pm.environment.get('oauthCode')) {",
                   "  console.log('Bỏ qua: chưa đặt biến oauthCode');",
                   "  pm.execution.skipRequest();",
