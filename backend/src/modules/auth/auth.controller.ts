@@ -39,7 +39,7 @@ import { OauthExchangeDto } from './dto/oauth-exchange.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { GithubAuthGuard } from './guards/github-auth.guard';
+import { GithubAuthGuard, GoogleAuthGuard } from './guards/oauth-auth.guard';
 import { OauthProfile } from './oauth.types';
 
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
@@ -177,6 +177,31 @@ export class AuthController {
   @UseGuards(GithubAuthGuard)
   @ApiExcludeEndpoint()
   async githubCallback(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const profile = (req.user ?? null) as OauthProfile | null;
+    res.redirect(await this.authService.oauthRedirectUrl(profile));
+  }
+
+  @Public()
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  @ApiOperation({
+    summary: 'UC20 - Đăng nhập bằng Google',
+    description:
+      'Mở bằng trình duyệt (không gọi bằng XHR). Chuyển hướng sang trang chọn tài khoản Google, xong thì Google gọi /auth/google/callback. Chỉ chạy với callback `localhost` (Google không nhận callback là địa chỉ IP).',
+  })
+  @ApiFoundResponse({ description: 'Chuyển hướng sang Google' })
+  googleLogin(): void {
+    // GoogleAuthGuard đã chuyển hướng sang Google
+  }
+
+  @Public()
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  @ApiExcludeEndpoint()
+  async googleCallback(
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {
