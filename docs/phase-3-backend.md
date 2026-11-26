@@ -246,7 +246,7 @@ Mọi route có prefix `/api/v1`. Cột "Quyền": `public` (không cần đăng
 | POST | `/auth/forgot-password` | public | UC03 | `forgot-password` | Luôn 200 với cùng một message. Có email thì gửi link `${FRONTEND_URL}/reset-password?token=...`. Rate limit 3 lần / 15 phút / IP |
 | POST | `/auth/reset-password` | public | UC03 | `reset-password` | Body `{ token, password, confirmPassword }`. Token sai hoặc hết hạn → 400 `RESET_TOKEN_INVALID`. Thành công: xóa token, thu hồi mọi refresh token |
 | GET | `/auth/me` | auth | UC02 | header | Thông tin user + role, để frontend hiện menu theo role |
-| GET | `/auth/google`, `/auth/github` | public | UC20 | `login`, `register` | Chuyển hướng sang provider |
+| GET | `/auth/google`, `/auth/github` | public | UC20 | `login`, `register` | Chuyển hướng sang provider. Google thêm `prompt=select_account` để luôn hiện màn chọn tài khoản, và chỉ chạy với callback `localhost` (requirements mục 9) |
 | GET | `/auth/google/callback`, `/auth/github/callback` | public | UC20 | | Xử lý theo UC20 rồi chuyển hướng về `${FRONTEND_URL}/oauth/callback?code=...`. Chỉ nhận email **đã xác minh** bên provider (liên kết theo email nên email chưa xác minh cho phép chiếm tài khoản). Lỗi thì `?error=`: `OAUTH_NO_EMAIL` (không có email đã xác minh), `ACCOUNT_LOCKED`, `OAUTH_FAILED` (người dùng hủy, provider lỗi, hoặc tài khoản trùng email đã liên kết một tài khoản khác của cùng provider) |
 | POST | `/auth/oauth/exchange` | public | UC20 | | Body `{ code }`. Đổi mã dùng một lần (60 giây) lấy `{ accessToken, refreshToken, user }` như login. Không đưa token lên URL. Mã sai, hết hạn hoặc đã dùng → 400 `OAUTH_CODE_INVALID`. Bị khóa → 403 `ACCOUNT_LOCKED` |
 
@@ -459,7 +459,7 @@ Gộp cột "Chờ" của cả ba người. Việc trong cùng một đợt làm
 | --- | --- | --- | --- |
 | 1 | A1 (**đã xong**) | Ngay từ đầu | Mọi việc còn lại |
 | 2 | A2 (**đã xong**), A3 (**đã xong**), B1 (**đã xong**), B2 (**đã xong**), B3 (**đã xong**), B6 | A1 đã merge | A2 → A6, A7, B5. A3 → A4, A5. B1 → B4, C1. B3 → C2. B6 → C3 |
-| 3 | A4 (**đã xong**), A5 (**đã xong**), A6 (**đã xong**), A7, B4 (**đã xong**), B5, C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
+| 3 | A4 (**đã xong**), A5 (**đã xong**), A6 (**đã xong**), A7 (**đã xong**), B4 (**đã xong**), B5 (**đã xong**), C1 (**đã xong**) | A4, A5 chờ A3. A6, A7, B5 chờ A2. B4, C1 chờ B1 | A4 → C3. C1 → C2 |
 | 4 | C2 (**đã xong**) | B3 và C1 đã merge | |
 | 5 | C3 (kiểm tra tổng) | A4 và B6 đã merge. Nên đợi mọi việc Must khác merge để kiểm tra một lần | A8, các PR sửa lỗi của A và B |
 | 6 | A8 | C3 đã merge | Kết thúc phase: merge `dev` → `master` |
@@ -482,6 +482,8 @@ Cập nhật 22/11: theo góp ý của mentor, bỏ UC17 (requirements 2.2, D5).
 
 Cập nhật 24/11: ghi lại trạng thái B4 (đã merge ngày 21/11, PR #59) và A5 ở bảng đợt. Việc chưa xong: A7, B5, B6, C3, A8. Việc đang chặn nhiều người nhất vẫn là **B6** (chặn C3, qua đó chặn A8).
 
+Cập nhật 26/11: A7 xong (GitHub PR #65 merge 25/11, Google PR #67 merge 26/11), B5 xong (PR #64 merge 25/11; folder Postman `12 - Admin Users` bổ sung sau). Việc chưa xong: B6, C3, A8. B6 chưa có nhánh, vẫn là việc đang chặn nhiều người nhất (chặn C3, qua đó chặn A8); đã quá mốc 09/11 ở mục 8.4 nên A có thể nhận B6.
+
 ### 8.3. Việc của từng người
 
 #### A
@@ -494,7 +496,7 @@ Cập nhật 24/11: ghi lại trạng thái B4 (đã merge ngày 21/11, PR #59) 
 | A4 (**đã xong**) | Chi tiết bài UC06: `/posts/:slug`, `/related`, tăng lượt xem | A3 | `/related` trả 404 khi slug không có ở ngôn ngữ đang chọn, giống `/posts/:slug` |
 | A5 (**đã xong**) | Tìm kiếm UC19 (Should) | A3 | Test với cả từ khóa tiếng Việt có dấu |
 | A6 (**đã xong**) | Hồ sơ cá nhân UC12 (Should, mục 4.4) | A2 | Chuyển từ B sang ở bản 1.1. Avatar dùng lại `UploadModule` |
-| A7 (**đang làm**: GitHub xong cả route, e2e, Postman; còn Google) | OAuth UC20 Google, Github (Should) | A2 | Cần đăng ký app OAuth (requirements mục 9) trước ngày làm |
+| A7 (**đã xong**: GitHub PR #65 merge 25/11, Google PR #67 merge 26/11) | OAuth UC20 Google, Github (Should) | A2 | Cần đăng ký app OAuth (requirements mục 9) trước ngày làm |
 | A8 | Duyệt lỗi C báo ở C3 thuộc phần nền, hoàn thiện Swagger, kiểm tra độ phủ chung, merge `dev` → `master` | C3 | |
 
 #### B
@@ -505,7 +507,7 @@ Cập nhật 24/11: ghi lại trạng thái B4 (đã merge ngày 21/11, PR #59) 
 | B2 (**đã xong**) | Ngôn ngữ UC16 (admin, mở rộng module mẫu) + bản dịch giao diện UC17 (admin + `GET /ui-translations/:code`) | A1 | UC17 bỏ ở 1.2 (requirements 2.2): đã xóa module `ui-translations` |
 | B3 (**đã xong**) | Danh mục UC15 (admin) | A1 | Tạo module `categories`. C2 thêm route public vào đây |
 | B4 (**đã xong**) | Bình luận UC08 | A1, B1 | Quyền xóa cần biết tác giả bài qua `post_translations → posts.user_id` |
-| B5 | Người dùng UC14 | A2 | Thu hồi refresh token dùng hàm của A2 |
+| B5 (**đã xong**: PR #64 merge 25/11) | Người dùng UC14 | A2 | Thu hồi refresh token dùng hàm của A2 |
 | B6 | Trang tĩnh UC11 + UC18 | A1 | |
 
 #### C
