@@ -4852,6 +4852,765 @@
           }
         }
       ]
+    },
+    {
+      "name": "12 - Admin Users",
+      "description": "UC14 (B5). Cần chạy 00 - Auth trước. Tạo một tài khoản mới (email ngẫu nhiên) rồi đổi vai trò, khóa, mở khóa trên chính tài khoản đó nên không đụng tài khoản seed. 409 LAST_SUPER_ADMIN cần hai Super Admin hạ quyền nhau cùng lúc nên chỉ kiểm tra ở e2e (backend/test/admin-users.e2e-spec.ts).",
+      "item": [
+        {
+          "name": "UC14 - Danh sách khi chưa đăng nhập (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 và success = false', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "});",
+                  "pm.test('UNAUTHORIZED', () => pm.expect(pm.response.json().code).to.eql('UNAUTHORIZED'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Danh sách bằng Blog Owner (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 và success = false', () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "});",
+                  "pm.test('FORBIDDEN', () => pm.expect(pm.response.json().code).to.eql('FORBIDDEN'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ownerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Danh sách người dùng",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.test('Có meta phân trang', () => pm.expect(body.meta).to.include.keys('page', 'limit', 'total', 'totalPages'));",
+                  "pm.test('Không trả passwordHash', () => body.data.forEach((u) => pm.expect(u).to.not.have.property('passwordHash')));",
+                  "const self = body.data.find((u) => u.isSelf);",
+                  "pm.test('Có đúng một dòng isSelf là tài khoản đang đăng nhập', () => {",
+                  "  pm.expect(body.data.filter((u) => u.isSelf)).to.have.length(1);",
+                  "  pm.expect(self.email).to.eql(pm.environment.get('adminEmail'));",
+                  "});",
+                  "if (self) pm.environment.set('adminUserId', self.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Lọc theo vai trò và trạng thái",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "const rows = pm.response.json().data;",
+                  "pm.test('Có kết quả', () => pm.expect(rows.length).to.be.above(0));",
+                  "pm.test('Chỉ có Blog Owner đang hoạt động', () => rows.forEach((u) => {",
+                  "  pm.expect(u.role).to.eql('blog_owner');",
+                  "  pm.expect(u.isActive).to.eql(true);",
+                  "}));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?role=blog_owner&isActive=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "blog_owner"
+                },
+                {
+                  "key": "isActive",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Tìm theo email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Tìm ra Blog Owner seed', () => {",
+                  "  const emails = pm.response.json().data.map((u) => u.email);",
+                  "  pm.expect(emails).to.include(pm.environment.get('ownerEmail'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?q={{ownerEmail}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "{{ownerEmail}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Lọc sai giá trị (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "});",
+                  "pm.test('errors có field role, isActive', () => {",
+                  "  const fields = [...new Set(pm.response.json().errors.map((e) => e.field))].sort();",
+                  "  pm.expect(fields).to.eql([\"isActive\",\"role\"]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?role=root&isActive=yes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "root"
+                },
+                {
+                  "key": "isActive",
+                  "value": "yes"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Tạo tài khoản",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 và success = true', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "const data = pm.response.json().data;",
+                  "pm.test('Đúng email, vai trò, đang hoạt động', () => {",
+                  "  pm.expect(data.email).to.eql(pm.environment.get('newUserEmail'));",
+                  "  pm.expect(data.role).to.eql('blog_owner');",
+                  "  pm.expect(data.isActive).to.eql(true);",
+                  "  pm.expect(data.isSelf).to.eql(false);",
+                  "});",
+                  "pm.test('Không trả passwordHash', () => pm.expect(data).to.not.have.property('passwordHash'));",
+                  "pm.environment.set('newUserId', data.id);"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set('newUserEmail', `postman-admin-${Date.now()}@test.local`);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Blog Owner Postman\",\n  \"email\": \"{{newUserEmail}}\",\n  \"password\": \"{{demoPassword}}\",\n  \"role\": \"blog_owner\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Tạo tài khoản email đã tồn tại (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 và success = false', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "});",
+                  "pm.test('CONFLICT', () => pm.expect(pm.response.json().code).to.eql('CONFLICT'));",
+                  "pm.test('errors có field email', () => {",
+                  "  const fields = [...new Set(pm.response.json().errors.map((e) => e.field))].sort();",
+                  "  pm.expect(fields).to.eql([\"email\"]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Trùng email\",\n  \"email\": \"{{newUserEmail}}\",\n  \"password\": \"{{demoPassword}}\",\n  \"role\": \"user\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Tạo tài khoản sai dữ liệu (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "});",
+                  "pm.test('errors có field fullName, email, password, role', () => {",
+                  "  const fields = [...new Set(pm.response.json().errors.map((e) => e.field))].sort();",
+                  "  pm.expect(fields).to.eql([\"email\",\"fullName\",\"password\",\"role\"]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"A\",\n  \"email\": \"khong-phai-email\",\n  \"password\": \"12345678\",\n  \"role\": \"root\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Đổi vai trò",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Vai trò mới là user', () => pm.expect(pm.response.json().data.role).to.eql('user'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"user\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{newUserId}}/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{newUserId}}",
+                "role"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Tự hạ quyền chính mình (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "});",
+                  "pm.test('BAD_REQUEST', () => pm.expect(pm.response.json().code).to.eql('BAD_REQUEST'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"blog_owner\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{adminUserId}}/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{adminUserId}}",
+                "role"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Đổi vai trò người dùng không có (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 và success = false', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "});",
+                  "pm.test('NOT_FOUND', () => pm.expect(pm.response.json().code).to.eql('NOT_FOUND'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"user\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/999999/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "999999",
+                "role"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Khóa tài khoản",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Đã khóa', () => pm.expect(pm.response.json().data.isActive).to.eql(false));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{newUserId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{newUserId}}",
+                "status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Tài khoản bị khóa không đăng nhập được (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 và success = false', () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "});",
+                  "pm.test('ACCOUNT_LOCKED', () => pm.expect(pm.response.json().code).to.eql('ACCOUNT_LOCKED'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{newUserEmail}}\",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Tự khóa chính mình (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và success = false', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "});",
+                  "pm.test('BAD_REQUEST', () => pm.expect(pm.response.json().code).to.eql('BAD_REQUEST'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{adminUserId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{adminUserId}}",
+                "status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Mở khóa tài khoản",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Đã mở khóa', () => pm.expect(pm.response.json().data.isActive).to.eql(true));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{newUserId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "users",
+                "{{newUserId}}",
+                "status"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC14 - Đăng nhập lại sau khi mở khóa",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Vai trò là user', () => pm.expect(pm.response.json().data.user.role).to.eql('user'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{newUserEmail}}\",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminAccessToken}}",
+            "type": "string"
+          }
+        ]
+      }
     }
   ]
 }

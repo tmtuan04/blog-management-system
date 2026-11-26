@@ -6,6 +6,13 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Quản lý người dùng UC14 (B5, PR #64 merge 25/11, trước đây chưa ghi changelog), module `AdminUsersModule`, chỉ Super Admin:
+  - `GET /admin/users`: phân trang, `?q=` (họ tên hoặc email, tối đa 100 ký tự), `?role=` (`user`, `blog_owner`, `super_admin`), `?isActive=true|false`; mới tạo xếp trước. Mỗi dòng có `isSelf` để phase 4 vô hiệu nút ở hàng của chính mình. Không trả `passwordHash`.
+  - `POST /admin/users`: body `{ fullName, email, password, role }`, ràng buộc giống UC01. 201. Email đã có → 409 `CONFLICT` kèm `errors[{field: "email"}]` (kể cả khi hai request trùng email chạy song song).
+  - `PATCH /admin/users/:id/role`: tự đổi vai trò của chính mình → 400 `BAD_REQUEST`; hạ quyền Super Admin hoạt động cuối cùng → 409 `LAST_SUPER_ADMIN` (khóa dòng `roles` để hai Super Admin hạ quyền nhau cùng lúc không deadlock). Người dùng không có → 404. Vai trò mới có hiệu lực với access token cấp sau đó.
+  - `PATCH /admin/users/:id/status`: body `{ isActive }`. Tự khóa mình → 400; khóa Super Admin hoạt động cuối cùng → 409 `LAST_SUPER_ADMIN`. Khóa thì thu hồi mọi refresh token (`TokenService.revokeAll`) và xóa cache `auth:user-active` nên access token cũ bị từ chối ngay (403 `ACCOUNT_LOCKED`).
+  - Unit test `admin-users.service.spec.ts`, e2e `admin-users.e2e-spec.ts`.
+- Postman folder `12 - Admin Users` (UC14), nhánh `feature/be-user-postman`: 17 request gồm 401 khi chưa đăng nhập, 403 với Blog Owner, danh sách (`isSelf`, không có `passwordHash`), lọc theo vai trò và trạng thái, tìm theo email, lọc sai giá trị (400), tạo tài khoản, email trùng (409), sai dữ liệu (400), đổi vai trò, tự hạ quyền (400), người dùng không có (404), khóa, đăng nhập bằng tài khoản bị khóa (403 `ACCOUNT_LOCKED`), tự khóa (400), mở khóa, đăng nhập lại. Chỉ thao tác trên tài khoản vừa tạo (email ngẫu nhiên) nên không đổi dữ liệu seed. 409 `LAST_SUPER_ADMIN` chỉ kiểm tra ở e2e. Environment `local` thêm biến `adminUserId`, `newUserId`, `newUserEmail`.
 - Đăng nhập GitHub UC20 (A7), nhánh `feature/be-oauth`:
   - Package `passport-github2` (dev: `@types/passport-github2`).
   - Config `oauth.github { clientId, clientSecret, callbackUrl }` trong `AppConfig`, đọc từ `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_CALLBACK_URL`. Các biến này vẫn không bắt buộc: để trống thì backend chạy bình thường, chỉ log cảnh báo và đăng nhập GitHub không dùng được. Chú thích trong `env.validation.ts`, `.env.example` sửa "việc A6" thành "việc A7".
@@ -257,6 +264,7 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Changed
 
+- Phase 3 doc mục 8: A7 (OAuth UC20, PR #65 merge 25/11 và #67 merge 26/11) và B5 (Người dùng UC14, PR #64 merge 25/11) chuyển sang đã xong ở bảng đợt 8.2 và bảng việc 8.3. Thêm ghi chú 26/11: còn B6, C3, A8; B6 chưa có nhánh, đã quá mốc 09/11 nên A có thể nhận B6 theo mục 8.4.
 - Phase 3 doc mục 8: B4 (Bình luận UC08, PR #59 merge 21/11) chuyển sang đã xong ở bảng đợt 8.2 và bảng việc 8.3. A5 ở bảng đợt 8.2 cũng chuyển sang đã xong cho khớp với 8.3. Thêm ghi chú 24/11: còn A7, B5, B6, C3, A8; B6 vẫn là việc đang chặn nhiều người nhất.
 
 - Chữ tĩnh trên giao diện (UI translation) chuyển từ CSDL sang file JSON của frontend theo góp ý của mentor, nhánh `feature/be-remove-ui-translations`:
