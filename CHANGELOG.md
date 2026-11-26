@@ -6,6 +6,14 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Tài liệu phase 4 (frontend Angular):
+  - `docs/phase-4-frontend.md`: công cụ, cấu trúc `frontend/`, khung Angular (gọi API, token trong `localStorage` + refresh khi 401 `TOKEN_EXPIRED`, guard theo role, xử lý lỗi theo `code` → key `error.*`, đa ngôn ngữ bằng `ngx-translate` + header `Accept-Language`, theme, layout, component dùng chung, rich text editor Tiptap), bảng màn hình kèm route, API và người làm, quy tắc chuyển HTML phase 2 sang component, kiểm thử, quy ước, thứ tự làm A1-A8 / B0-B6 / C0-C5, lịch 30/11 - 16/12/2026, điều kiện hoàn thành, quyết định cần thống nhất Q1-Q7.
+  - `docs/phase-4-huong-dan.md`: cài máy, chạy backend + frontend qua proxy, quy trình làm một màn (ví dụ `/admin/categories`), checklist PR, commit scope `web`, nhánh `feature/fe-<phần>`, lỗi hay gặp.
+  - `docs/requirements.md` mục 1.5 Phase 4: thêm link tới `phase-4-frontend.md`.
+  - Rule `.claude/rules/frontend.md` (áp dụng cho `frontend/**`): phân tầng component/service, dùng interceptor và component có sẵn, đa ngôn ngữ, quyền, bảo mật (`innerHTML`, 4 key `localStorage`), chuyển HTML phase 2, phần nền cần duyệt.
+  - Skill `new-angular-page`: chuyển một màn HTML phase 2 thành màn Angular nối API thật, theo màn mẫu `login` / `admin/posts`, kèm route, guard, file dịch, kiểm tra trên trình duyệt và changelog.
+- `.claude/rules/git-workflow.md`: thêm nhánh `feature/fe-<phần>`, bảng scope commit (`api`, `html`, `web`), checklist PR frontend (`docs/phase-4-huong-dan.md` mục 6), phần nền frontend cần duyệt, conflict ở `app.routes.ts` và `public/i18n/*.json`; bỏ qua `.angular/` khi `git add`.
+- Skill `pr-ready`: thêm bước kiểm tra `frontend/` (`lint`, `test`, `build`, `i18n:check`, soát diff theo `.claude/rules/frontend.md`, kiểm tra bằng mắt) và checklist mô tả PR frontend.
 - Quản lý người dùng UC14 (B5, PR #64 merge 25/11, trước đây chưa ghi changelog), module `AdminUsersModule`, chỉ Super Admin:
   - `GET /admin/users`: phân trang, `?q=` (họ tên hoặc email, tối đa 100 ký tự), `?role=` (`user`, `blog_owner`, `super_admin`), `?isActive=true|false`; mới tạo xếp trước. Mỗi dòng có `isSelf` để phase 4 vô hiệu nút ở hàng của chính mình. Không trả `passwordHash`.
   - `POST /admin/users`: body `{ fullName, email, password, role }`, ràng buộc giống UC01. 201. Email đã có → 409 `CONFLICT` kèm `errors[{field: "email"}]` (kể cả khi hai request trùng email chạy song song).

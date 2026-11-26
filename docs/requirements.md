@@ -140,6 +140,8 @@ Công việc:
 
 #### Phase 4 - Xây dựng frontend
 
+Chi tiết (khung Angular, danh sách màn, thứ tự làm, lịch) xem [phase-4-frontend.md](phase-4-frontend.md).
+
 Công việc:
 
 - A dựng khung Angular trước (module, routing, interceptors, guards, cơ chế đa ngôn ngữ, layout, component dùng chung: phân trang, hộp xác nhận, rich text editor). C làm component thông báo (toast) và nút đổi sáng/tối ngay sau khi khung được merge. B và C bắt đầu sau khi khung Angular được merge.
