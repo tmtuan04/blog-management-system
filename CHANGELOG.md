@@ -6,10 +6,18 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Added
 
+- Khung frontend Angular (A1, nhánh `feature/fe-starter`), bước 1 - dựng project `frontend/`:
+  - Angular 22.3 standalone, TypeScript `strict` + `strictTemplates`, không SSR. Test runner mặc định Vitest (`npm run test` chạy một lần, `npm run test:watch` để theo dõi).
+  - Thư viện: `bootstrap@5.3.8` (khóa đúng bản như `html/`), `bootstrap-icons`, `@ng-bootstrap/ng-bootstrap` (kèm `@angular/localize/init` trong polyfills, `@popperjs/core`), `@ngx-translate/core`, `@ngx-translate/http-loader`.
+  - `proxy.conf.json`: `/api`, `/uploads` → `http://localhost:3000`, khai báo trong `serve.options.proxyConfig` nên `npm start` tự dùng proxy.
+  - `angular.json`: `stylePreprocessorOptions.includePaths: ["node_modules"]`, tắt cảnh báo deprecation `@import` của Sass do Bootstrap 5.3; schematic sinh file theo quy ước mục 7.1 (`*.component.ts`, `*.service.ts`, `auth.guard.ts`, `language.interceptor.ts`) và component mặc định `OnPush`.
+  - ESLint (`angular-eslint` 22 + `eslint-config-prettier`), bật luật `prefer-on-push-component-change-detection`, `prefer-inject`. Prettier cùng cấu hình backend (`singleQuote`, `trailingComma: all`) + parser `angular` cho `.html`. `npm run lint` chạy ESLint `--fix` rồi Prettier.
+  - `src/environments/environment.ts` chỉ có `apiBase: '/api/v1'`. Component gốc `AppComponent` chỉ có `<router-outlet />`.
 - Tài liệu phase 4 (frontend Angular):
   - `docs/phase-4-frontend.md`: công cụ, cấu trúc `frontend/`, khung Angular (gọi API, token trong `localStorage` + refresh khi 401 `TOKEN_EXPIRED`, guard theo role, xử lý lỗi theo `code` → key `error.*`, đa ngôn ngữ bằng `ngx-translate` + header `Accept-Language`, theme, layout, component dùng chung, rich text editor Tiptap), bảng màn hình kèm route, API và người làm, quy tắc chuyển HTML phase 2 sang component, kiểm thử, quy ước, thứ tự làm A1-A8 / B0-B6 / C0-C5, lịch 30/11 - 16/12/2026, điều kiện hoàn thành, quyết định cần thống nhất Q1-Q7.
   - `docs/phase-4-huong-dan.md`: cài máy, chạy backend + frontend qua proxy, quy trình làm một màn (ví dụ `/admin/categories`), checklist PR, commit scope `web`, nhánh `feature/fe-<phần>`, lỗi hay gặp.
   - `docs/requirements.md` mục 1.5 Phase 4: thêm link tới `phase-4-frontend.md`.
+  - `docs/phase-4-frontend.md` mục 10: chốt Q1-Q6 theo phương án đề xuất (standalone, `ngx-translate`, `ng-bootstrap`, Tiptap, map lỗi field chỉ backend biết sang `validation.*`, chép SCSS sang `frontend/`). Q1 còn chờ mentor xác nhận, Q7 chốt trước A5.
   - Rule `.claude/rules/frontend.md` (áp dụng cho `frontend/**`): phân tầng component/service, dùng interceptor và component có sẵn, đa ngôn ngữ, quyền, bảo mật (`innerHTML`, 4 key `localStorage`), chuyển HTML phase 2, phần nền cần duyệt.
   - Skill `new-angular-page`: chuyển một màn HTML phase 2 thành màn Angular nối API thật, theo màn mẫu `login` / `admin/posts`, kèm route, guard, file dịch, kiểm tra trên trình duyệt và changelog.
 - `.claude/rules/git-workflow.md`: thêm nhánh `feature/fe-<phần>`, bảng scope commit (`api`, `html`, `web`), checklist PR frontend (`docs/phase-4-huong-dan.md` mục 6), phần nền frontend cần duyệt, conflict ở `app.routes.ts` và `public/i18n/*.json`; bỏ qua `.angular/` khi `git add`.

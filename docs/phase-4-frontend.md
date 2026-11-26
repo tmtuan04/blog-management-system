@@ -569,6 +569,8 @@ Phase 4 kết thúc khi đạt hết các mục sau (mở rộng từ requiremen
 
 Cả nhóm chốt các mục này trước khi bắt đầu A1. Cột "Đề xuất" là phương án tài liệu này đang dùng.
 
+**Đã chốt (26/11/2026):** Q1-Q6 theo cột "Đề xuất". Q1 vẫn chờ mentor trả lời có bắt buộc `NgModule` không; A1 làm standalone, nếu mentor yêu cầu thì thêm `*.module.ts` cho từng khu vực như cột "Lý do". Q7 chốt trước A5.
+
 | # | Vấn đề | Đề xuất | Lý do |
 | --- | --- | --- | --- |
 | Q1 | Requirements 1.2 ghi "Angular (chia theo module)": dùng `NgModule` hay standalone component? | Standalone, chia theo khu vực tính năng trong `features/`, mỗi khu vực nạp lười bằng một file route | Standalone là mặc định của Angular CLI từ bản 17, `NgModule` không còn được khuyên dùng cho project mới. Vẫn giữ ý "chia theo module": mỗi khu vực tự chứa route, màn, service. Cần hỏi mentor có bắt buộc `NgModule` không; nếu có thì mỗi khu vực thêm một `*.module.ts`, phần còn lại của tài liệu không đổi |
