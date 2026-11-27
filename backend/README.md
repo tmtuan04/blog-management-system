@@ -36,7 +36,7 @@ Tài khoản mẫu (sau khi seed), mật khẩu chung `Password123`:
 | `owner2@blog.local` (Trần Thị Bình) | `blog_owner` |
 | `user@blog.local` (Lê Minh Cường) | `user`, chỉ đăng nhập bằng Github nên không có mật khẩu |
 
-Seeder copy ảnh mẫu từ `database/seed-data/images/` vào `UPLOAD_DIR`. Khi `NODE_ENV=production`, seeder chỉ nạp dữ liệu hệ thống (roles, languages, UI translations, trang tĩnh) và bỏ qua tài khoản, danh mục, bài viết, bình luận mẫu.
+Seeder copy ảnh mẫu từ `database/seed-data/images/` vào `UPLOAD_DIR`. Khi `NODE_ENV=production`, seeder chỉ nạp dữ liệu hệ thống (roles, languages, trang tĩnh) và bỏ qua tài khoản, danh mục, bài viết, bình luận mẫu.
 
 ## Lệnh
 
@@ -51,10 +51,6 @@ Seeder copy ảnh mẫu từ `database/seed-data/images/` vào `UPLOAD_DIR`. Khi
 | `npm run db:migrate:undo:all` | Rollback mọi migration |
 | `npm run db:seed` / `db:seed:undo` | Nạp / xóa dữ liệu mẫu |
 | `npm run db:test:migrate` | Chạy migrations trên database test |
-| `npm run i18n:extract` | Quét key `data-i18n` trong `html/`, cập nhật `database/seed-data/ui-translations.json` (giữ bản dịch `en` đã có) |
-| `npm run i18n:check` | Báo lỗi nếu file UI translation lệch với `html/` hoặc còn key thiếu `en` |
-
-Sửa chữ hoặc thêm `data-i18n` trong `html/` thì chạy `npm run i18n:extract`, dịch các key thiếu `en` trong file JSON, rồi chạy `npm run i18n:check`. Chữ có dữ liệu động (số lượng, tên người) thì thêm trường `sample` và viết `vi`, `en` bằng tay với tham số `{{ten}}` (xem comment đầu `scripts/extract-i18n.mjs`).
 
 Các lệnh `test*` chạy Jest với `node --experimental-vm-modules` vì `sanitize-html` 2.18 dùng `htmlparser2` dạng ESM. Gọi Jest trực tiếp (`npx jest`) sẽ báo lỗi "Must use import to load ES Module".
 
@@ -68,7 +64,6 @@ postman collection run docs/postman/blog-api.postman_collection.json -e docs/pos
 
 ```text
 database/            # sequelize-cli: config.js, migrations/, seeders/, seed-data/ (JSON + ảnh mẫu)
-scripts/             # extract-i18n.mjs
 src/
   config/            # Đọc + validate biến môi trường (Joi)
   common/            # decorators, guards, filters, interceptors, pipes, middleware, dto, utils

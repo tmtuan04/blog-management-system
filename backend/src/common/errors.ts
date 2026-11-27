@@ -19,6 +19,10 @@ export const ErrorCode = {
   ACCOUNT_LOCKED: 'ACCOUNT_LOCKED',
   RESET_TOKEN_INVALID: 'RESET_TOKEN_INVALID',
   OAUTH_NO_EMAIL: 'OAUTH_NO_EMAIL',
+  /** UC20: người dùng hủy ở provider, provider lỗi, hoặc tài khoản đã liên kết provider khác */
+  OAUTH_FAILED: 'OAUTH_FAILED',
+  /** UC20: mã đổi token sai, hết hạn (60 giây) hoặc đã dùng */
+  OAUTH_CODE_INVALID: 'OAUTH_CODE_INVALID',
   // Nghiệp vụ
   LANGUAGE_IN_USE: 'LANGUAGE_IN_USE',
   CATEGORY_IN_USE: 'CATEGORY_IN_USE',

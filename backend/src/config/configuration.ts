@@ -36,6 +36,18 @@ export interface AppConfig {
     dir: string;
     maxSize: number;
   };
+  /** UC20. Rỗng = chưa cấu hình, backend vẫn chạy nhưng đăng nhập OAuth không dùng được */
+  oauth: {
+    github: OauthProviderConfig;
+    google: OauthProviderConfig;
+  };
+}
+
+/** UC20: app OAuth đăng ký bên provider */
+export interface OauthProviderConfig {
+  clientId: string;
+  clientSecret: string;
+  callbackUrl: string;
 }
 
 /**
@@ -79,6 +91,18 @@ export default (): AppConfig => {
     upload: {
       dir: env.UPLOAD_DIR,
       maxSize: Number(env.UPLOAD_MAX_SIZE),
+    },
+    oauth: {
+      github: {
+        clientId: env.GITHUB_CLIENT_ID,
+        clientSecret: env.GITHUB_CLIENT_SECRET,
+        callbackUrl: env.GITHUB_CALLBACK_URL,
+      },
+      google: {
+        clientId: env.GOOGLE_CLIENT_ID,
+        clientSecret: env.GOOGLE_CLIENT_SECRET,
+        callbackUrl: env.GOOGLE_CALLBACK_URL,
+      },
     },
   };
 };

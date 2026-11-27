@@ -24,9 +24,10 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { LanguagesModule } from './modules/languages/languages.module';
+import { PagesModule } from './modules/pages/pages.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { ProfileModule } from './modules/profile/profile.module';
-import { UiTranslationsModule } from './modules/ui-translations/ui-translations.module';
+import { AdminUsersModule } from './modules/users/admin-users.module';
 
 @Module({
   imports: [
@@ -63,9 +64,10 @@ import { UiTranslationsModule } from './modules/ui-translations/ui-translations.
     CategoriesModule,
     CommentsModule,
     LanguagesModule,
+    PagesModule,
     PostsModule,
     ProfileModule,
-    UiTranslationsModule,
+    AdminUsersModule,
   ],
   providers: [
     // Thứ tự guard: rate limit → xác thực → phân quyền

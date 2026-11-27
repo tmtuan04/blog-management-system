@@ -13,7 +13,6 @@ const DEPENDENT_TABLES = [
   'posts',
   'post_translations',
   'category_translations',
-  'ui_translations',
   'page_translations',
 ];
 

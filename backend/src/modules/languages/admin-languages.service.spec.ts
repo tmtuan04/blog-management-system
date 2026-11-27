@@ -5,7 +5,6 @@ import { AppException } from '../../common/errors';
 import { CachePrefix } from '../../common/utils/redis-keys';
 import { CacheService } from '../../infra/redis/cache.service';
 import { PostTranslation } from '../posts/models/post-translation.model';
-import { UiTranslation } from '../ui-translations/models/ui-translation.model';
 import { AdminLanguagesService } from './admin-languages.service';
 import { Language } from './models/language.model';
 
@@ -19,7 +18,6 @@ describe('AdminLanguagesService', () => {
     create: jest.fn(),
     update: jest.fn(),
   };
-  const uiTranslationModel = { findAll: jest.fn(), bulkCreate: jest.fn() };
   const postTranslationModel = { findAll: jest.fn(), count: jest.fn() };
   const transaction = { id: 'tx' };
   const sequelize = {
@@ -73,7 +71,6 @@ describe('AdminLanguagesService', () => {
       providers: [
         AdminLanguagesService,
         { provide: getModelToken(Language), useValue: languageModel },
-        { provide: getModelToken(UiTranslation), useValue: uiTranslationModel },
         {
           provide: getModelToken(PostTranslation),
           useValue: postTranslationModel,
@@ -145,17 +142,11 @@ describe('AdminLanguagesService', () => {
       expect(cache.invalidate).not.toHaveBeenCalled();
     });
 
-    it('tạo ngôn ngữ và sao chép UI translation của ngôn ngữ mặc định trong một transaction', async () => {
-      languageModel.findOne
-        .mockResolvedValueOnce(null) // kiểm tra trùng mã
-        .mockResolvedValueOnce(row({ id: 1, code: 'vi', isDefault: true }));
+    it('tạo ngôn ngữ, mặc định đang hoạt động, rồi xóa toàn bộ cache', async () => {
+      languageModel.findOne.mockResolvedValue(null);
       languageModel.create.mockResolvedValue(
         row({ id: 5, code: 'fr', name: 'Français' }),
       );
-      uiTranslationModel.findAll.mockResolvedValue([
-        { key: 'menu.home', value: 'Trang chủ' },
-        { key: 'menu.about', value: 'Giới thiệu' },
-      ]);
 
       const result = await service.create({ code: 'fr', name: 'Français' });
 
@@ -167,20 +158,11 @@ describe('AdminLanguagesService', () => {
         isActive: true,
         postTranslationCount: 0,
       });
-      expect(languageModel.create).toHaveBeenCalledWith(
-        { code: 'fr', name: 'Français', isActive: true },
-        { transaction },
-      );
-      expect(uiTranslationModel.findAll).toHaveBeenCalledWith(
-        expect.objectContaining({ where: { languageId: 1 }, transaction }),
-      );
-      expect(uiTranslationModel.bulkCreate).toHaveBeenCalledWith(
-        [
-          { languageId: 5, key: 'menu.home', value: 'Trang chủ' },
-          { languageId: 5, key: 'menu.about', value: 'Giới thiệu' },
-        ],
-        { transaction },
-      );
+      expect(languageModel.create).toHaveBeenCalledWith({
+        code: 'fr',
+        name: 'Français',
+        isActive: true,
+      });
       expect(cache.invalidate).toHaveBeenCalledWith(CachePrefix.all);
     });
 
@@ -192,7 +174,6 @@ describe('AdminLanguagesService', () => {
       await service.create({ code: 'fr', name: 'Français', isActive: false });
       expect(languageModel.create).toHaveBeenCalledWith(
         expect.objectContaining({ isActive: false }),
-        { transaction },
       );
     });
   });

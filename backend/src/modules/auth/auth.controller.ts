@@ -1,11 +1,24 @@
-import { Body, Controller, Get, HttpCode, Ip, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Ip,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiExcludeEndpoint,
+  ApiFoundResponse,
   ApiOperation,
   ApiTags,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
+import type { Request, Response } from 'express';
 import {
   ApiDataResponse,
   ApiErrorResponses,
@@ -22,9 +35,12 @@ import {
 } from './dto/auth-response.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
+import { OauthExchangeDto } from './dto/oauth-exchange.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { GithubAuthGuard, GoogleAuthGuard } from './guards/oauth-auth.guard';
+import { OauthProfile } from './oauth.types';
 
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
 
@@ -141,5 +157,70 @@ export class AuthController {
   @ResponseMessage('Lấy thông tin tài khoản thành công')
   me(@CurrentUser() user: AuthUser): Promise<AuthUserDto> {
     return this.authService.me(user.id);
+  }
+
+  @Public()
+  @Get('github')
+  @UseGuards(GithubAuthGuard)
+  @ApiOperation({
+    summary: 'UC20 - Đăng nhập bằng GitHub',
+    description:
+      'Mở bằng trình duyệt (không gọi bằng XHR). Chuyển hướng sang trang đăng nhập GitHub, xong thì GitHub gọi /auth/github/callback.',
+  })
+  @ApiFoundResponse({ description: 'Chuyển hướng sang GitHub' })
+  githubLogin(): void {
+    // GithubAuthGuard đã chuyển hướng sang GitHub
+  }
+
+  @Public()
+  @Get('github/callback')
+  @UseGuards(GithubAuthGuard)
+  @ApiExcludeEndpoint()
+  async githubCallback(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const profile = (req.user ?? null) as OauthProfile | null;
+    res.redirect(await this.authService.oauthRedirectUrl(profile));
+  }
+
+  @Public()
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  @ApiOperation({
+    summary: 'UC20 - Đăng nhập bằng Google',
+    description:
+      'Mở bằng trình duyệt (không gọi bằng XHR). Chuyển hướng sang trang chọn tài khoản Google, xong thì Google gọi /auth/google/callback. Chỉ chạy với callback `localhost` (Google không nhận callback là địa chỉ IP).',
+  })
+  @ApiFoundResponse({ description: 'Chuyển hướng sang Google' })
+  googleLogin(): void {
+    // GoogleAuthGuard đã chuyển hướng sang Google
+  }
+
+  @Public()
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  @ApiExcludeEndpoint()
+  async googleCallback(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const profile = (req.user ?? null) as OauthProfile | null;
+    res.redirect(await this.authService.oauthRedirectUrl(profile));
+  }
+
+  @Public()
+  @Post('oauth/exchange')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'UC20 - Đổi mã OAuth lấy token',
+    description:
+      'Mã lấy từ `${FRONTEND_URL}/oauth/callback?code=...`, dùng một lần, hạn 60 giây. Sai, hết hạn hoặc đã dùng: 400 OAUTH_CODE_INVALID. Tài khoản bị khóa: 403 ACCOUNT_LOCKED.',
+  })
+  @ApiDataResponse(LoginResponseDto)
+  @ApiErrorResponses(400, 403)
+  @ResponseMessage('Đăng nhập thành công')
+  exchangeOauthCode(@Body() dto: OauthExchangeDto): Promise<LoginResponseDto> {
+    return this.authService.exchangeOauthCode(dto.code);
   }
 }

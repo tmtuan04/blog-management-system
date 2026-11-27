@@ -7,6 +7,7 @@ import { CacheTtl, RedisKeys } from '../../common/utils/redis-keys';
 import { AppConfig } from '../../config/configuration';
 import { MailService } from '../../infra/mail/mail.service';
 import { RedisService } from '../../infra/redis/redis.service';
+import { OauthProvider } from '../users/models/oauth-account.model';
 import { User } from '../users/models/user.model';
 import { UsersService } from '../users/users.service';
 import {
@@ -17,6 +18,7 @@ import {
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { OauthProfile } from './oauth.types';
 import { TokenService } from './token.service';
 
 export const BCRYPT_COST = 10;
@@ -33,6 +35,21 @@ export const toAuthUser = (user: User): AuthUserDto => ({
   avatar: user.avatar ?? null,
   role: user.role!.code,
 });
+
+const OAUTH_PROVIDER_NAMES: Record<OauthProvider, string> = {
+  google: 'Google',
+  github: 'GitHub',
+};
+
+/**
+ * UC20: họ tên của tài khoản mới, theo ràng buộc 2-150 ký tự của UC01. Tên bên
+ * provider quá ngắn thì dùng phần trước @ của email.
+ */
+export function oauthFullName(name: string, email: string): string {
+  const candidates = [name.trim(), email.split('@')[0]];
+  const valid = candidates.find((value) => value.length >= 2);
+  return (valid ?? 'Người dùng').slice(0, 150);
+}
 
 const accountLocked = () =>
   new AppException(
@@ -186,6 +203,129 @@ export class AuthService {
       await hash(dto.password, BCRYPT_COST),
     );
     await this.tokens.revokeAll(user.id);
+  }
+
+  /**
+   * UC20 callback: xử lý profile từ provider rồi trả URL chuyển hướng về frontend.
+   * Không ném lỗi vì trình duyệt đang được chuyển hướng: lỗi đi kèm `?error=<mã>`.
+   * `profile` null khi người dùng hủy ở provider hoặc provider báo lỗi.
+   */
+  async oauthRedirectUrl(profile: OauthProfile | null): Promise<string> {
+    const base = `${this.frontendUrl}/oauth/callback`;
+    if (!profile) {
+      return `${base}?error=${ErrorCode.OAUTH_FAILED}`;
+    }
+    try {
+      const code = await this.oauthLogin(profile);
+      return `${base}?code=${code}`;
+    } catch (error) {
+      if (error instanceof AppException) {
+        return `${base}?error=${error.code}`;
+      }
+      this.logger.error(
+        `Đăng nhập ${profile.provider} thất bại (provider user ${profile.providerUserId})`,
+        (error as Error).stack,
+      );
+      return `${base}?error=${ErrorCode.OAUTH_FAILED}`;
+    }
+  }
+
+  /**
+   * UC20: tìm hoặc tạo tài khoản, trả mã dùng một lần (60 giây) để frontend đổi lấy
+   * token qua POST /auth/oauth/exchange. Không đưa token lên URL.
+   */
+  async oauthLogin(profile: OauthProfile): Promise<string> {
+    if (!profile.email) {
+      throw new AppException(
+        HttpStatus.BAD_REQUEST,
+        ErrorCode.OAUTH_NO_EMAIL,
+        `Tài khoản ${OAUTH_PROVIDER_NAMES[profile.provider]} của bạn không có email đã xác minh. Vui lòng dùng cách đăng nhập khác.`,
+      );
+    }
+    const user = await this.findOrCreateOauthUser(profile, profile.email);
+    if (!user.isActive) {
+      throw accountLocked();
+    }
+    const code = randomBytes(32).toString('base64url');
+    await this.redis.client.set(
+      RedisKeys.oauthCode(code),
+      String(user.id),
+      'EX',
+      CacheTtl.oauthCode,
+    );
+    return code;
+  }
+
+  /** UC20: mã dùng một lần. Đổi được thì trả như đăng nhập bằng mật khẩu */
+  async exchangeOauthCode(code: string): Promise<LoginResponseDto> {
+    const userId = await this.redis.client.getdel(RedisKeys.oauthCode(code));
+    const user = userId ? await this.users.findById(Number(userId)) : null;
+    if (!user) {
+      throw new AppException(
+        HttpStatus.BAD_REQUEST,
+        ErrorCode.OAUTH_CODE_INVALID,
+        'Phiên đăng nhập đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại.',
+      );
+    }
+    // Có thể bị khóa trong 60 giây giữa callback và lúc đổi mã
+    if (!user.isActive) {
+      throw accountLocked();
+    }
+    const tokens = await this.tokens.issue({
+      id: user.id,
+      role: user.role!.code,
+    });
+    return { ...tokens, user: toAuthUser(user) };
+  }
+
+  /**
+   * UC20: đã liên kết thì dùng luôn; chưa liên kết mà trùng email thì liên kết vào
+   * tài khoản đó; chưa có thì tạo mới (role user, chưa có mật khẩu).
+   */
+  private async findOrCreateOauthUser(
+    profile: OauthProfile,
+    email: string,
+  ): Promise<User> {
+    const linked = await this.users.findByOauth(
+      profile.provider,
+      profile.providerUserId,
+    );
+    if (linked) {
+      return linked;
+    }
+
+    const link = {
+      provider: profile.provider,
+      providerUserId: profile.providerUserId,
+      providerEmail: email,
+    };
+    const existing = await this.users.findByEmail(email);
+    if (!existing) {
+      return this.users.createFromOauth({
+        ...link,
+        email,
+        fullName: oauthFullName(profile.fullName, email),
+        avatar:
+          profile.avatar && profile.avatar.length <= 255
+            ? profile.avatar
+            : null,
+      });
+    }
+
+    // Tài khoản bị khóa thì không ghi thêm liên kết
+    if (!existing.isActive) {
+      throw accountLocked();
+    }
+    if (await this.users.hasOauth(existing.id, profile.provider)) {
+      const name = OAUTH_PROVIDER_NAMES[profile.provider];
+      throw new AppException(
+        HttpStatus.CONFLICT,
+        ErrorCode.OAUTH_FAILED,
+        `Tài khoản có email này đã liên kết với một tài khoản ${name} khác.`,
+      );
+    }
+    await this.users.linkOauth(existing.id, link);
+    return existing;
   }
 
   /** GET /auth/me */
