@@ -1,0 +1,51 @@
+// Đầu trang kết quả tìm kiếm (UC19): ô tìm kiếm lớn, "Kết quả cho <từ khóa>", số kết quả. Mẫu ở public/search.html.
+//   .search-head__prefix  Chữ "Kết quả cho" màu xám, từ khóa giữ màu chữ chính như Medium
+//   .search-tips          Danh sách gợi ý trong .empty-state khi không có kết quả
+.search-head {
+  margin-bottom: 2rem;
+}
+
+.search-head__form {
+  margin-bottom: 2rem;
+
+  // Ô nhập pill nền xám giống ô tìm kiếm trên header, cao hơn
+  .search-input__control {
+    height: 3rem;
+    font-size: 1rem;
+    background-color: var(--bl-bg-subtle);
+    border-color: transparent;
+    border-radius: 999px;
+
+    // Selector trên ghi đè màu viền lỗi của Bootstrap, trả lại ở trạng thái lỗi
+    &.is-invalid {
+      border-color: var(--bl-danger);
+    }
+  }
+
+  // Căn icon theo giữa ô nhập (cao 3rem) thay vì giữa cả khối, vì ở trạng thái lỗi
+  // .invalid-feedback nằm trong .search-input làm khối cao thêm và đẩy icon xuống
+  .search-input__icon {
+    top: 1.5rem;
+  }
+
+  .invalid-feedback {
+    padding-left: 1rem;
+  }
+}
+
+.search-head__title {
+  margin-bottom: .25rem;
+  overflow-wrap: anywhere;
+}
+
+.search-head__prefix {
+  color: var(--bl-text-secondary);
+}
+
+.search-tips {
+  display: inline-block;
+  padding-left: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--bl-text-secondary);
+  text-align: left;
+}

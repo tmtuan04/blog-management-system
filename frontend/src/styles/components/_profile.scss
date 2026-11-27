@@ -1,0 +1,49 @@
+// Trang hồ sơ cá nhân (UC12). Mẫu ở public/profile.html.
+// Cột tối đa $reading-max-width, căn giữa trong .site-body__main (trang không có sidebar).
+//   .profile__section        Một khối (thông tin cá nhân, mật khẩu), khối sau có kẻ trên
+//   .profile__avatar         Avatar lớn + nút "Đổi ảnh" + gợi ý / lỗi ảnh
+.profile {
+  max-width: $reading-max-width;
+  margin: 0 auto;
+}
+
+.profile__section {
+  & + & {
+    padding-top: 2rem;
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--bl-border);
+  }
+}
+
+.profile__section-title {
+  margin-bottom: .25rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.profile__section-desc {
+  margin-bottom: 1.5rem;
+  font-size: .875rem;
+  color: var(--bl-text-secondary);
+}
+
+.profile__avatar {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile__avatar-hint,
+.profile__avatar-error {
+  margin-top: .5rem;
+  font-size: .8125rem;
+}
+
+.profile__avatar-hint {
+  color: var(--bl-text-secondary);
+}
+
+.profile__avatar-error {
+  color: var(--bl-danger);
+}

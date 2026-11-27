@@ -1,0 +1,27 @@
+// Khối trong sidebar trang public: tiêu đề nhỏ + nội dung (Đọc nhiều nhất, Danh mục).
+//   .aside-links  Dòng link nhỏ cuối sidebar (Giới thiệu, Liên hệ, Chính sách bảo mật)
+.aside-section {
+  margin-bottom: 2.5rem;
+}
+
+.aside-section__title {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5rem;
+}
+
+.aside-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem 1rem;
+  font-size: .8125rem;
+
+  a {
+    color: var(--bl-text-secondary);
+
+    &:hover {
+      color: var(--bl-text);
+    }
+  }
+}

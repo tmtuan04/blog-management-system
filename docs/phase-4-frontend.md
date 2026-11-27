@@ -190,7 +190,7 @@ Guard (functional, khai báo trong route):
 | 404 khi mở màn có slug, key, id | Component màn hình | Màn 404 tại chỗ, giữ nguyên URL (UC06, UC11) |
 | 409, 400 có mã nghiệp vụ (`CATEGORY_IN_USE`, `LANGUAGE_IN_USE`, `LAST_SUPER_ADMIN`, `RESET_TOKEN_INVALID`...) | Component | Toast hoặc `.alert-inline` theo màn HTML phase 2 |
 | 429 | Component có form | `.alert-inline` với `auth.error.too_many_attempts` hoặc `error.too_many_requests` |
-| 0, 500 | Interceptor | Toast `error.network` / `error.internal_error` |
+| 0, 500 | Interceptor | Toast `error.network_error` / `error.internal_error` |
 
 **Câu thông báo theo ngôn ngữ đang chọn** (Q2 của phase 3): backend trả `message` tiếng Việt và `code`. Frontend không hiện `message` của backend mà tra key:
 

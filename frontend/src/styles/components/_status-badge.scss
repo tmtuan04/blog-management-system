@@ -1,0 +1,45 @@
+// Badge trạng thái: chấm màu + chữ, viền mảnh. Dùng cho trạng thái bản dịch, tài khoản, trang tĩnh.
+//   <span class="status-badge status-badge--success"><span class="status-badge__code">VI</span> Đã đăng</span>
+// Màu: --success (published, đang hoạt động), --warning (draft), --muted (archived, bị khóa), --danger
+.status-badge {
+  --status-color: var(--bl-text-secondary);
+
+  display: inline-flex;
+  gap: .375rem;
+  align-items: center;
+  padding: .125rem .5rem;
+  font-size: .75rem;
+  line-height: 1.25rem;
+  color: var(--bl-text);
+  white-space: nowrap;
+  border: 1px solid var(--bl-border-strong);
+  border-radius: 999px;
+
+  &::before {
+    width: .5rem;
+    height: .5rem;
+    content: "";
+    background-color: var(--status-color);
+    border-radius: 50%;
+  }
+}
+
+.status-badge__code {
+  font-weight: 600;
+}
+
+.status-badge--success {
+  --status-color: var(--bl-success);
+}
+
+.status-badge--warning {
+  --status-color: var(--bl-warning);
+}
+
+.status-badge--muted {
+  --status-color: var(--bl-muted);
+}
+
+.status-badge--danger {
+  --status-color: var(--bl-danger);
+}

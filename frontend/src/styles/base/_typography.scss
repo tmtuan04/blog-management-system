@@ -1,0 +1,170 @@
+// Kiểu chữ theo vai trò (docs mục 3.2).
+// Mobile-first: giá trị mặc định là cỡ mobile, từ md (≥ 768px) trở lên dùng cỡ desktop.
+
+// Tiêu đề bài viết trên trang chi tiết
+.text-post-title {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 2.375rem;
+  letter-spacing: -.016em;
+  overflow-wrap: anywhere;
+
+  @include media-breakpoint-up(md) {
+    font-size: 2.625rem;
+    line-height: 3.25rem;
+  }
+}
+
+// Tiêu đề trang: admin, auth, trang tĩnh
+.text-page-title {
+  font-size: 1.625rem;
+  font-weight: 700;
+  line-height: 2rem;
+  letter-spacing: -.011em;
+
+  @include media-breakpoint-up(md) {
+    font-size: 2rem;
+    line-height: 2.5rem;
+  }
+}
+
+// Tiêu đề trên thẻ bài viết
+.text-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.25rem;
+
+  @include media-breakpoint-up(md) {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+}
+
+// Tóm tắt trên thẻ bài viết
+.text-excerpt {
+  font-size: .875rem;
+  line-height: 1.25rem;
+  color: var(--bl-text-secondary);
+
+  @include media-breakpoint-up(md) {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+}
+
+// Dòng meta: tác giả, ngày đăng, lượt xem
+.text-meta {
+  font-size: .8125rem;
+  line-height: 1.25rem;
+  color: var(--bl-text-secondary);
+}
+
+// Nội dung rich text: bài viết (UC06), trang tĩnh (UC11), vùng soạn thảo của editor
+.prose {
+  font-family: $font-family-serif;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: var(--bl-text);
+  overflow-wrap: break-word;
+
+  @include media-breakpoint-up(md) {
+    font-size: 1.25rem;
+    line-height: 2rem;
+  }
+
+  p,
+  ul,
+  ol,
+  blockquote,
+  figure,
+  pre {
+    margin: 0 0 1.5em;
+  }
+
+  li + li {
+    margin-top: .5em;
+  }
+
+  h2,
+  h3 {
+    font-family: $font-family-sans-serif;
+    font-weight: 700;
+    margin: 1.6em 0 .5em;
+  }
+
+  h2 {
+    font-size: 1.375rem;
+    line-height: 1.75rem;
+
+    @include media-breakpoint-up(md) {
+      font-size: 1.5rem;
+      line-height: 1.875rem;
+    }
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    line-height: 1.625rem;
+
+    @include media-breakpoint-up(md) {
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+    }
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  blockquote {
+    padding-left: 1.25em;
+    font-style: italic;
+    border-left: 3px solid var(--bl-text);
+  }
+
+  img {
+    display: block;
+    margin: 0 auto;
+  }
+
+  figcaption {
+    margin-top: .75em;
+    font-family: $font-family-sans-serif;
+    font-size: .875rem;
+    line-height: 1.25rem;
+    color: var(--bl-text-secondary);
+    text-align: center;
+  }
+
+  code {
+    padding: .15em .35em;
+    font-size: .85em;
+    color: inherit;
+    background-color: var(--bl-bg-subtle);
+    border-radius: $border-radius;
+  }
+
+  pre {
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    font-size: .875rem;
+    line-height: 1.5;
+    background-color: var(--bl-bg-subtle);
+    border-radius: $border-radius;
+
+    code {
+      padding: 0;
+      font-size: inherit;
+      background: none;
+    }
+  }
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+}

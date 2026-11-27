@@ -1,0 +1,172 @@
+// Ô chọn nhiều dạng dropdown có tìm kiếm (ô "Bản dịch" ở admin/post-create.html). JS: js/multi-select.js
+//   <div class="multi-select dropdown" data-multi-select data-max-chips="3">
+//     .multi-select__field         Khung giống .form-select (dùng kèm class đó), bấm vào đâu trong khung cũng mở menu
+//       .multi-select__value       Chữ gợi ý (__placeholder), các chip (__chips > __chip + __chip-remove, rồi __more "+N"
+//                                  khi chọn nhiều hơn data-max-chips) hoặc "Tất cả (N ...)" (__summary) khi chọn hết
+//       .multi-select__toggle      Nút mở menu, phủ kín khung, nằm dưới chip để nút bỏ chọn trên chip vẫn bấm được
+//     .dropdown-menu.multi-select__menu
+//       .multi-select__search      Ô tìm (.search-input)
+//       .multi-select__all         Checkbox "Chọn tất cả"
+//       .multi-select__options     Danh sách cuộn, mỗi lựa chọn một .form-check.multi-select__option
+//       .multi-select__empty       Dòng "Không tìm thấy" khi không lựa chọn nào khớp ô tìm
+
+.multi-select__field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: $input-height;
+  padding-top: .25rem;
+  padding-bottom: .25rem;
+
+  // Bootstrap gắn .show lên nút khi menu đang mở
+  &:has(.multi-select__toggle:focus-visible),
+  &:has(.multi-select__toggle.show) {
+    border-color: $form-select-focus-border-color;
+    box-shadow: $form-select-focus-box-shadow;
+  }
+}
+
+.multi-select__toggle {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: inherit;
+  outline: 0;
+}
+
+.multi-select__value {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  pointer-events: none;
+}
+
+.multi-select__placeholder {
+  color: var(--bl-muted);
+}
+
+// Một dòng: JS gộp chip không vừa vào "+N" (đo bằng scrollWidth nên chip không được co lại)
+.multi-select__chips {
+  display: flex;
+  gap: .25rem;
+  min-width: 0;
+  overflow: hidden;
+
+  > * {
+    flex-shrink: 0;
+  }
+}
+
+// Nền lấy từ màu chữ với độ trong suốt thấp như .category-chip để đúng ở cả sáng lẫn tối.
+// Tên quá dài thì cắt bằng "..." để chip còn lại cuối cùng vẫn vừa khung.
+.multi-select__chip {
+  display: inline-flex;
+  gap: .125rem;
+  align-items: center;
+  max-width: 10rem;
+  padding-left: .625rem;
+  font-size: .8125rem;
+  line-height: 1.5rem;
+  white-space: nowrap;
+  background-color: rgba(var(--bl-text-rgb), .06);
+  border-radius: 999px;
+
+  [data-chip-label] {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.multi-select__chip-remove {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  color: var(--bl-text-secondary);
+  pointer-events: auto;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+
+  &:hover {
+    color: var(--bl-text);
+    background-color: rgba(var(--bl-text-rgb), .1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--bl-accent);
+    outline-offset: -2px;
+  }
+}
+
+.multi-select__more {
+  padding: 0 .625rem;
+  font-size: .8125rem;
+  font-weight: 500;
+  line-height: 1.5rem;
+  color: var(--bl-text-secondary);
+  background-color: rgba(var(--bl-text-rgb), .06);
+  border-radius: 999px;
+}
+
+.multi-select__summary {
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.multi-select__menu {
+  width: 100%;
+  min-width: 16rem;
+  padding: .5rem 0 .25rem;
+}
+
+.multi-select__search {
+  padding: 0 .75rem .5rem;
+}
+
+.multi-select__all,
+.multi-select__option {
+  // Cả dòng là vùng bấm: chữ của .form-check-label giãn hết chiều ngang
+  padding: .375rem 1rem .375rem calc(1rem + 1.5em);
+  margin-bottom: 0;
+
+  .form-check-label {
+    display: block;
+    cursor: pointer;
+  }
+}
+
+.multi-select__all {
+  border-bottom: 1px solid var(--bl-border);
+}
+
+.multi-select__options {
+  max-height: 15rem;
+  padding-top: .25rem;
+  overflow-y: auto;
+}
+
+.multi-select__option {
+  &:hover {
+    background-color: var(--bl-bg-subtle);
+  }
+
+  &:has(.form-check-input:checked) {
+    background-color: rgba(var(--bl-accent-rgb), .08);
+  }
+}
+
+.multi-select__empty {
+  padding: .5rem 1rem;
+  margin: 0;
+  color: var(--bl-text-secondary);
+}
