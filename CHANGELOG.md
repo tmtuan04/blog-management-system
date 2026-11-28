@@ -326,6 +326,8 @@ Ghi lại các thay đổi của dự án. Định dạng theo [Keep a Changelog
 
 ### Changed
 
+- `.gitattributes` mới ở gốc repo: `* text=auto eol=lf`, mọi file text lưu và checkout bằng LF kể cả trên Windows (Git for Windows mặc định `core.autocrlf=true` đổi sang CRLF khi checkout); ảnh, font đánh dấu `binary`. Trước đây Prettier ghi LF còn checkout ra CRLF, nên sau mỗi lần `npm run lint` hàng chục file hiện "đã sửa" trong `git status` dù `git diff` trống. Không đổi nội dung file nào trong repo (index vốn đã toàn LF). `frontend/.editorconfig` thêm `end_of_line = lf`. Máy đã clone trước đó: sau khi pull, file nào vẫn hiện "đã sửa" mà `git diff` trống thì chạy `git add -u` (không stage gì, chỉ cập nhật lại cache của git).
+
 - Phase 3 doc mục 8: A7 (OAuth UC20, PR #65 merge 25/11 và #67 merge 26/11) và B5 (Người dùng UC14, PR #64 merge 25/11) chuyển sang đã xong ở bảng đợt 8.2 và bảng việc 8.3. Thêm ghi chú 26/11: còn B6, C3, A8; B6 chưa có nhánh, đã quá mốc 09/11 nên A có thể nhận B6 theo mục 8.4.
 - Phase 3 doc mục 8: B4 (Bình luận UC08, PR #59 merge 21/11) chuyển sang đã xong ở bảng đợt 8.2 và bảng việc 8.3. A5 ở bảng đợt 8.2 cũng chuyển sang đã xong cho khớp với 8.3. Thêm ghi chú 24/11: còn A7, B5, B6, C3, A8; B6 vẫn là việc đang chặn nhiều người nhất.
 

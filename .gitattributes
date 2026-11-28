@@ -1,0 +1,14 @@
+# Mọi file text lưu và checkout bằng LF, kể cả trên Windows (Git for Windows mặc định core.autocrlf=true
+# đổi sang CRLF khi checkout). Prettier ghi LF, nên nếu checkout ra CRLF thì mỗi lần `npm run lint`
+# các file bị đổi xuống dòng và hiện trong git status dù nội dung không khác.
+* text=auto eol=lf
+
+# File nhị phân: không đổi xuống dòng, không diff theo dòng
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
