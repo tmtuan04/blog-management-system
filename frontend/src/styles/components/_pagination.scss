@@ -1,0 +1,36 @@
+// Phân trang kiểu tối giản: không viền, trang hiện tại là nút tròn đen
+.pagination {
+  --bs-pagination-color: var(--bl-text);
+  --bs-pagination-bg: transparent;
+  --bs-pagination-border-width: 0;
+  --bs-pagination-hover-color: var(--bl-text);
+  --bs-pagination-hover-bg: var(--bl-bg-subtle);
+  --bs-pagination-focus-color: var(--bl-text);
+  --bs-pagination-focus-bg: var(--bl-bg-subtle);
+  --bs-pagination-active-color: var(--bl-btn-primary-text);
+  --bs-pagination-active-bg: var(--bl-btn-primary-bg);
+  --bs-pagination-disabled-color: var(--bl-muted);
+  --bs-pagination-disabled-bg: transparent;
+  --bs-pagination-border-radius: 999px;
+
+  gap: .25rem;
+  margin-bottom: 0;
+
+  .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+  }
+}
+
+.pagination-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}

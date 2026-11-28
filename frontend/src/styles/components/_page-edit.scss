@@ -1,0 +1,46 @@
+// Form sửa trang tĩnh (UC18, admin/page-edit.html).
+// Dùng khung admin; cột form rộng bằng cột đọc để editor hiện giống trang public.
+// Tab ngôn ngữ dùng chung component translation-tabs với admin/post-edit.html (chấm đỏ: .translation-tabs__dot--error).
+// Editor chép khối rich-text-editor của admin/post-create.html (components/_editor.scss).
+
+.page-edit {
+  max-width: $reading-max-width;
+}
+
+.page-edit__back {
+  display: inline-flex;
+  gap: .375rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: var(--bl-text-secondary);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--bl-text);
+  }
+}
+
+// Key, URL public (chỉ đọc) và switch "Hiển thị"
+.page-edit__info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem 1.5rem;
+  align-items: center;
+  padding: .75rem 1rem;
+  margin-bottom: 1.5rem;
+  background-color: var(--bl-bg-subtle);
+  border: 1px solid var(--bl-border);
+  border-radius: $border-radius;
+}
+
+.page-edit__info-label {
+  margin-right: .5rem;
+  font-size: .75rem;
+  color: var(--bl-text-secondary);
+}
+
+.page-edit__code {
+  font-family: $font-family-monospace;
+  font-size: .8125rem;
+  overflow-wrap: anywhere;
+}

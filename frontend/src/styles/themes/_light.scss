@@ -1,0 +1,24 @@
+// Bảng màu chế độ sáng (docs mục 3.1).
+// Gắn cả vào :root để có giá trị mặc định khi <html> chưa có data-bs-theme.
+// Biến *-rgb dùng cho chỗ cần độ trong suốt: rgba(var(--bl-accent-rgb), .2)
+
+:root,
+[data-bs-theme="light"] {
+  --bl-bg: #FFFFFF;
+  --bl-bg-rgb: 255, 255, 255;
+  --bl-bg-subtle: #F9F9F9;
+  --bl-text: #242424;
+  --bl-text-rgb: 36, 36, 36;
+  --bl-text-secondary: #6B6B6B;
+  --bl-border: #F2F2F2;
+  --bl-border-strong: #D9D9D9;
+  --bl-btn-primary-bg: #191919;
+  --bl-btn-primary-hover: #000000;
+  --bl-btn-primary-text: #FFFFFF;
+  --bl-accent: #1A8917;
+  --bl-accent-rgb: 26, 137, 23;
+  --bl-danger: #C94A4A;
+  --bl-warning: #B26A00;
+  --bl-success: #1A8917;
+  --bl-muted: #9E9E9E;
+}

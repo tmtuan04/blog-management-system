@@ -1,0 +1,56 @@
+// Layout trang soạn bài (post-create, post-edit): thanh trên tối giản như trình soạn thảo của Medium,
+// không có sidebar admin để người viết tập trung. Nội dung là một cột căn giữa.
+//   <header class="editor-topbar">← · logo · trạng thái · [ngôn ngữ, theme, Lưu, tài khoản]</header>
+//   <main class="editor-page">...</main>
+
+.editor-topbar {
+  position: sticky;
+  top: 0;
+  z-index: $zindex-sticky;
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  height: $header-height;
+  padding: 0 .75rem;
+  background-color: var(--bl-bg);
+  border-bottom: 1px solid var(--bl-border);
+
+  @include media-breakpoint-up(md) {
+    gap: .75rem;
+    padding: 0 1.5rem;
+  }
+}
+
+// "Nháp", "Đã lưu lúc 10:24"... cắt bằng "..." khi thiếu chỗ trên mobile
+.editor-topbar__status {
+  min-width: 0;
+  overflow: hidden;
+  font-size: .8125rem;
+  color: var(--bl-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-topbar__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: .25rem;
+  align-items: center;
+  margin-left: auto;
+
+  .btn-primary {
+    margin: 0 .25rem;
+  }
+}
+
+// Cột soạn bài rộng bằng cột đọc của trang chi tiết ($reading-max-width) để bài trông giống lúc đăng
+.editor-page {
+  width: 100%;
+  max-width: calc(#{$reading-max-width} + 3rem);
+  padding: 1.5rem 1rem 6rem;
+  margin: 0 auto;
+
+  @include media-breakpoint-up(md) {
+    padding: 2.5rem 1.5rem 6rem;
+  }
+}

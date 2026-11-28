@@ -1,0 +1,59 @@
+// Điểm vào SCSS của Angular. Thứ tự import giống html/scss/main.scss (docs/phase-2-html.md mục 2.2):
+// abstracts → bootstrap → themes → base → layouts → components.
+// Dùng @import (không phải @use) vì Bootstrap 5.3 chỉ cho ghi đè biến qua @import.
+// Style dùng chung nằm trong src/styles/, chép từ html/scss/ (trừ components/_demo-state.scss).
+// Phase 2 sửa SCSS thì sửa cả hai nơi trong cùng PR (docs/phase-4-frontend.md Q6).
+@import 'styles/abstracts/variables';
+@import 'styles/abstracts/mixins';
+
+@import 'bootstrap/scss/bootstrap';
+
+@import 'styles/themes/light';
+@import 'styles/themes/dark';
+@import 'styles/themes/bootstrap-bridge';
+
+@import 'styles/base/base';
+@import 'styles/base/typography';
+
+// Layouts
+@import 'styles/layouts/admin';
+@import 'styles/layouts/public';
+@import 'styles/layouts/auth';
+@import 'styles/layouts/editor';
+
+// Components: mỗi component một file, xếp theo tên
+@import 'styles/components/alert-inline';
+@import 'styles/components/aside-section';
+@import 'styles/components/avatar';
+@import 'styles/components/brand';
+@import 'styles/components/category-chips';
+@import 'styles/components/category-head';
+@import 'styles/components/category-table';
+@import 'styles/components/comment';
+@import 'styles/components/dropdown';
+@import 'styles/components/editor';
+@import 'styles/components/empty-state';
+@import 'styles/components/icon-btn';
+@import 'styles/components/language-table';
+@import 'styles/components/multi-select';
+@import 'styles/components/not-found';
+@import 'styles/components/page-edit';
+@import 'styles/components/page-table';
+@import 'styles/components/page-tabs';
+@import 'styles/components/pagination';
+@import 'styles/components/post-card';
+@import 'styles/components/post-detail';
+@import 'styles/components/post-form';
+@import 'styles/components/post-preview';
+@import 'styles/components/post-table';
+@import 'styles/components/profile';
+@import 'styles/components/search-head';
+@import 'styles/components/search-input';
+@import 'styles/components/static-page';
+@import 'styles/components/status-badge';
+@import 'styles/components/table';
+@import 'styles/components/theme-toggle';
+@import 'styles/components/thumb-upload';
+@import 'styles/components/toast';
+@import 'styles/components/translation-tabs';
+@import 'styles/components/user-table';

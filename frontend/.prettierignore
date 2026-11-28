@@ -1,0 +1,3 @@
+# Chép nguyên từ html/scss/ (docs/phase-4-frontend.md Q6): không format lại để còn so được với phase 2.
+# Bỏ dòng này khi phase 2 đóng và src/styles/ thành nguồn chuẩn duy nhất.
+src/styles/

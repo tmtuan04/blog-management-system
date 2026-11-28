@@ -1,0 +1,169 @@
+// Trang chi tiết bài viết kiểu Medium (UC06). Mẫu ở public/post-detail.html.
+// Cột đọc tối đa $reading-max-width, căn giữa trong .site-body__main (trang không có sidebar).
+//   .post-detail__title      Dùng kèm .text-post-title
+//   .post-detail__content    Dùng kèm .prose
+//   .post-detail__section    Khối dưới bài (bình luận, bài cùng danh mục), có kẻ trên
+.post-detail {
+  max-width: $reading-max-width;
+  margin: 0 auto;
+}
+
+.post-detail__title {
+  margin-bottom: .75rem;
+}
+
+// Tóm tắt hiện dạng subtitle xám dưới tiêu đề như Medium
+.post-detail__subtitle {
+  margin-bottom: 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.625rem;
+  color: var(--bl-text-secondary);
+  overflow-wrap: anywhere;
+
+  @include media-breakpoint-up(md) {
+    margin-bottom: 2rem;
+    font-size: 1.375rem;
+    line-height: 1.75rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Thanh tác giả: avatar lớn, tên · danh mục, dòng dưới thời gian đọc · ngày đăng
+// ---------------------------------------------------------------------------
+.post-detail__author {
+  display: flex;
+  gap: .75rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.post-detail__author-info {
+  min-width: 0;
+}
+
+.post-detail__author-line {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  min-width: 0;
+  font-size: .9375rem;
+  line-height: 1.5rem;
+}
+
+.post-detail__author-name {
+  overflow: hidden;
+  font-weight: 500;
+  color: var(--bl-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-detail__category {
+  flex-shrink: 0;
+  color: var(--bl-text-secondary);
+
+  &:hover {
+    color: var(--bl-text);
+  }
+}
+
+.post-detail__sep {
+  flex-shrink: 0;
+  color: var(--bl-text-secondary);
+}
+
+// ---------------------------------------------------------------------------
+// Thanh lượt xem + số bình luận, kẻ trên dưới như thanh clap/comment của Medium
+// ---------------------------------------------------------------------------
+.post-detail__actions {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  padding: .625rem .5rem;
+  font-size: .875rem;
+  color: var(--bl-text-secondary);
+  border-top: 1px solid var(--bl-border);
+  border-bottom: 1px solid var(--bl-border);
+
+  a {
+    color: var(--bl-text-secondary);
+
+    &:hover {
+      color: var(--bl-text);
+      text-decoration: none;
+    }
+  }
+
+  .bi {
+    margin-right: .375rem;
+    font-size: 1.125rem;
+    vertical-align: -.125em;
+  }
+}
+
+// "Bài viết này có ở các ngôn ngữ: Tiếng Việt · English"
+.post-detail__languages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem .5rem;
+  align-items: center;
+  margin: 1rem 0 0;
+  font-size: .875rem;
+  color: var(--bl-text-secondary);
+
+  .bi {
+    font-size: 1rem;
+  }
+
+  a {
+    color: var(--bl-accent);
+  }
+}
+
+.post-detail__language-current {
+  font-weight: 500;
+  color: var(--bl-text);
+}
+
+// Ảnh thumbnail toàn chiều rộng cột đọc, giữ tỉ lệ 3:2 như thẻ bài viết
+.post-detail__cover {
+  margin: 2rem 0;
+  overflow: hidden;
+  background-color: var(--bl-bg-subtle);
+
+  @include media-breakpoint-up(md) {
+    margin: 2.5rem 0;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+}
+
+// Chip danh mục cuối bài (thay cho tag của Medium)
+.post-detail__tags {
+  margin-top: 2.5rem;
+}
+
+// ---------------------------------------------------------------------------
+// Khối dưới bài: bình luận, bài cùng danh mục
+// ---------------------------------------------------------------------------
+.post-detail__section {
+  padding-top: 2rem;
+  margin-top: 2.5rem;
+  border-top: 1px solid var(--bl-border);
+
+  @include media-breakpoint-up(md) {
+    margin-top: 3rem;
+  }
+}
+
+.post-detail__section-title {
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.75rem;
+}

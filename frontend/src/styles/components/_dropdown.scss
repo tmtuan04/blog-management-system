@@ -1,0 +1,26 @@
+// Dropdown kiểu Medium: nền theo theme, viền nhạt, đổ bóng, mục được chọn không tô xanh
+.dropdown-menu {
+  --bs-dropdown-bg: var(--bl-bg);
+  --bs-dropdown-color: var(--bl-text);
+  --bs-dropdown-border-color: var(--bl-border-strong);
+  --bs-dropdown-divider-bg: var(--bl-border);
+  --bs-dropdown-link-color: var(--bl-text);
+  --bs-dropdown-link-hover-color: var(--bl-text);
+  --bs-dropdown-link-hover-bg: var(--bl-bg-subtle);
+  --bs-dropdown-link-active-color: var(--bl-text);
+  --bs-dropdown-link-active-bg: var(--bl-bg-subtle);
+  --bs-dropdown-header-color: var(--bl-text-secondary);
+  --bs-dropdown-item-padding-y: .5rem;
+  --bs-dropdown-font-size: .875rem;
+  box-shadow: $box-shadow;
+
+  .dropdown-item {
+    display: flex;
+    gap: .625rem;
+    align-items: center;
+  }
+
+  .dropdown-item.text-danger {
+    color: var(--bl-danger) !important; // ghi đè !important của tiện ích .text-danger để dùng màu theo theme
+  }
+}

@@ -1,0 +1,14 @@
+// Chữ logo của blog, dùng ở header public, trang auth và sidebar admin
+.brand {
+  font-family: $font-family-serif;
+  font-size: 1.625rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--bl-text);
+  letter-spacing: -.03em;
+
+  &:hover {
+    color: var(--bl-text);
+    text-decoration: none;
+  }
+}
