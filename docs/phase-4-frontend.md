@@ -149,7 +149,7 @@ Các phần trong mục này là phần nền. Sửa phần nền (`core/`, `sha
 
 - Service khu vực dùng `unwrap()` (lấy `data`) hoặc `unwrapPage()` (lấy `{ items: data, meta }`). Component không đọc `success`, `message` của response.
 - Kiểu dữ liệu viết tay theo response DTO trong Swagger, đặt trong `*.models.ts` của khu vực; kiểu dùng ở nhiều khu vực (`AuthUser`, `PostCard`, `Language`) đặt trong `core/models/`. Tên field giữ đúng camelCase của API.
-- Ngày giờ API trả ISO 8601 UTC. Hiển thị bằng `DatePipe` theo locale của ngôn ngữ đang chọn, đăng ký `registerLocaleData` cho `vi` và `en`.
+- Ngày giờ API trả ISO 8601 UTC. Hiển thị bằng pipe `localDate` (`shared/pipes/`) theo giờ máy người xem và ngôn ngữ chữ tĩnh đang dùng, tự định dạng lại khi đổi ngôn ngữ: `{{ post.publishedAt | localDate }}` → `12/10/2026` / `Oct 12, 2026`; `{{ comment.createdAt | localDate: 'datetime' }}` → `12/10/2026 21:15` / `Oct 12, 2026, 21:15`. `registerLocaleData` cho `vi` và `en` chạy lúc khởi động. Không dùng thẳng `DatePipe`.
 - Danh sách phân trang đọc và ghi `page` cùng các bộ lọc lên query string của URL (`/admin/posts?status=draft&page=2`), để tải lại trang và nút Back giữ đúng trang.
 
 ### 3.2. Xác thực và phân quyền
@@ -209,7 +209,7 @@ Guard (functional, khai báo trong route):
 
 **Ngôn ngữ của nội dung**
 
-`LanguageService` (A1) giữ `current` (signal mã ngôn ngữ) và `languages` (danh sách từ `GET /languages`):
+`LanguageService` (A1) giữ `current` (signal mã ngôn ngữ nội dung), `uiLang` (file dịch chữ tĩnh đang dùng: bằng `current`, trừ khi ngôn ngữ đó chưa có file dịch thì là file dự phòng), `languages` (danh sách từ `GET /languages`) và `defaultLanguage`:
 
 | Lúc | Làm gì |
 | --- | --- |
@@ -243,7 +243,7 @@ Header hiện theo trạng thái phiên (requirements, phase 2 mục 4.1): nút 
 
 Route `**` dùng màn 404. Màn 403 dùng lại khối `.not-found` với mã 403 và key `error.forbidden_*` (A1 thêm key).
 
-Router bật `withComponentInputBinding()` (tham số route vào thẳng `input()` của component), `withInMemoryScrolling({ scrollPositionRestoration: 'top' })`. Mỗi màn đặt `<title>` qua `TitleStrategy` có dịch.
+Router bật `withComponentInputBinding()` (tham số route vào thẳng `input()` của component), `withInMemoryScrolling({ scrollPositionRestoration: 'top' })`. Mỗi màn đặt `<title>` dạng `Tên trang · Inkwell` qua `TitleStrategy` có dịch: route khai báo key dịch (`title: 'auth.login.title'`), đổi ngôn ngữ thì tự dịch lại. Màn có tiêu đề theo dữ liệu (chi tiết bài, trang tĩnh, danh mục) không khai báo `title`, gọi `inject(PageTitle).set(post.title)` sau khi tải xong.
 
 ### 3.7. SCSS và component dùng chung
 

@@ -1,14 +1,10 @@
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { provideApiTesting } from '../testing/provide-api-testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthUser } from '../models/auth-user.model';
-import { API_INTERCEPTORS } from '../interceptors';
 import { AuthService } from './auth.service';
-import { fakeJwt } from './testing/jwt.testing';
+import { fakeJwt } from '../testing/jwt.testing';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from './token-storage';
 
 const ok = <T>(data: T) => ({ success: true, message: 'OK', data });
@@ -30,11 +26,7 @@ describe('AuthService', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [
-        provideRouter([]),
-        provideHttpClient(withInterceptors(API_INTERCEPTORS)),
-        provideHttpClientTesting(),
-      ],
+      providers: [provideApiTesting()],
     });
     auth = TestBed.inject(AuthService);
     backend = TestBed.inject(HttpTestingController);
@@ -75,16 +67,14 @@ describe('AuthService', () => {
     it('phiên không còn hợp lệ: xóa token, coi như khách, không chuyển trang', async () => {
       storeTokens();
       const done = auth.init();
-      backend
-        .expectOne('/api/v1/auth/me')
-        .flush(
-          {
-            success: false,
-            code: 'UNAUTHORIZED',
-            message: 'Vui lòng đăng nhập',
-          },
-          { status: 401, statusText: 'Unauthorized' },
-        );
+      backend.expectOne('/api/v1/auth/me').flush(
+        {
+          success: false,
+          code: 'UNAUTHORIZED',
+          message: 'Vui lòng đăng nhập',
+        },
+        { status: 401, statusText: 'Unauthorized' },
+      );
       await done;
 
       expect(auth.isLoggedIn()).toBe(false);
