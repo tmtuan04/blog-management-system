@@ -5611,6 +5611,588 @@
           }
         ]
       }
+    },
+    {
+      "name": "13 - Pages",
+      "description": "UC11 (xem trang tĩnh, public) và UC18 (quản lý trang tĩnh, Super Admin). Chạy sau `00 - Auth` để có `adminAccessToken`, `ownerAccessToken`. Folder sửa trang `contact` rồi trả lại nội dung cũ ở cuối.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminAccessToken}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "UC11 - Danh sách trang đang hiển thị",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Có đủ about, contact, privacy', () => {",
+                  "  const keys = pm.response.json().data.map((p) => p.key);",
+                  "  pm.expect(keys).to.include.members(['about', 'contact', 'privacy']);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/pages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC11 - Xem trang about",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Có tiêu đề và nội dung', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data.key).to.eql('about');",
+                  "  pm.expect(data.title).to.be.a('string').and.not.empty;",
+                  "  pm.expect(data.content).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/pages/about",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages",
+                "about"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC11 - Xem trang about bằng tiếng Anh",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.upsert({ key: 'Accept-Language', value: 'en' });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Trả nội dung khác bản tiếng Việt', () => {",
+                  "  pm.expect(pm.response.json().data.key).to.eql('about');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/pages/about",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages",
+                "about"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC11 - Trang không có (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 và code = NOT_FOUND', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/pages/khong-ton-tai",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages",
+                "khong-ton-tai"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC18 - Danh sách khi chưa đăng nhập (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 và code = UNAUTHORIZED', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('UNAUTHORIZED');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/pages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "pages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC18 - Danh sách bằng Blog Owner (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 và code = FORBIDDEN', () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('FORBIDDEN');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ownerAccessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/pages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "pages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC18 - Danh sách trang tĩnh",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('Có 3 trang, mỗi trang có languages và isVisible', () => {",
+                  "  const data = pm.response.json().data;",
+                  "  pm.expect(data).to.have.lengthOf(3);",
+                  "  data.forEach((p) => {",
+                  "    pm.expect(p.languages).to.be.an('array');",
+                  "    pm.expect(p.isVisible).to.be.a('boolean');",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/pages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "pages"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC18 - Chi tiết trang contact",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "const data = pm.response.json().data;",
+                  "pm.test('Mỗi ngôn ngữ đang hoạt động một tab, mặc định đứng đầu', () => {",
+                  "  pm.expect(data.translations.length).to.be.above(0);",
+                  "  pm.expect(data.translations[0].isDefault).to.eql(true);",
+                  "});",
+                  "// Lưu nội dung hiện tại để ẩn trang rồi trả lại ở cuối folder",
+                  "const translations = data.translations.map(({ code, title, content }) => ({ code, title, content }));",
+                  "pm.environment.set('pageSaveBody', JSON.stringify({ isVisible: data.isVisible, translations }));",
+                  "pm.environment.set('pageHideBody', JSON.stringify({ isVisible: false, translations }));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/pages/contact",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "pages",
+                "contact"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC18 - Chi tiết trang không có (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 và code = NOT_FOUND', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [],
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/admin/pages/khong-ton-tai",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "pages",
+                "khong-ton-tai"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC18 - Lưu thiếu nội dung (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 và code = VALIDATION_ERROR', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('VALIDATION_ERROR');",
+                  "});",
+                  "pm.test('Lỗi ghi theo tab ngôn ngữ', () => {",
+                  "  const fields = pm.response.json().errors.map((e) => e.field);",
+                  "  pm.expect(fields).to.include.members(['translations.vi.title', 'translations.vi.content', 'translations.en.content']);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isVisible\": true,\n  \"translations\": [\n    { \"code\": \"vi\", \"title\": \"\", \"content\": \"\" },\n    { \"code\": \"en\", \"title\": \"Contact\", \"content\": \"\" }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/pages/contact",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "pages",
+                "contact"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC18 - Ẩn trang contact",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('isVisible = false', () => {",
+                  "  pm.expect(pm.response.json().data.isVisible).to.eql(false);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{{pageHideBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/pages/contact",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "pages",
+                "contact"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC11 - Trang đang ẩn (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 và code = NOT_FOUND', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().success).to.eql(false);",
+                  "  pm.expect(pm.response.json().code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/pages/contact",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages",
+                "contact"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC18 - Lưu trang contact (hiện lại, giữ nội dung cũ)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('isVisible = true', () => {",
+                  "  pm.expect(pm.response.json().data.isVisible).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "body": {
+              "mode": "raw",
+              "raw": "{{pageSaveBody}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/pages/contact",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "pages",
+                "contact"
+              ]
+            }
+          }
+        },
+        {
+          "name": "UC11 - Trang contact hiện lại",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 và success = true', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/pages/contact",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages",
+                "contact"
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

@@ -24,6 +24,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { LanguagesModule } from './modules/languages/languages.module';
+import { PagesModule } from './modules/pages/pages.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { AdminUsersModule } from './modules/users/admin-users.module';
@@ -63,6 +64,7 @@ import { AdminUsersModule } from './modules/users/admin-users.module';
     CategoriesModule,
     CommentsModule,
     LanguagesModule,
+    PagesModule,
     PostsModule,
     ProfileModule,
     AdminUsersModule,
