@@ -162,9 +162,9 @@ Theo Q1 của phase 3: refresh token gửi qua body, frontend lưu `localStorage
 | Trạng thái phiên | `AuthService.user` là signal `AuthUser \| null` (`id`, `fullName`, `email`, `avatar`, `role`). `isLoggedIn`, `role`, `canWrite` (Blog Owner, Super Admin), `isSuperAdmin` là `computed` |
 | Khởi động app | `provideAppInitializer`: có `refreshToken` thì gọi `GET /auth/me` trước khi router chạy, để guard và header biết role ngay. Lỗi thì xóa token, coi như khách |
 | Gửi token | `authInterceptor` thêm `Authorization: Bearer <accessToken>` cho mọi request tới `/api` (route public có `optionalAuth` như `/posts/:slug` cần token để biết quyền xóa bình luận) |
-| Hết hạn | `refreshInterceptor`: gặp 401 có `code: TOKEN_EXPIRED` thì gọi `POST /auth/refresh` **một lần** cho mọi request đang chờ (dùng chung một Observable), lưu cặp token mới, gửi lại request cũ. Refresh lỗi thì xóa token, chuyển `/login?returnUrl=<url hiện tại>` (UC02) |
+| Hết hạn | `refreshInterceptor`: gặp 401 có `code: TOKEN_EXPIRED` thì gọi `POST /auth/refresh` **một lần** cho mọi request đang chờ (dùng chung một Observable), lưu cặp token mới, gửi lại request cũ. Refresh lỗi thì xóa token, chuyển `/login?returnUrl=<url hiện tại>&sessionError=TOKEN_EXPIRED` (UC02). Ngoài ra `authInterceptor` đọc `exp` của access token, đã hết hạn thì refresh **trước** khi gửi: route `optionalAuth` nhận token hết hạn không trả 401 mà coi như khách (mất quyền xóa bình luận). Refresh trước khi gửi mà lỗi thì xóa phiên, gửi request như khách |
 | Nhiều tab | Refresh token xoay vòng nên hai tab cùng refresh thì một tab bị 401. Trước khi refresh đọc lại `localStorage` (tab khác có thể vừa đổi token); nghe sự kiện `storage` để đồng bộ đăng nhập, đăng xuất giữa các tab |
-| Bị khóa | 403 `ACCOUNT_LOCKED` ở bất kỳ request nào: xóa phiên, chuyển `/login`, hiện `error.account_locked` |
+| Bị khóa | 403 `ACCOUNT_LOCKED` ở bất kỳ request nào: xóa phiên, chuyển `/login?sessionError=ACCOUNT_LOCKED`, hiện `error.account_locked`. 401 khác (không phải `TOKEN_EXPIRED`) cũng hết phiên với `sessionError=UNAUTHORIZED` |
 | Đăng xuất (UC04) | `POST /auth/logout` với `refreshToken`. Thành công hay lỗi đều xóa token và chuyển `/` |
 
 Guard (functional, khai báo trong route):
@@ -313,7 +313,7 @@ Cột "Người" theo requirements mục 1.4 và mục 8.3. Cột "API" là rout
 
 | Route | UC | Người | Từ HTML | API | Ghi chú |
 | --- | --- | --- | --- | --- | --- |
-| `/login` | UC02, UC20 | A | `public/login.html` | `POST /auth/login` | **Màn mẫu form** (A1). Sai → `auth.error.invalid_credentials` (một câu chung), khóa → `auth.error.account_locked`, 429 → `auth.error.too_many_attempts`. Thành công: lưu token, về `returnUrl` hoặc `/`. Có `?registered=1` thì hiện thông báo đăng ký thành công. Có `?oauthError=<code>` thì hiện lỗi OAuth |
+| `/login` | UC02, UC20 | A | `public/login.html` | `POST /auth/login` | **Màn mẫu form** (A1). Sai → `auth.error.invalid_credentials` (một câu chung), khóa → `auth.error.account_locked`, 429 → `auth.error.too_many_attempts`. Thành công: lưu token, về `returnUrl` hoặc `/`. Có `?registered=1` thì hiện thông báo đăng ký thành công. Có `?oauthError=<code>` thì hiện lỗi OAuth. Có `?sessionError=<code>` (hết phiên, bị khóa khi đang dùng, mục 3.2) thì hiện `error.<code>` |
 | (header) | UC04 | A | menu avatar | `POST /auth/logout` | Làm cùng A1 |
 | `/register` | UC01 | A | `public/register.html` | `POST /auth/register` | 409 → lỗi dưới ô email. Thành công → `/login?registered=1` |
 | `/forgot-password` | UC03 | A | `public/forgot-password.html` | `POST /auth/forgot-password` | Luôn hiện cùng một câu "Nếu email tồn tại..." |

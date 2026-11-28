@@ -135,9 +135,9 @@ describe('API_INTERCEPTORS', () => {
     it('lỗi 4xx không hiện toast, để component tự xử lý', () => {
       const spy = vi.spyOn(toast, 'error');
       failWith(
-        '/auth/login',
-        { success: false, code: 'INVALID_CREDENTIALS', message: 'Sai' },
-        { status: 401, statusText: 'Unauthorized' },
+        '/posts/khong-ton-tai',
+        { success: false, code: 'NOT_FOUND', message: 'Không tìm thấy' },
+        { status: 404, statusText: 'Not Found' },
       );
       expect(spy).not.toHaveBeenCalled();
     });
