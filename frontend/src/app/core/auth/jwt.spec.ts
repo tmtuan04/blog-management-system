@@ -1,5 +1,5 @@
 import { isTokenExpired } from './jwt';
-import { fakeJwt } from './testing/jwt.testing';
+import { fakeJwt } from '../testing/jwt.testing';
 
 describe('isTokenExpired', () => {
   it('token còn hạn', () => {

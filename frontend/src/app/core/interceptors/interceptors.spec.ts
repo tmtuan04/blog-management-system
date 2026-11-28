@@ -1,17 +1,10 @@
-import {
-  HttpClient,
-  provideHttpClient,
-  withInterceptors,
-} from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { provideApiTesting } from '../testing/provide-api-testing';
+import { HttpClient } from '@angular/common/http';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ApiError } from '../api/api.models';
 import { skipErrorToast } from '../api/http-context';
 import { ToastService } from '../../shared/components/toast/toast.service';
-import { API_INTERCEPTORS } from '.';
 
 describe('API_INTERCEPTORS', () => {
   let http: HttpClient;
@@ -20,10 +13,7 @@ describe('API_INTERCEPTORS', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        provideHttpClient(withInterceptors(API_INTERCEPTORS)),
-        provideHttpClientTesting(),
-      ],
+      providers: [provideApiTesting()],
     });
     http = TestBed.inject(HttpClient);
     backend = TestBed.inject(HttpTestingController);

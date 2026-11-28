@@ -1,18 +1,11 @@
-import {
-  HttpClient,
-  provideHttpClient,
-  withInterceptors,
-} from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { provideApiTesting } from '../testing/provide-api-testing';
+import { HttpClient } from '@angular/common/http';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Router, provideRouter } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import { fakeJwt } from '../auth/testing/jwt.testing';
+import { fakeJwt } from '../testing/jwt.testing';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../auth/token-storage';
-import { API_INTERCEPTORS } from '.';
 
 const UNAUTHORIZED = { status: 401, statusText: 'Unauthorized' };
 const expiredBody = {
@@ -46,11 +39,7 @@ describe('refreshInterceptor', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [
-        provideRouter([]),
-        provideHttpClient(withInterceptors(API_INTERCEPTORS)),
-        provideHttpClientTesting(),
-      ],
+      providers: [provideApiTesting()],
     });
     http = TestBed.inject(HttpClient);
     backend = TestBed.inject(HttpTestingController);
